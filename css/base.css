@@ -93,8 +93,8 @@ iframe {
   border: none;
 }
 .step {
-     -moz-box-shadow: 2px 0 2px rgba(0,0,0,.14);
   -webkit-box-shadow: 2px 0 2px rgba(0,0,0,.14);
+     -moz-box-shadow: 2px 0 2px rgba(0,0,0,.14);
           box-shadow: 2px 0 2px rgba(0,0,0,.14);
   background: url(../img/next-step-bottom.jpg) no-repeat bottom;
   background-color: #F9F7F1;
@@ -164,38 +164,40 @@ iframe {
   position: absolute;
   width: 100%;
 }
-#metadata span:nth-child(1) {
-  display: block;
-  padding: 0 320px 0 20px;
-}
-#metadata span:nth-child(2) {
-  bottom: 14px;
-  position: absolute;
-  right: 20px;
-}
-#metadata a {
-  color: #FFF;
-}
-#metadata .title {
-  font-size: 1.6em;
-  line-height: 25px;
-  margin: 12px 0 0 0;
-}
-#metadata .description {
-  margin-top: 6px;
-  position: relative;
-}
-  #metadata .description a {
-    max-width: 100%;
-    overflow: hidden;
-    position: absolute;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+  #metadata a {
+    color: #FFF;
   }
+  #metadata .buttons {
+    bottom: 14px;
+    position: absolute;
+    right: 20px;
+  }
+    #metadata .buttons button span {
+      top: 3px;
+    }
+  #metadata .info {
+    display: block;
+    padding: 0 320px 0 20px;
+  }
+    #metadata .info .description {
+      margin-top: 6px;
+      position: relative;
+    }
+      #metadata .info .description a {
+        max-width: 100%;
+        overflow: hidden;
+        position: absolute;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+    #metadata .info .title {
+      font-size: 1.6em;
+      line-height: 25px;
+      margin: 12px 0 0 0;
+    } 
 #accordion-step-1 {
   margin: 0 -28px;
 }
-
 #steps {
   display: block;
   list-style-position: inside;

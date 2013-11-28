@@ -1,3 +1,7 @@
+/* Customized by NPS:
+ *   - Escape key does not hide editable popover.
+ */
+
 /*! X-editable - v1.5.0 
 * In-place editing with Twitter Bootstrap, jQuery UI or pure jQuery
 * http://github.com/vitalets/x-editable
@@ -928,7 +932,7 @@ Applied as jQuery method.
                 //close all on escape
                 $(document).on('keyup.editable', function (e) {
                     if (e.which === 27) {
-                        $('.editable-open').editableContainer('hide');
+                        //$('.editable-open').editableContainer('hide');
                         //todo: return focus on element 
                     }
                 });
@@ -1778,6 +1782,7 @@ Makes editable any HTML element on the page. Applied as jQuery method.
                     value: this.value,
                     input: this.input //pass input to form (as it is already created)
                 });
+
                 this.$element.editableContainer(containerOptions);
                 //listen `save` event 
                 this.$element.on("save.internal", $.proxy(this.save, this));
@@ -5566,6 +5571,7 @@ Editableform based on Twitter Bootstrap 3
             var dateChanged = false,
                 dir, day, month,
                 newDate, newViewDate;
+
             switch(e.keyCode){
                 case 27: // escape
                     this.hide();

@@ -40,14 +40,28 @@
         <li><button>3. Export Embed Code</button></li>
       </ol>
       <div id="metadata">
-        <span>
+        <span class="info">
           <h1 class="title"><a href="#" data-placement="right" data-title="Enter a Title" data-type="text"></a></h1>
           <p class="description"><a href="#" data-placement="right" data-title="Enter a Description" data-type="textarea"></a></p>
         </span>
-        <span>
-          <button id="button-saveMap" class="btn btn-default">Save Map</button>
-          <button id="button-settings" class="btn btn-default">Settings</button>
-          <!--<button id="button-viewConfig" class="btn btn-default">View Code</button>-->
+        <span class="buttons">
+          <div class="btn-toolbar">
+            <div class="btn-group">
+              <button type="button" id="button-saveMap" class="btn btn-default">
+                <span class="glyphicon glyphicon-floppy-disk"></span>
+              </button>
+              <button type="button" id="button-settings" class="btn btn-default">
+                <span class="glyphicon glyphicon-cog"></span>
+              </button>
+              <button type="button" id="button-help" class="btn btn-default">
+                <span class="glyphicon glyphicon-question-sign"></span>
+              </button>
+              <button type="button" id="button-feedback" class="btn btn-default">
+                <span class="glyphicon glyphicon-comment"></span>
+              </button>
+              <!--<button id="button-viewConfig" class="btn btn-default">View Code</button>-->
+            </div>
+          </div>
         </span>
       </div>
     </header>
@@ -130,11 +144,9 @@
                       <label><input type="checkbox" value="fullscreenControl">Fullscreen</label>
                     </div>
                     -->
-                    <!--
                     <div class="checkbox">
-                      <label><input type="checkbox" value="geocoder">Geocoder</label>
+                      <label><input type="checkbox" value="geocoderControl">Geocoder</label>
                     </div>
-                    -->
                     <div class="checkbox">
                       <label><input type="checkbox" value="homeControl" checked="checked">Home</label>
                     </div>
@@ -143,7 +155,7 @@
                     </div>
                     <!--
                     <div class="checkbox">
-                      <label><input type="checkbox" value="print">Print</label>
+                      <label><input type="checkbox" value="printControl">Print</label>
                     </div>
                     -->
                     <div class="checkbox">
@@ -151,7 +163,7 @@
                     </div>
                     <!--
                     <div class="checkbox">
-                      <label><input type="checkbox" value="share">Share</label>
+                      <label><input type="checkbox" value="shareControl">Share</label>
                     </div>
                     -->
                     <div class="checkbox">

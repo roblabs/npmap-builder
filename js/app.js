@@ -1,7 +1,12 @@
 var NPMap = {
   baseLayers: ['nps-lightStreets'],
+  center: {
+    lat: 39,
+    lng: -96
+  },
   div: 'map',
-  homeControl: true
+  homeControl: true,
+  zoom: 4
 };
 var Builder = (function() {
   var $buttonAddAnotherLayer,
@@ -218,7 +223,7 @@ var Builder = (function() {
       });
     $('#metadata .description a').editable({
       animation: false,
-      container: '#metadata span:first-child',
+      container: '#metadata span.info',
       emptytext: 'Add a description to give your map context.',
       validate: function(value) {
         if ($.trim(value) === '') {
@@ -359,9 +364,9 @@ var Builder = (function() {
   });
 
   return {
-    // PRIVATE: ABCs for the layer labels.
+    // ABCs for the layer labels.
     _abcs: ['A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z'],
-    // PRIVATE: HTML element handlers.
+    // HTML element handlers.
     _handlers: {
       /**
        *
@@ -430,23 +435,6 @@ var Builder = (function() {
      *
      */
     updateMap: function(callback) {
-      /*
-      var npmap = document.getElementById('iframe-map').contentWindow.NPMap;
-
-      if (npmap) {
-        var map = npmap.config.L;
-
-        // TODO: This isn't hooked up in NPMap.js yet.
-        NPMap.hooks = {
-          init: function(callback) {
-            map.setCenter(map.getCenter());
-            map.setZoom(map.getZoom());
-            callback();
-          }
-        };
-      }
-      */
-
       $iframe.attr('src', 'iframe.html?c=' + encodeURIComponent(JSON.stringify(NPMap)));
       var interval = setInterval(function() {
         var npmap = document.getElementById('iframe-map').contentWindow.NPMap;

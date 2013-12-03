@@ -342,7 +342,12 @@ Builder.ui.modal.addLayer = (function() {
 
         index = $layers.children().length;
 
-        $layers.append($('<li class="dd-item" data-id="' + index + '"><div class="letter">' + Builder._abcs[index] + '</div><div class="details"><span>' + name + '</span><span><img src="img/edit-layer.png" style="cursor:pointer;float:left;"><button style="background-color:transparent;border:none;float:right;" onclick="Builder._handlers.layerRemoveOnClick(this);"><img src="img/remove-layer.png" style="cursor:pointer;float:right;margin-top:3px;"></button></span></div></li>'));
+        $layers.append($([
+          '<li class="dd-item" data-id="' + index + '"><div class="letter">' + Builder._abcs[index] + '</div><div class="details"><span>' + name + '</span>',
+          '<span><img src="img/edit-layer.png" style="cursor:pointer;float:left;"><button style="background-color:transparent;border:none;float:right;" onclick="Builder._handlers.layerRemoveOnClick(this);"><img src="img/remove-layer.png" style="cursor:pointer;float:right;margin-top:3px;"></button></span>',
+          '<span><img src="img/change-marker.png" style="cursor:pointer;float:left;" onclick="Builder._handlers.layerChangeMarker(NPMap.overlays[' + index + ']);"></span>',
+          '</div></li>'
+        ].join('')));
         Builder._refreshLayersUl();
       }
     },

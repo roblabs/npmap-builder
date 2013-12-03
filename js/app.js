@@ -18,6 +18,7 @@ var Builder = (function() {
     $modalEditBaseMaps,
     $modalExport,
     $modalViewConfig,
+    $modalChangeMarker,
     $stepSection = $('section .step'),
     $ul = $('#layers'),
     descriptionSet = false,
@@ -375,6 +376,12 @@ var Builder = (function() {
         Builder.showConfirm('Yes, remove the layer', 'Once the layer is removed, you cannot get it back.', 'Are you sure?', function() {
           Builder.removeLayerLi(el);
           Builder.removeLayer($(el).parent().prev()[0].innerHTML);
+        });
+        return false;
+      },
+      layerChangeMarker: function(layer) {
+        Builder.showConfirm('Confirm the new icon', 'This is where you can change the point icon!', 'Change the icon?', function() {
+          alert('not gonna happen');
         });
         return false;
       }

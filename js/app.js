@@ -6,6 +6,7 @@ var NPMap = {
   },
   div: 'map',
   homeControl: true,
+  smallzoomControl: true,
   zoom: 4
 };
 var Builder = (function() {
@@ -13,8 +14,8 @@ var Builder = (function() {
     $buttonEditBaseMapsAgain,
     $iframe = $('#iframe-map'),
     $modalAddLayer,
-    $modalEditBaseMaps,
     $modalConfirm,
+    $modalEditBaseMaps,
     $modalExport,
     $modalViewConfig,
     $stepSection = $('section .step'),
@@ -139,30 +140,37 @@ var Builder = (function() {
         });
       }
     });
+    $('#button-feedback').on('click', function() {
+      window.open('https://github.com/nationalparkservice/npmap-builder/issues', '_blank');
+    });
     $('#button-saveMap').on('click', function() {
-      var newNPMap = {'userJson' : $.extend(true, {}, NPMap)};
-      newNPMap.mapName = $('.title a').text();
-      newNPMap.isPublic = true;
-      newNPMap.isShared = true;
-      newNPMap.userJson.description = $('.description a').text();
-      var serverUrl = 'http://162.243.77.34/builder';
+      var config = {'userJson': $.extend(true, {}, NPMap)},
+        serverUrl = 'http://162.243.77.34/builder';
+
+      config.mapName = $('.title a').text();
+      config.isPublic = true;
+      config.isShared = true;
+      config.userJson.description = $('.description a').text();
+
+      $('#button-saveMap').attr('disabled', 'disabled');
       $.ajax({
         beforeSend: function (xhr) {
           xhr.setRequestHeader ('Authorization', 'Basic ' + btoa('npmap_builder:321redliub_pampn'));
         },
-        type: 'POST',
-        xhrFields: { withCredentials: true },
-        url: serverUrl,
-        data: JSON.stringify(newNPMap),
-        processData: false,
         contentType: false,
-        success: function(data) {
-          console.log('success:', data);
-          $('#button-saveMap').attr("disabled", "disabled");
-        },
+        data: JSON.stringify(config),
         error: function(data) {
           console.log('error', data);
-        }
+          $('#button-saveMap').removeAttr('disabled');
+        },
+        processData: false,
+        success: function(data) {
+          console.log('success', data);
+          $('#button-saveMap').removeAttr('disabled');
+        },
+        type: 'POST',
+        url: serverUrl,
+        xhrFields: { withCredentials: true },
       });
     });
     $('#button-viewConfig').on('click', function() {
@@ -215,7 +223,8 @@ var Builder = (function() {
         });
 
         if (overlays.length) {
-          NPMap.overlays = overlays.reverse();
+          //NPMap.overlays = overlays.reverse();
+          NPMap.overlays = overlays;
           Builder.updateMap();
         }
 
@@ -307,10 +316,6 @@ var Builder = (function() {
           'padding-right': '10px'
         });
       });
-    $('[rel=tooltip]').tooltip();
-    $('#accordion-step-1').on('shown.bs.collapse', function() {
-      setAccordionHeight('#accordion-step-1');
-    });
     $($('#set-center-and-zoom .btn-block')[0]).on('click', function() {
       var map = getLeafletMap(),
         center = map.getCenter();
@@ -364,13 +369,8 @@ var Builder = (function() {
   });
 
   return {
-    // ABCs for the layer labels.
     _abcs: ['A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z'],
-    // HTML element handlers.
     _handlers: {
-      /**
-       *
-       */
       layerRemoveOnClick: function(el) {
         Builder.showConfirm('Yes, remove the layer', 'Once the layer is removed, you cannot get it back.', 'Are you sure?', function() {
           Builder.removeLayerLi(el);
@@ -379,9 +379,6 @@ var Builder = (function() {
         return false;
       }
     },
-    /**
-     *
-     */
     _refreshLayersUl: function() {
       var previous = $ul.parent().prev();
 
@@ -395,33 +392,26 @@ var Builder = (function() {
         previous.hide();
       }
     },
-    /**
-     *
-     */
     _updateInitialCenterAndZoom: function() {
       $('#set-center-and-zoom .lat').html(NPMap.center.lat.toFixed(2));
       $('#set-center-and-zoom .lng').html(NPMap.center.lng.toFixed(2));
       $('#set-center-and-zoom .zoom').html(NPMap.zoom);
     },
-    /**
-     *
-     */
+    rebuildTooltips: function() {
+      $('[rel=tooltip]').tooltip({
+        animation: false
+      });
+    },
     removeLayer: function(name) {
       NPMap.overlays = $.grep(NPMap.overlays, function(layer) {
         return layer.name !== name;
       });
       this.updateMap();
     },
-    /**
-     *
-     */
     removeLayerLi: function(el) {
       $(el).parent().parent().parent().remove();
       this._refreshLayersUl();
     },
-    /**
-     *
-     */
     showConfirm: function(button, content, title, callback) {
       $($modalConfirm.find('.btn-primary')[0]).html(button).on('click', function() {
         $modalConfirm.modal('hide');
@@ -431,9 +421,6 @@ var Builder = (function() {
       $($modalConfirm.find('h4')[0]).html(title);
       $modalConfirm.modal('show');
     },
-    /**
-     *
-     */
     updateMap: function(callback) {
       $iframe.attr('src', 'iframe.html?c=' + encodeURIComponent(JSON.stringify(NPMap)));
       var interval = setInterval(function() {
@@ -450,6 +437,7 @@ var Builder = (function() {
     }
   };
 })();
+Builder.rebuildTooltips();
 Builder.updateMap(function(config) {
   // TODO: Grab details if this map is being loaded and populate necessary fields.
   NPMap.center = {

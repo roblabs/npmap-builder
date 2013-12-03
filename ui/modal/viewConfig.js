@@ -12,10 +12,9 @@ Builder.ui.modal.viewConfig = (function() {
       height: $(document).height() - 200
     });
   }
-
-  $('#modal-viewConfig').modal().on('show.bs.modal shown.bs.modal', function() {
+  function setConfig() {
     var formatted = '',
-        json = JSON.stringify(NPMap.config, null, 2).split('\n');
+      json = JSON.stringify(NPMap, null, 2).split('\n');
 
     $.each(json, function(i, v) {
       if (v !== null) {
@@ -34,10 +33,11 @@ Builder.ui.modal.viewConfig = (function() {
     $('#modal-viewConfig-code').on('click', function() {
       $(this).select();
     }).select();
-  });
-  $('[rel=tooltip]').tooltip({
-    animation: false
-  });
+  }
+
+  $('#modal-viewConfig').modal().on('show.bs.modal shown.bs.modal', setConfig);
+  Builder.rebuildTooltips();
+  setConfig();
   setHeight();
   $(window).resize(setHeight);
 

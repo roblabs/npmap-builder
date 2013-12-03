@@ -65,10 +65,10 @@ Builder.ui.modal.addLayer = (function() {
       },
       geojson: {
         fields: {
-
+          $url: $('#geojson-url')
         },
         reset: function() {
-          
+          types.geojson.fields.$url.val('');
         }
       },
       github: {
@@ -85,10 +85,18 @@ Builder.ui.modal.addLayer = (function() {
       },
       kml: {
         fields: {
-
+          $url: $('#kml-url')
         },
         reset: function() {
-          
+          types.kml.fields.$url.val('');
+        }
+      },
+      mapbox: {
+        fields: {
+          $id: $('#mapbox-id')
+        },
+        reset: function() {
+          types.mapbox.fields.$id.val('');
         }
       }
     };

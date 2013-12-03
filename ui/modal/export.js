@@ -10,9 +10,7 @@ Builder.ui.modal.export = (function() {
   }
 
   $('#modal-export').modal();
-  $('[rel=tooltip]').tooltip({
-    animation: false
-  });
+  Builder.rebuildTooltips();
   setHeight();
   $(window).resize(setHeight);
 

@@ -161,9 +161,7 @@ Builder.ui.modal.addLayer = (function() {
     prefetch: 'data/tilestream-search.json',
     valueKey: 'n'
   }]);
-  $('[rel=tooltip]').tooltip({
-    animation: false
-  });
+  Builder.rebuildTooltips();
   setHeight();
   $type.focus();
   $(window).resize(setHeight);

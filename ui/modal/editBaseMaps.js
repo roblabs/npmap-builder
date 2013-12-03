@@ -6,7 +6,7 @@ Builder.ui = Builder.ui || {};
 Builder.ui.modal = Builder.ui.modal || {};
 Builder.ui.modal.editBaseMaps = (function() {
   var baseMaps = document.getElementById('iframe-map').contentWindow.L.npmap.preset.baselayers,
-      html = [];
+    html = [];
 
   function getProvider(provider) {
     switch (provider) {
@@ -125,9 +125,7 @@ Builder.ui.modal.editBaseMaps = (function() {
     backdrop: 'static'
   })
     .on('show.bs.modal', update);
-  $('[rel=tooltip]').tooltip({
-    animation: false
-  });
+  Builder.rebuildTooltips();
   setHeight();
   update();
   $(window).resize(setHeight);

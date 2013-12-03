@@ -9,6 +9,9 @@ Builder.ui.modal.changeMarker = (function() {
     });
   }
 
+  $('#modal-changeMarker').modal({
+    backdrop: 'static'
+  });
   Builder.rebuildTooltips();
   setHeight();
   $(window).resize(setHeight);

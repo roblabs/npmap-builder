@@ -14,11 +14,11 @@ var Builder = (function() {
     $buttonEditBaseMapsAgain,
     $iframe = $('#iframe-map'),
     $modalAddLayer,
+    $modalChangeMarker,
     $modalConfirm,
     $modalEditBaseMaps,
     $modalExport,
     $modalViewConfig,
-    $modalChangeMarker,
     $stepSection = $('section .step'),
     $ul = $('#layers'),
     descriptionSet = false,
@@ -52,6 +52,8 @@ var Builder = (function() {
    */
   function loadModule(module, callback) {
     module = module.replace('Builder.', '').replace(/\./g,'/');
+
+    console.log(module);
 
     $.ajax({
       dataType: 'html',
@@ -374,6 +376,14 @@ var Builder = (function() {
     _handlers: {
       layerChangeMarkerOnClick: function(layer) {
         console.log(layer);
+        console.log($modalChangeMarker);
+        if ($modalChangeMarker) {
+          $modalChangeMarker.modal('show');
+        } else {
+          loadModule('Builder.ui.modal.changeMarker', function() {
+            $modalChangeMarker = $('#modal-changeMarker');
+          });
+        }
       },
       layerRemoveOnClick: function(el) {
         Builder.showConfirm('Yes, remove the layer', 'Once the layer is removed, you cannot get it back.', 'Are you sure?', function() {

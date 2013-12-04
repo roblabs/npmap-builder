@@ -53,8 +53,6 @@ var Builder = (function() {
   function loadModule(module, callback) {
     module = module.replace('Builder.', '').replace(/\./g,'/');
 
-    console.log(module);
-
     $.ajax({
       dataType: 'html',
       success: function (html) {
@@ -163,12 +161,12 @@ var Builder = (function() {
         contentType: false,
         data: JSON.stringify(config),
         error: function(data) {
-          console.log('error', data);
+          //console.log('error', data);
           $('#button-saveMap').removeAttr('disabled');
         },
         processData: false,
         success: function(data) {
-          console.log('success', data);
+          //console.log('success', data);
           $('#button-saveMap').removeAttr('disabled');
         },
         type: 'POST',

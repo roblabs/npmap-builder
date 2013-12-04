@@ -374,14 +374,16 @@ var Builder = (function() {
   return {
     _abcs: ['A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z'],
     _handlers: {
-      layerChangeMarkerOnClick: function(layer) {
-        console.log(layer);
-        console.log($modalChangeMarker);
+      layerChangeMarkerOnClick: function(el) {
+        var layerIndex = $(el).parent().parent().parent().data('id');
+        var layer = document.getElementById('iframe-map').contentWindow.NPMap.config.overlays[layerIndex];
         if ($modalChangeMarker) {
           $modalChangeMarker.modal('show');
+          $modalChangeMarker.data({'layer': layer});
         } else {
           loadModule('Builder.ui.modal.changeMarker', function() {
             $modalChangeMarker = $('#modal-changeMarker');
+            $modalChangeMarker.data({'layer': layer});
           });
         }
       },

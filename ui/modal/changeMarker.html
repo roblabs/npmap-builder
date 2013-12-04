@@ -3,15 +3,39 @@
     <div class="modal-content">
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-        <h4 id="modal-changeMarker-title" class="modal-title">View Config&nbsp;<img src="img/help.png" rel="tooltip" title="You can copy and paste the code below into a blank document and save it with a .html extension to run it for yourself." data-placement="bottom"></h4>
+        <h4 id="modal-changeMarker-title" class="modal-title">Select Marker Icon</h4>
       </div>
       <div class="modal-body">
-        <p id="modal-changeMarker-description">The textarea below contains a snippet of code you can use to embed the map into your own web page. Hover over the help icon above to get more information.</p>
-        <form role="form">
-          <div class="form-group">
-            <code style="padding:0;"><textarea id="modal-changeMarker-code" class="form-control" readonly="readonly"></textarea></code>
-          </div>
+
+        <form>
+          <select id="icon" onChange="set();">
+            <option value='park'>park</option>
+            <option value='recreation'>recreation</option>
+            <option value='forest'>forest</option>
+            <option value='tree'>tree</option>
+            <option value='green'>green</option>
+            <option value='woods'>woods</option>
+            <option value='nature'>nature</option>
+          </select>
+          <select id="color" onChange="set();">
+            <option value='D98D38'>mustard</option>
+            <option value='D39800'>gold</option>
+            <option value='D46655'>rose</option>
+            <option value='BF815D'>chesnut</option>
+            <option value='896C9C'>lilac</option>
+            <option value='5F3663'>currant</option>
+            <option value='1B99AA'>chill</option>
+            <option value='558877'>eucalyptus</option>
+            <option value='7A9052'>parks</option>
+            <option value='7A4810'>russett</option>
+          </select>
+          <button type="button" onClick="set();">Show Icon</button>
+          <span id='DemoIcon'>[ ICON HERE ]</span>
         </form>
+
+        <script type="text/javascript">
+               </script>
+
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>

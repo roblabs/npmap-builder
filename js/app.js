@@ -380,10 +380,16 @@ var Builder = (function() {
         if ($modalChangeMarker) {
           $modalChangeMarker.modal('show');
           $modalChangeMarker.data({'layer': layer});
+          $modalChangeMarker.on('hidden', function () {
+            Builder.updateMap();
+          });
         } else {
           loadModule('Builder.ui.modal.changeMarker', function() {
             $modalChangeMarker = $('#modal-changeMarker');
             $modalChangeMarker.data({'layer': layer});
+            $modalChangeMarker.on('hidden', function () {
+              Builder.updateMap();
+            });
           });
         }
       },

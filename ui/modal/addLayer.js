@@ -5,8 +5,7 @@ $('head').append($('<link rel="stylesheet">').attr('href', 'ui/modal/addLayer.cs
 Builder.ui = Builder.ui || {};
 Builder.ui.modal = Builder.ui.modal || {};
 Builder.ui.modal.addLayer = (function() {
-  var
-    $attribution = $('#layerAttribution'),
+  var $attribution = $('#layerAttribution'),
     $description = $('#layerDescription'),
     $name = $('#layerName'),
     $type = $('#layerType'),
@@ -134,10 +133,20 @@ Builder.ui.modal.addLayer = (function() {
           $formGroup.removeClass('has-error');
         }
       });
+
+      Builder.ui.modal.addLayer._editingIndex = -1;
+      $('#layerType').removeAttr('disabled');
+      $('#modal-addLayer-description').html('You can add an overlay to your map either by typing in information about the overlay or searching the NPMap Catalog for datasets to add <em>(coming soon)</em>. Hover over the help icon above for more information.');
+      $('#modal-addLayer-title').html('Add Overlay&nbsp;<img src="img/help.png" rel="tooltip" title="You can add ArcGIS Server, CartoDB, GeoJSON, KML, and MapBox Hosting overlays to your map. The NPMap Catalog includes results from the National Park Service ArcGIS Server (from both ArcGIS Online and public-facing ArcGIS Server instances), CartoDB, GitHub, and MapBox Hosting accounts." data-placement="bottom">');
+      $('#modal-addLayer .btn-primary').text('Add to Map');
+      Builder.rebuildTooltips();
     })
     .on('shown.bs.modal', function() {
       $type.focus();
     });
+  $($('#modal-addLayer a')[1]).click(function() {
+    return false;
+  });
   $('#modal-addLayer .btn-primary').click(function() {
     Builder.ui.modal.addLayer._click();
   });
@@ -173,9 +182,9 @@ Builder.ui.modal.addLayer = (function() {
   $(window).resize(setHeight);
 
   return {
+    _editingIndex: -1,
     _click: function() {
-      var
-        attribution = $attribution.val() || null,
+      var attribution = $attribution.val() || null,
         config,
         description = $description.val() || null,
         errors = [],
@@ -193,7 +202,7 @@ Builder.ui.modal.addLayer = (function() {
       if ($('#arcgisserver').is(':visible')) {
         (function() {
           var layers = types.arcgisserver.fields.$layers.val(),
-              url = types.arcgisserver.fields.$url.val();
+            url = types.arcgisserver.fields.$url.val();
 
           $.each(types.arcgisserver.fields, function(field) {
             fields.push(field);
@@ -220,9 +229,9 @@ Builder.ui.modal.addLayer = (function() {
       } else if ($('#cartodb').is(':visible')) {
         (function() {
           var $table = $('#cartodb-table'),
-              table = $table.val(),
-              $user = $('#cartodb-user'),
-              user = $user.val();
+            table = $table.val(),
+            $user = $('#cartodb-user'),
+            user = $user.val();
 
           fields.push($table);
           fields.push($user);
@@ -322,7 +331,7 @@ Builder.ui.modal.addLayer = (function() {
       } else if ($('#mapbox').is(':visible')) {
         (function() {
           var $id = $('#mapbox-id'),
-              id = $id.val();
+            id = $id.val();
 
           fields.push($id);
 
@@ -343,35 +352,54 @@ Builder.ui.modal.addLayer = (function() {
         });
       } else {
         var $layers = $('#layers'),
-            index;
+          index;
 
-        config.attribution = attribution;
-        config.description = description;
-        config.name = name;
-        NPMap.overlays.push(config);
-        Builder.updateMap();
-        $('#modal-addLayer').modal('hide');
-
-        if (!$layers.is(':visible')) {
-          $layers.prev().hide();
-          $('#customize .content').css({
-            padding: 0
-          });
-          $layers.show();
+        if (attribution) {
+          config.attribution = attribution;
         }
 
-        index = $layers.children().length;
-        $layers.append($([
-          '<li class="dd-item">',
-          '<div class="letter">' + Builder._abcs[index] + '</div>',
-          '<div class="details"><span>' + name + '</span><span>',
-          '<button style="float:left;padding-left:0;" onclick="Builder._handlers.layerEditOnClick(this);"><img src="img/edit-layer.png"></button>',
-          '<div style="float:right;">',
-          '<button onclick="Builder._handlers.layerChangeStyleOnClick(this);"><img src="img/edit-style.png"></button>',
-          '<button onclick="Builder._handlers.layerRemoveOnClick(this);"><img src="img/remove-layer.png"></button>',
-          '</div></span></div></li>'
-        ].join('')));
-        Builder._refreshLayersUl();
+        if (description) {
+          config.description = description;
+        }
+
+        config.name = name;
+        
+        if (Builder.ui.modal.addLayer._editingIndex === -1) {
+          NPMap.overlays.push(config);
+
+          if (!$layers.is(':visible')) {
+            $layers.prev().hide();
+            $('#customize .content').css({
+              padding: 0
+            });
+            $layers.show();
+          }
+
+          index = $layers.children().length;
+          $layers.append($([
+            '<li class="dd-item">',
+            '<div class="letter">' + Builder._abcs[index] + '</div>',
+            '<div class="details"><span class="name">' + name + '</span><span class="description">' + (description || '') + '</span><span>',
+            '<button style="float:left;padding-left:0;" onclick="Builder._handlers.layerEditOnClick(this);"><img src="img/edit-layer.png"></button>',
+            '<div style="float:right;">',
+            '<button onclick="Builder._handlers.layerChangeStyleOnClick(this);"><img src="img/edit-style.png"></button>',
+            '<button onclick="Builder._handlers.layerRemoveOnClick(this);"><img src="img/remove-layer.png"></button>',
+            '</div></span></div></li>'
+          ].join('')));
+          Builder._refreshLayersUl();
+        } else {
+          var $li = $($layers.children()[Builder.ui.modal.addLayer._editingIndex]);
+
+          NPMap.overlays[Builder.ui.modal.addLayer._editingIndex] = config;
+          $($li.find('.name')[0]).text(config.name);
+
+          if (config.description) {
+            $($li.find('.description')[0]).text(config.description);
+          }
+        }
+
+        Builder.updateMap();
+        $('#modal-addLayer').modal('hide');
       }
     },
     _layerTypeOnChange: function(value) {
@@ -387,8 +415,25 @@ Builder.ui.modal.addLayer = (function() {
         }
       });
     },
-    load: function(layer) {
-      console.log(layer);
+    _load: function(layer) {
+      var type = layer.type;
+
+      $type.val(type).trigger('change');
+
+      for (var prop in layer) {
+        var value = layer[prop];
+
+        if (prop === 'attribution' || prop === 'description' || prop === 'name') {
+          $('#layer' + (prop.charAt(0).toUpperCase() + prop.slice(1))).val(value);
+        } else if (prop !== 'type') {
+          $('#' + type + '-' + prop).val(value);
+        }
+      }
+
+      $('#layerType').attr('disabled', 'disabled');
+      $('#modal-addLayer-description').html('Use the form below to update your overlay.');
+      $('#modal-addLayer-title').text('Update Overlay');
+      $('#modal-addLayer .btn-primary').text('Save Overlay');
     }
   };
 })();

@@ -11,7 +11,8 @@
     <meta name="msapplication-TileColor" content="#222222">
     <meta name="msapplication-TileImage" content="http://www.nps.gov/npmap/windows-8-tile.png">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-    <link href="http://www.nps.gov/npmap/bootstrap/dist/css/nps-bootstrap.min.css" rel="stylesheet">
+    <!--<link href="http://www.nps.gov/npmap/bootstrap/dist/css/nps-bootstrap.min.css" rel="stylesheet">-->
+    <link href="http://localhost:9001/dist/css/nps-bootstrap.min.css" rel="stylesheet">
     <link href="js/libs/bootstrap-editable/css/bootstrap-editable.min.css" rel="stylesheet">
     <link href="js/libs/bootstrap-slider/css/bootstrap-slider.min.css" rel="stylesheet">
     <link href="js/libs/typeahead/typeahead.min.css" rel="stylesheet">
@@ -74,7 +75,7 @@
           <h5 style="font-weight:bold;">Min and Max Zoom Levels</h5>
           <p style="margin-bottom:20px;">Use the slider to restrict the map to a range of zoom levels.</p>
           <input type="text" id="set-zoom" class="form-control" required></input>
-          <p class="help-block" style="margin:10px 0 0 0;">Initial Center: <span class="lat"></span>, <span class="lng"></span><br>Initial Zoom: <span class="zoom"></span><br>Bounds Restricted: <span class="bounds">No</span><span class="bounds-clear" style="display:none;"> (<a style="cursor:pointer;">Clear</a>)</span></p>
+          <p class="help-block" style="margin:10px 0 0 0;">Initial Center: <span class="lat"></span>, <span class="lng"></span><br>Initial Zoom: <span class="zoom"></span></p>
           <div class="bottom" style="border-top:dotted 1px #908e7d;margin-top:14px;padding-top:20px;">
             <p>Use map to:</p>
             <button class="btn btn-default btn-block">Set Center & Zoom</button>

@@ -327,24 +327,25 @@ var Builder = (function() {
       Builder._updateInitialCenterAndZoom();
       Builder.updateMap();
     });
-    $('#set-center-and-zoom .bounds-clear a').on('click', function() {
-      delete NPMap.maxBounds;
-      $('#set-center-and-zoom .bounds').html('No');
-      $('#set-center-and-zoom .bounds-clear').hide();
-      Builder.updateMap();
-    });
     $($('#set-center-and-zoom .btn-block')[1]).on('click', function() {
-      var bounds = getLeafletMap().getBounds(),
-        northEast = bounds.getNorthEast(),
-        southWest = bounds.getSouthWest();
+      var $this = $(this);
 
-      NPMap.maxBounds = [
-        [southWest.lat, southWest.lng],
-        [northEast.lat, northEast.lng]
-      ];
+      if ($this.hasClass('active')) {
+        delete NPMap.maxBounds;
+        $this.removeClass('active').text('Restrict Bounds');
+      } else {
+        var bounds = getLeafletMap().getBounds(),
+          northEast = bounds.getNorthEast(),
+          southWest = bounds.getSouthWest();
 
-      $('#set-center-and-zoom .bounds').html('Yes');
-      $('#set-center-and-zoom .bounds-clear').show();
+        NPMap.maxBounds = [
+          [southWest.lat, southWest.lng],
+          [northEast.lat, northEast.lng]
+        ];
+
+        $(this).addClass('active').text('Remove Bounds Restriction');
+      }
+
       Builder.updateMap();
     });
     $('#set-zoom').slider({
@@ -401,12 +402,10 @@ var Builder = (function() {
         });
       },
       layerEditOnClick: function(el) {
-        $modalAddLayer.modal('show', function() {
-          // TODO: Not being called.
-          console.log(NPMap.overlays[$.inArray($(el).parent().parent().prev().text(), Builder._abcs)]);
-          console.log(Builder.ui.modal.addLayer);
-          Builder.ui.modal.addLayer.load(NPMap.overlays[$.inArray($(el).parent().parent().prev().text(), Builder._abcs)]);
-        });
+        var index = $.inArray($(el).parent().parent().prev().text(), Builder._abcs);
+        $modalAddLayer.modal('show');
+        Builder.ui.modal.addLayer._load(NPMap.overlays[index]);
+        Builder.ui.modal.addLayer._editingIndex = index;
       },
       layerRemoveOnClick: function(el) {
         Builder.showConfirm('Yes, remove the layer', 'Once the layer is removed, you cannot get it back.', 'Are you sure?', function() {

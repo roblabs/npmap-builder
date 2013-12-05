@@ -42,11 +42,21 @@
   position: absolute;
   right: 0;
 }
-  #layers li .details span:first-child {
+  #layers li .details span.name {
     color: #44433a;
     display: block;
     font-size: 13px;
     font-weight: bold;
+  }
+  #layers li .details span.description {
+    color: #44433a;
+    display: inline-block;
+    font-size: 12px;
+    overflow: hidden;
+    line-height: 20px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    width: 100%;
   }
   #layers li .details span:last-child {
     bottom: 18px;

@@ -3,10 +3,29 @@
     <div class="modal-content">
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-        <h4 id="modal-export-title" class="modal-title">Export&nbsp;<img src="img/help.png" rel="tooltip" title="" data-placement="bottom"></h4>
+        <h4 id="modal-export-title" class="modal-title">Export Your Map&nbsp;<img src="img/help.png" rel="tooltip" title="You can export your map to a pre-built template, use your map's id to embed it into your nps.gov web page, or embed the map into many other places on the web by using a snippet of code." data-placement="bottom"></h4>
       </div>
       <div class="modal-body">
-        <p id="modal-export-description">Hover over the help icon above to get more information.</p>
+        <p id="modal-export-description">Take your map with you. You can embed it in your nps.gov web page or anywhere else on the web.</p>
+        <ul class="nav nav-tabs">
+          <li class="active"><a href="#template" data-toggle="tab">Template</a></li>
+          <li><a href="#cms" data-toggle="tab">NPS.gov</a></li>
+          <li><a href="#code" data-toggle="tab">Code</a></li>
+        </ul>
+        <div class="tab-content">
+          <div id="template" class="tab-pane active">
+          </div>
+          <div id="cms" class="tab-pane">
+            <input type="text">
+          </div>
+          <div id="code" class="tab-pane">
+            <form role="form">
+              <div class="form-group">
+                <code style="padding:0;"><textarea id="modal-viewConfig-code" class="form-control" readonly="readonly"></textarea></code>
+              </div>
+            </form>
+          </div>
+        </div>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>

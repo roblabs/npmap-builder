@@ -65,19 +65,23 @@ Builder.ui.modal.addLayer = (function() {
       },
       geojson: {
         fields: {
+          $clickable: $('#geojson-clickable'),
           $url: $('#geojson-url')
         },
         reset: function() {
+          types.geojson.fields.$clickable.prop('checked', 'checked');
           types.geojson.fields.$url.val('');
         }
       },
       github: {
         fields: {
+          $clickable: $('#github-clickable'),
           $path: $('#github-path'),
           $repo: $('#github-repo'),
           $user: $('#github-user')
         },
         reset: function() {
+          types.github.fields.$clickable.prop('checked', 'checked');
           types.github.fields.$path.val('');
           types.github.fields.$repo.val('');
           types.github.fields.$user.val('');
@@ -85,9 +89,11 @@ Builder.ui.modal.addLayer = (function() {
       },
       kml: {
         fields: {
+          $clickable: $('#kml-clickable'),
           $url: $('#kml-url')
         },
         reset: function() {
+          types.kml.fields.$clickable.prop('checked', 'checked');
           types.kml.fields.$url.val('');
         }
       },
@@ -167,9 +173,6 @@ Builder.ui.modal.addLayer = (function() {
   $(window).resize(setHeight);
 
   return {
-    /**
-     *
-     */
     _click: function() {
       var
         attribution = $attribution.val() || null,
@@ -240,25 +243,32 @@ Builder.ui.modal.addLayer = (function() {
         })();
       } else if ($('#geojson').is(':visible')) {
         (function() {
-          var $url = $('#geojson-url'),
-              url = $url.val();
+          var clickable = types.geojson.fields.$clickable.prop('checked'),
+            url = types.geojson.fields.$url.val();
 
-          fields.push($url);
+          $.each(types.geojson.fields, function(field) {
+            fields.push(field);
+          });
 
           if (!url) {
-            errors.push($url);
+            errors.push(types.geojson.fields.$url);
           }
 
           config = {
             type: 'geojson',
             url: url
           };
+
+          if (!clickable) {
+            config.clickable = false;
+          }
         })();
       } else if ($('#github').is(':visible')) {
         (function() {
-          var path = types.github.fields.$path.val(),
-              repo = types.github.fields.$repo.val(),
-              user = types.github.fields.$user.val();
+          var clickable = types.github.fields.$clickable.prop('checked'),
+            path = types.github.fields.$path.val(),
+            repo = types.github.fields.$repo.val(),
+            user = types.github.fields.$user.val();
 
           $.each(types.github.fields, function(field) {
             fields.push(field);
@@ -282,22 +292,32 @@ Builder.ui.modal.addLayer = (function() {
             type: 'github',
             user: user
           };
+
+          if (!clickable) {
+            config.clickable = false;
+          }
         })();
       } else if ($('#kml').is(':visible')) {
         (function() {
-          var $url = $('#kml-url'),
-              url = $url.val();
+          var clickable = types.kml.fields.$clickable.prop('checked'),
+            url = types.kml.fields.$url.val();
 
-          fields.push($url);
+          $.each(types.kml.fields, function(field) {
+            fields.push(field);
+          });
 
           if (!url) {
-            errors.push($url);
+            errors.push(types.kml.fields.$url);
           }
 
           config = {
             'type': 'kml',
             'url': url
           };
+
+          if (!clickable) {
+            config.clickable = false;
+          }
         })();
       } else if ($('#mapbox').is(':visible')) {
         (function() {
@@ -341,19 +361,19 @@ Builder.ui.modal.addLayer = (function() {
         }
 
         index = $layers.children().length;
-
         $layers.append($([
-          '<li class="dd-item" data-id="' + index + '"><div class="letter">' + Builder._abcs[index] + '</div><div class="details"><span>' + name + '</span>',
-          '<span><img src="img/edit-layer.png" style="cursor:pointer;float:left;"><button style="background-color:transparent;border:none;float:right;" onclick="Builder._handlers.layerRemoveOnClick(this);"><img src="img/remove-layer.png" style="cursor:pointer;float:right;margin-top:3px;"></button></span>',
-          '<span><img src="img/change-marker.png" style="cursor:pointer;float:left;" onclick="Builder._handlers.layerChangeMarkerOnClick(this);"></span>',
-          '</div></li>'
+          '<li class="dd-item">',
+          '<div class="letter">' + Builder._abcs[index] + '</div>',
+          '<div class="details"><span>' + name + '</span><span>',
+          '<button style="float:left;padding-left:0;" onclick="Builder._handlers.layerEditOnClick(this);"><img src="img/edit-layer.png"></button>',
+          '<div style="float:right;">',
+          '<button onclick="Builder._handlers.layerChangeStyleOnClick(this);"><img src="img/edit-style.png"></button>',
+          '<button onclick="Builder._handlers.layerRemoveOnClick(this);"><img src="img/remove-layer.png"></button>',
+          '</div></span></div></li>'
         ].join('')));
         Builder._refreshLayersUl();
       }
     },
-    /**
-     *
-     */
     _layerTypeOnChange: function(value) {
       $.each($('#manual div'), function(i, div) {
         var $div = $(div);
@@ -366,6 +386,9 @@ Builder.ui.modal.addLayer = (function() {
           }
         }
       });
+    },
+    load: function(layer) {
+      console.log(layer);
     }
   };
 })();

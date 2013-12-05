@@ -18,7 +18,6 @@ var Builder = (function() {
     $modalConfirm,
     $modalEditBaseMaps,
     $modalExport,
-    $modalViewConfig,
     $stepSection = $('section .step'),
     $ul = $('#layers'),
     descriptionSet = false,
@@ -92,7 +91,7 @@ var Builder = (function() {
     $modalConfirm = $('#modal-confirm');
     stepLis = $('#steps li');
 
-    $.each($('#add-functionality form'), function(i, form) {
+    $.each($('#additional-tools-and-settings form'), function(i, form) {
       $.each($(form).find('input'), function(j, input) {
         $(input).on('change', function() {
           var checked = $(this).prop('checked'),
@@ -101,7 +100,15 @@ var Builder = (function() {
           if (value === 'overviewControl') {
             if (checked) {
               NPMap[value] = {
-                layer: NPMap.baseLayers[0]
+                layer: (function() {
+                  for (var i = 0; i < NPMap.baseLayers.length; i++) {
+                    var baseLayer = NPMap.baseLayers[0];
+
+                    if (typeof baseLayer.visible === 'undefined' || baseLayer.visible === true) {
+                      return baseLayer;
+                    }
+                  }
+                })()
               };
             } else {
               NPMap[value] = false;
@@ -173,15 +180,6 @@ var Builder = (function() {
         url: serverUrl,
         xhrFields: { withCredentials: true },
       });
-    });
-    $('#button-viewConfig').on('click', function() {
-      if ($modalViewConfig) {
-        $modalViewConfig.modal('show');
-      } else {
-        loadModule('Builder.ui.modal.viewConfig', function() {
-          $modalViewConfig = $('#modal-viewConfig');
-        });
-      }
     });
     $($('section .step .btn-primary')[0]).on('click', function() {
       goToStep(0, 1);
@@ -372,7 +370,8 @@ var Builder = (function() {
   return {
     _abcs: ['A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z'],
     _handlers: {
-      layerChangeMarkerOnClick: function(el) {
+      layerChangeStyleOnClick: function(el) {
+        /*
         var layerIndex = $(el).parent().parent().parent().data('id');
         var layer = document.getElementById('iframe-map').contentWindow.NPMap.config.overlays[layerIndex];
         if ($modalChangeMarker) {
@@ -390,6 +389,22 @@ var Builder = (function() {
             });
           });
         }
+        */
+
+        $(el).popover({
+          animation: false,
+          container: 'body',
+          html: 'This is only a test.',
+          placement: 'right'
+        });
+      },
+      layerEditOnClick: function(el) {
+        $modalAddLayer.modal('show', function() {
+          // TODO: Not being called.
+          console.log(NPMap.overlays[$.inArray($(el).parent().parent().prev().text(), Builder._abcs)]);
+          console.log(Builder.ui.modal.addLayer);
+          Builder.ui.modal.addLayer.load(NPMap.overlays[$.inArray($(el).parent().parent().prev().text(), Builder._abcs)]);
+        });
       },
       layerRemoveOnClick: function(el) {
         Builder.showConfirm('Yes, remove the layer', 'Once the layer is removed, you cannot get it back.', 'Are you sure?', function() {

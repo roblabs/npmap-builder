@@ -2,14 +2,14 @@
 
 Builder.ui = Builder.ui || {};
 Builder.ui.modal = Builder.ui.modal || {};
-Builder.ui.modal.changeMarker = (function() {
+Builder.ui.modal.changeStyle = (function() {
   function setHeight() {
-    $('#modal-changeMarker .modal-body').css({
+    $('#modal-changeStyle .modal-body').css({
       height: $(document).height() - 200
     });
   }
 
-  $('#modal-changeMarker').modal({
+  $('#modal-changeStyle').modal({
     backdrop: 'static'
   });
   Builder.rebuildTooltips();
@@ -24,18 +24,13 @@ var set = function () {
     'name': $('#icon')[0][$('#icon')[0].selectedIndex].value
   },
   regex = new RegExp('url\\((.+?)\\)'),
-  layer = $('#modal-changeMarker').data('layer');
+  layer = $('#modal-changeStyle').data('layer');
 
-  //Extract the url from the CSS
   document.getElementById('iframe-map').contentWindow.L.npmap.icon.maki(options).createIcon().style.cssText.replace(regex, function(_,url) {
-    // Draw the icon for the demo
     $('#DemoIcon').html('<img src="' + url + '">');
   });
-  // Add the icon to the layer
+
   if (layer) {
     layer.icon = options;
   }
-
-
 };
-

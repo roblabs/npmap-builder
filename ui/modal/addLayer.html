@@ -63,6 +63,11 @@
                   <label for="geojson-url">URL</label>
                   <input id="geojson-url" type="text" placeholder="Must end with '.geojson', '.json', or '.topojson'..." class="form-control" required></input>
                 </div>
+                <label>
+                  <div class="checkbox">
+                    <input id="geojson-clickable" type="checkbox" checked="checked"></input>Is this overlay clickable?
+                  </div>
+                </label>
               </div>
               <div id="github">
                 <div class="form-group">
@@ -77,12 +82,22 @@
                   <label for="github-path">Path</label>
                   <input id="github-path" type="text" class="form-control" required></input>
                 </div>
+                <label>
+                  <div class="checkbox">
+                    <input id="github-clickable" type="checkbox" checked="checked"></input>Is this overlay clickable?
+                  </div>
+                </label>
               </div>
               <div id="kml">
                 <div class="form-group">
                   <label for="kml-url">URL</label>
                   <input id="kml-url" type="text" placeholder="Must end with '.kml'..." class="form-control" required></input>
                 </div>
+                <label>
+                  <div class="checkbox">
+                    <input id="kml-clickable" type="checkbox" checked="checked"></input>Is this overlay clickable?
+                  </div>
+                </label>
               </div>
               <div id="mapbox">
                 <div class="form-group">

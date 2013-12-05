@@ -1,11 +1,13 @@
 /* globals $, Builder */
 
+$('head').append($('<link rel="stylesheet">').attr('href', 'ui/modal/export.css'));
+
 Builder.ui = Builder.ui || {};
 Builder.ui.modal = Builder.ui.modal || {};
 Builder.ui.modal.export = (function() {
   function setHeight() {
-    $('#modal-export .modal-body').css({
-      height: $(document).height() - 200
+    $('#modal-export .tab-content').css({
+      height: $(document).height() - 289
     });
   }
 

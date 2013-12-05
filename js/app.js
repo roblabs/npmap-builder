@@ -375,6 +375,8 @@ var Builder = (function() {
       layerChangeMarkerOnClick: function(el) {
         var layerIndex = $(el).parent().parent().parent().data('id');
         var layer = document.getElementById('iframe-map').contentWindow.NPMap.config.overlays[layerIndex];
+
+        // TODO: Clean this up a little
         if ($modalChangeMarker) {
           $modalChangeMarker.modal('show');
           $modalChangeMarker.data({'layer': layer});
@@ -397,6 +399,22 @@ var Builder = (function() {
           Builder.removeLayer($(el).parent().prev()[0].innerHTML);
         });
         return false;
+      },
+      loadMap: function () {
+        var preLoadModule = function(module, callback) {
+          var preLoaders = {}; //TODO: move this
+          if (preLoaders.module) {
+            callback(preLoaders.module);
+          } else {
+            loadModule(module, function() {
+              preLoaders.module = $('#modal-' + module.split('.').pop());
+              callback(preLoaders.module);
+            });
+          }
+        };
+        preLoadModule('Builder.ui.modal.loadMap', function(loader) {
+          loader.modal('show');
+        });
       }
     },
     _refreshLayersUl: function() {

@@ -1,6 +1,40 @@
-/* globals $, Builder, NPMap */
+/* globals $, Builder */
+/* global NPMap:true */
 
 $('head').append($('<link rel="stylesheet" type="text/css">').attr('href', 'ui/modal/loadMap.css'));
+
+var colors = {
+  'valid': '#CCFFCC',
+  'error': '#FFCCCC'
+},
+validateJson =  function(json) {
+  var newJson;
+  if (json){
+    try{
+      console.log('valid');
+      newJson=JSON.parse(json);
+      if (newJson && !newJson.div) {
+        newJson = undefined;
+      }
+    }catch(e){
+      console.log('invalid', e);
+      newJson = undefined;
+    }
+  }
+  return newJson;
+},
+setMap = function(json) {
+  var validJson = validateJson(json);
+  if (validJson) {
+    NPMap = validJson;
+    Builder.updateMap();
+  }
+},
+updateModal = function() {
+  var validJson = validateJson($('#modal-loadMap-code').val());
+  $('#modal-loadMap-code').css('background-color', validJson ? colors.valid : colors.error);
+  $('#modal-loadMap-set-button').prop('disabled', !validJson);
+};
 
 Builder.ui = Builder.ui || {};
 Builder.ui.modal = Builder.ui.modal || {};
@@ -12,37 +46,19 @@ Builder.ui.modal.loadMap = (function() {
     });
   }
 
-
   Builder.buildTooltips();
   setHeight();
   $(window).resize(setHeight);
+  updateModal();
 
   return {};
 })();
 
+
 $('#modal-loadMap-code').bind('keyup','textarea',function(){
-  var json,
-  input = $('#modal-loadMap-code').val();
-  console.log('changed!');
-
-  if (input){
-    try{
-      json=JSON.parse(input);
-      $('#modal-loadMap-code').css('background-color', '#CCffCC');
-      console.log('jsoned');
-    }catch(e){
-      console.log(e);
-      $('#modal-loadMap-code').css('background-color', '#ffCCCC');
-      json = undefined;
-      console.log('json crap');
-    }
-  }
-
-  if (json) {
-    $('#modal-loadMap').data({'newMap': json});
-    NPMap = json;
-    Builder.updateMap();
-    console.log('json set');
-  }
+  updateModal();
+});
+$('#modal-loadMap-set-button').click(function() {
+  setMap($('#modal-loadMap-code').val());
 });
 

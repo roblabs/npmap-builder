@@ -42,6 +42,8 @@ Builder.ui.modal.addLayer = (function() {
               types.arcgisserver.fields.$layers.attr('disabled', 'disabled');
               types.arcgisserver._url = null;
             }
+
+            $('.selectpicker').selectpicker();
           })
         },
         reset: function() {
@@ -180,6 +182,7 @@ Builder.ui.modal.addLayer = (function() {
   setHeight();
   $type.focus();
   $(window).resize(setHeight);
+  $('.selectpicker').selectpicker();
 
   return {
     _editingIndex: -1,

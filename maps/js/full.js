@@ -10,11 +10,11 @@ var NPMap;
 
     NPMap = JSON.parse(Base64.decode(search[0]));
 
-    console.log(Base64.decode(search[1]));
+    //console.log(Base64.decode(search[1]));
     
     (function() {
       var s = document.createElement('script');
-      s.src = 'http://localhost:1984/dist/npmap-bootstrap.min.js';
+      s.src = 'http://www.nps.gov/npmap/npmap.js/0.0.0/npmap-bootstrap.min.js';
       document.body.appendChild(s);
     })();
   }

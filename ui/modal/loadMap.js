@@ -47,6 +47,7 @@ Builder.ui.modal.loadMap = (function() {
   Builder.buildTooltips();
   setHeight();
   $(window).resize(setHeight);
+  $('#modal-loadMap-code').val(JSON.stringify(NPMap,null,2));
   updateModal();
 
   return {};

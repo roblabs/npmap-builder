@@ -13,7 +13,7 @@ Builder.ui.modal.loadMap = (function() {
   }
 
 
-  Builder.rebuildTooltips();
+  Builder.buildTooltips();
   setHeight();
   $(window).resize(setHeight);
 

@@ -317,6 +317,13 @@ body.dragging, body.dragging * {
 .dd-item button {
   background-color: transparent;
   border: none;
+  height: 20px;
+  padding: 0;
+  width: 20px;
+}
+.dd-item div:first-child button {
+  height: 21px;
+  width: 55px;
 }
 /* Bootstrap Overrides */
 .modal {

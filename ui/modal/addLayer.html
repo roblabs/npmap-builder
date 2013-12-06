@@ -34,7 +34,7 @@
                 <textarea id="layerDescription" rows="3"  class="form-control"></textarea>
               </div>
               <div class="form-group">
-                <label for="layerAttribution">Attribution (optional) (some html allowed)</label>
+                <label for="layerAttribution">Attribution (optional)</label>
                 <input id="layerAttribution" type="text" class="form-control"></input>
               </div>
               <div id="arcgisserver">
@@ -44,6 +44,7 @@
                 </div>
                 <div class="form-group">
                   <label for="arcgisserver-layers">Layers</label>
+                  <span style="float:right;"><button type="button" class="btn btn-link" style="margin-right:10px;padding:0;" onclick="Builder.ui.modal.addLayer._selectAllArcGisServerLayers();return false;">Select All</button><button type="button" class="btn btn-link" style="padding:0;" onclick="Builder.ui.modal.addLayer._clearAllArcGisServerLayers();return false;">Clear</button></span>
                   <select id="arcgisserver-layers" multiple="multiple" class="form-control" disabled="disabled" required></select>
                   <span class="help-block">All of the service's layers will appear here after you fill in the "URL" field above. You must choose at least one. You can choose multiple layers by holding down the "Control" key ("⌘" on Mac OS X) and clicking on the layers you want to add.</span>
                 </div>

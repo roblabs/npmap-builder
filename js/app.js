@@ -14,7 +14,6 @@ var Builder = (function() {
     $buttonEditBaseMapsAgain,
     $iframe = $('#iframe-map'),
     $modalAddLayer,
-    $modalChangeMarker,
     $modalConfirm,
     $modalEditBaseMaps,
     $modalExport,
@@ -22,33 +21,24 @@ var Builder = (function() {
     $ul = $('#layers'),
     descriptionSet = false,
     descriptionZ = null,
+    settingsSet = false,
+    settingsZ = null,
     stepLis,
     titleSet = false,
     titleZ = null;
 
-  /**
-   * Gets the Leaflet map object from the map iframe.
-   * @return {Object}
-   */
+  function getLayerIndexFromButton(el) {
+    return $.inArray($(el).parent().parent().parent().prev().text(), Builder._abcs);
+  }
   function getLeafletMap() {
     return document.getElementById('iframe-map').contentWindow.NPMap.config.L;
   }
-  /**
-   * Changes the step.
-   * @param {Number} from
-   * @param {Number} to
-   */
   function goToStep(from, to) {
     $($stepSection[from]).hide();
     $($stepSection[to]).show();
     $(stepLis[from]).removeClass('active');
     $(stepLis[to]).addClass('active');
   }
-  /**
-   * Loads a UI module.
-   * @param {String} module
-   * @param {Function} callback (Optional)
-   */
   function loadModule(module, callback) {
     module = module.replace('Builder.', '').replace(/\./g,'/');
 
@@ -65,10 +55,6 @@ var Builder = (function() {
       url: module + '.html'
     });
   }
-  /**
-   * Sets a height for each of an accordion's child panels.
-   * @param {String} selector
-   */
   function setAccordionHeight(selector) {
     var $accordion = $(selector),
       outerHeight = $accordion.outerHeight();
@@ -152,13 +138,14 @@ var Builder = (function() {
       window.open('https://github.com/nationalparkservice/npmap-builder/issues', '_blank');
     });
     $('#button-saveMap').on('click', function() {
-      var config = {'userJson': $.extend(true, {}, NPMap)},
+      var checkboxes = $('#metadata .buttons .popover checkbox'),
+        config = {'json': $.extend(true, {}, NPMap)},
         serverUrl = 'http://162.243.77.34/builder';
 
-      config.mapName = $('.title a').text();
-      config.isPublic = true;
-      config.isShared = true;
-      config.userJson.description = $('.description a').text();
+      config.description = $('.description a').text();
+      config.isPublic = $(checkboxes[0]).prop('checked');
+      config.isShared = $(checkboxes[1]).prop('checked');
+      config.name = $('.title a').text();
 
       $('#button-saveMap').attr('disabled', 'disabled');
       $.ajax({
@@ -180,6 +167,18 @@ var Builder = (function() {
         url: serverUrl,
         xhrFields: { withCredentials: true },
       });
+    });
+    $('#button-settings').on('click', function() {
+      var $this = $(this),
+        $span = $($this.children('span')[2]);
+
+      if ($this.hasClass('active')) {
+        $span.popover('hide');
+        $this.removeClass('active');
+      } else {
+        $span.popover('show');
+        $this.addClass('active');
+      }
     });
     $($('section .step .btn-primary')[0]).on('click', function() {
       goToStep(0, 1);
@@ -203,22 +202,35 @@ var Builder = (function() {
         }
       });
     });
+    $($('#button-settings span')[2]).popover({
+      animation: false,
+      container: '#metadata .buttons',
+      content: '<div class="checkbox"><label><input type="checkbox" value="public" checked="checked">Is this map public?</label></div><div class="checkbox"><label><input type="checkbox" value="shared" checked="checked">Share this map with others?</label></div><div style="text-align:center;"><button type="button" class="btn btn-primary" onclick="Builder._handlers.settingsButtonOnClick(this);return false;">Start Building!</button></div>',
+      html: true,
+      placement: 'bottom',
+      trigger: 'manual'
+    })
+      .on('shown.bs.popover', function() {
+        if (settingsSet) {
+          $('#metadata .buttons .popover .btn-primary').hide();
+        }
+      });
     $('.dd').nestable({
       handleClass: 'letter',
       listNodeName: 'ul'
     })
       .on('change', function() {
-        var overlays = [];
+        var abcs = Builder._abcs,
+          overlays = [];
 
         $.each($ul.children(), function(i, li) {
-          var from = parseInt($(li).attr('data-id'), 10);
+          var from = $.inArray($($(li).children('.letter')[0]).text(), abcs);
 
           if (from !== i) {
             overlays.splice(i, 0, NPMap.overlays[from]);
           }
 
-          $(li).attr('data-id', i.toString());
-          li.childNodes[0].innerHTML = Builder._abcs[i];
+          li.childNodes[0].innerHTML = abcs[i];
         });
 
         if (overlays.length) {
@@ -243,7 +255,7 @@ var Builder = (function() {
         var next = $(this).next();
 
         if (!descriptionSet) {
-          $('#mask').remove();
+          $($('#button-settings span')[2]).popover('show');
           next.css({
             'z-index': descriptionZ
           });
@@ -251,6 +263,14 @@ var Builder = (function() {
             display: 'block'
           });
           descriptionSet = true;
+
+          if (!settingsSet) {
+            next = $('#metadata .buttons .popover');
+            settingsZ = next.css('z-index');
+            next.css({
+              'z-index': 1031
+            });
+          }
         }
       })
       .on('shown', function() {
@@ -359,10 +379,6 @@ var Builder = (function() {
         NPMap.minZoom = e.value[0];
         Builder.updateMap();
       });
-    $(window).resize(function() {
-      setAccordionHeight('#accordion-step-1');
-    });
-    setAccordionHeight('#accordion-step-1');
     setTimeout(function() {
       $('#metadata .title a').editable('toggle');
     }, 200);
@@ -402,15 +418,18 @@ var Builder = (function() {
         });
       },
       layerEditOnClick: function(el) {
-        var index = $.inArray($(el).parent().parent().prev().text(), Builder._abcs);
+        var index = getLayerIndexFromButton(el);
+
         $modalAddLayer.modal('show');
         Builder.ui.modal.addLayer._load(NPMap.overlays[index]);
         Builder.ui.modal.addLayer._editingIndex = index;
       },
       layerRemoveOnClick: function(el) {
         Builder.showConfirm('Yes, remove the layer', 'Once the layer is removed, you cannot get it back.', 'Are you sure?', function() {
+          var index = getLayerIndexFromButton(el);
+
           Builder.removeLayerLi(el);
-          Builder.removeLayer($(el).parent().prev()[0].innerHTML);
+          Builder.removeLayer(index);
         });
         return false;
       },
@@ -429,6 +448,16 @@ var Builder = (function() {
         preLoadModule('Builder.ui.modal.loadMap', function(loader) {
           loader.modal('show');
         });
+      },
+      settingsButtonOnClick: function(el) {
+        var $el = $(el);
+
+        $el.parents('.popover').css({
+          'z-index': settingsZ
+        });
+        $('#mask').remove();
+        $($('#button-settings span')[2]).popover('hide');
+        settingsSet = true;
       }
     },
     _refreshLayersUl: function() {
@@ -449,19 +478,17 @@ var Builder = (function() {
       $('#set-center-and-zoom .lng').html(NPMap.center.lng.toFixed(2));
       $('#set-center-and-zoom .zoom').html(NPMap.zoom);
     },
-    rebuildTooltips: function() {
+    buildTooltips: function() {
       $('[rel=tooltip]').tooltip({
         animation: false
       });
     },
-    removeLayer: function(name) {
-      NPMap.overlays = $.grep(NPMap.overlays, function(layer) {
-        return layer.name !== name;
-      });
+    removeLayer: function(index) {
+      NPMap.overlays.splice(index, 1);
       this.updateMap();
     },
     removeLayerLi: function(el) {
-      $(el).parent().parent().parent().remove();
+      $($(el).parents('li')[0]).remove();
       this._refreshLayersUl();
     },
     showConfirm: function(button, content, title, callback) {
@@ -489,7 +516,7 @@ var Builder = (function() {
     }
   };
 })();
-Builder.rebuildTooltips();
+Builder.buildTooltips();
 Builder.updateMap(function(config) {
   // TODO: Grab details if this map is being loaded and populate necessary fields.
   NPMap.center = {

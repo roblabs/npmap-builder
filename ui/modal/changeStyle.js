@@ -12,7 +12,7 @@ Builder.ui.modal.changeStyle = (function() {
   $('#modal-changeStyle').modal({
     backdrop: 'static'
   });
-  Builder.rebuildTooltips();
+  Builder.buildTooltips();
   setHeight();
   $(window).resize(setHeight);
 

@@ -36,7 +36,7 @@ Builder.ui.modal.viewConfig = (function() {
   }
 
   $('#modal-viewConfig').modal().on('show.bs.modal shown.bs.modal', setConfig);
-  Builder.rebuildTooltips();
+  Builder.buildTooltips();
   setConfig();
   setHeight();
   $(window).resize(setHeight);

@@ -139,7 +139,7 @@ Builder.ui.modal.addLayer = (function() {
       $('#modal-addLayer-description').html('You can add an overlay to your map either by typing in information about the overlay or searching the NPMap Catalog for datasets to add <em>(coming soon)</em>. Hover over the help icon above for more information.');
       $('#modal-addLayer-title').html('Add Overlay&nbsp;<img src="img/help.png" rel="tooltip" title="You can add ArcGIS Server, CartoDB, GeoJSON, KML, and MapBox Hosting overlays to your map. The NPMap Catalog includes results from the National Park Service ArcGIS Server (from both ArcGIS Online and public-facing ArcGIS Server instances), CartoDB, GitHub, and MapBox Hosting accounts." data-placement="bottom">');
       $('#modal-addLayer .btn-primary').text('Add to Map');
-      Builder.rebuildTooltips();
+      Builder.buildTooltips();
     })
     .on('shown.bs.modal', function() {
       $type.focus();
@@ -176,7 +176,7 @@ Builder.ui.modal.addLayer = (function() {
     prefetch: 'data/tilestream-search.json',
     valueKey: 'n'
   }]);
-  Builder.rebuildTooltips();
+  Builder.buildTooltips();
   setHeight();
   $type.focus();
   $(window).resize(setHeight);
@@ -363,6 +363,8 @@ Builder.ui.modal.addLayer = (function() {
         }
 
         config.name = name;
+
+        // TODO: Loop through all properties and "sanitize" them.
         
         if (Builder.ui.modal.addLayer._editingIndex === -1) {
           NPMap.overlays.push(config);
@@ -380,9 +382,9 @@ Builder.ui.modal.addLayer = (function() {
             '<li class="dd-item">',
             '<div class="letter">' + Builder._abcs[index] + '</div>',
             '<div class="details"><span class="name">' + name + '</span><span class="description">' + (description || '') + '</span><span>',
-            '<button style="float:left;padding-left:0;" onclick="Builder._handlers.layerEditOnClick(this);"><img src="img/edit-layer.png"></button>',
+            '<div style="float:left;"><button onclick="Builder._handlers.layerEditOnClick(this);"><img src="img/edit-layer.png"></button></div>',
             '<div style="float:right;">',
-            '<button onclick="Builder._handlers.layerChangeStyleOnClick(this);"><img src="img/edit-style.png"></button>',
+            '<button onclick="Builder._handlers.layerChangeStyleOnClick(this);" style="margin-right:10px;"><img src="img/edit-style.png"></button>',
             '<button onclick="Builder._handlers.layerRemoveOnClick(this);"><img src="img/remove-layer.png"></button>',
             '</div></span></div></li>'
           ].join('')));
@@ -434,6 +436,26 @@ Builder.ui.modal.addLayer = (function() {
       $('#modal-addLayer-description').html('Use the form below to update your overlay.');
       $('#modal-addLayer-title').text('Update Overlay');
       $('#modal-addLayer .btn-primary').text('Save Overlay');
+      
+      // TODO: Handle checkboxes - clickable
+
+      if (type === 'arcgisserver') {
+        var interval;
+
+        types.arcgisserver.fields.$url.trigger('change');
+        interval = setInterval(function() {
+          if ($('#arcgisserver-layers option').length) {
+            clearInterval(interval);
+            types.arcgisserver.fields.$layers.val(layer.layers.split(','));
+          }
+        }, 100);
+      }
+    },
+    _clearAllArcGisServerLayers: function() {
+      types.arcgisserver.fields.$layers.val([]);
+    },
+    _selectAllArcGisServerLayers: function() {
+      $('#arcgisserver-layers option').prop('selected', 'selected');
     }
   };
 })();

@@ -125,7 +125,7 @@ Builder.ui.modal.editBaseMaps = (function() {
     backdrop: 'static'
   })
     .on('show.bs.modal', update);
-  Builder.rebuildTooltips();
+  Builder.buildTooltips();
   setHeight();
   update();
   $(window).resize(setHeight);

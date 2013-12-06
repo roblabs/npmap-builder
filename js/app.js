@@ -137,6 +137,9 @@ var Builder = (function() {
     $('#button-feedback').on('click', function() {
       window.open('https://github.com/nationalparkservice/npmap-builder/issues', '_blank');
     });
+    $('#button-help').on('click', function() {
+      window.open('https://github.com/nationalparkservice/npmap-builder/wiki', '_blank');
+    });
     $('#button-saveMap').on('click', function() {
       var checkboxes = $('#metadata .buttons .popover checkbox'),
         config = {'json': $.extend(true, {}, NPMap)},

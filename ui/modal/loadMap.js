@@ -11,13 +11,11 @@ validateJson =  function(json) {
   var newJson;
   if (json){
     try{
-      console.log('valid');
       newJson=JSON.parse(json);
       if (newJson && !newJson.div) {
         newJson = undefined;
       }
     }catch(e){
-      console.log('invalid', e);
       newJson = undefined;
     }
   }
@@ -55,7 +53,7 @@ Builder.ui.modal.loadMap = (function() {
 })();
 
 
-$('#modal-loadMap-code').bind('keyup','textarea',function(){
+$('#modal-loadMap-code').bind('keyup paste cut','textarea',function(){
   updateModal();
 });
 $('#modal-loadMap-set-button').click(function() {

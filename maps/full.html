@@ -1,45 +1,40 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <meta charset="utf-8">
+        <meta charset="utf-8">
     <title>Full | InsideMaps | U.S. National Park Service</title>
     <meta name="apple-mobile-web-app-title" content="InsideMaps">
     <meta name="application-name" content="InsideMaps">
-    <meta name="author" content="The NPMap Team">
+    <meta name="author" content="">
     <meta name="description" content="">
     <meta name="keywords" content="">
     <meta name="msapplication-TileColor" content="#222222">
     <meta name="msapplication-TileImage" content="http://www.nps.gov/npmap/windows-8-tile.png">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
     <link href="http://www.nps.gov/npmap/bootstrap/dist/css/nps-bootstrap.min.css" rel="stylesheet">
-    <link href="css/full.css" rel="stylesheet" media="screen">
     <link rel="shortcut icon" href="http://www.nps.gov/npmap/favicon.ico">
     <link rel="apple-touch-icon-precomposed" sizes="144x144" href="http://www.nps.gov/npmap/apple-touch-icon-144x144-precomposed.png">
     <link rel="apple-touch-icon-precomposed" sizes="114x114" href="http://www.nps.gov/npmap/apple-touch-icon-114x114-precomposed.png">
     <link rel="apple-touch-icon-precomposed" sizes="72x72" href="http://www.nps.gov/npmap/apple-touch-icon-72x72-precomposed.png">
     <link rel="apple-touch-icon-precomposed" href="http://www.nps.gov/npmap/apple-touch-icon-57x57-precomposed.png">
     <!--[if lt IE 9]>
-      <script src="../js/libs/html5shiv/html5shiv.min.js"></script>
-      <script src="../js/libs/respond/respond.min.js"></script>
+    <script src="js/libs/html5shiv/html5shiv.min.js"></script>
+    <script src="js/libs/respond/respond.min.js"></script>
     <![endif]-->
+    <link href="css/full.css" rel="stylesheet" media="screen">
   </head>
   <body>
     <header>
-      <span class="left">
-        <a href="/">
-          <img src="img/insidemaps_left.jpg">
-        </a>
-      </span>
-      <span class="right">
-        <a href="http://www.nps.gov">
-          <img src="img/nps_right.jpg">
-        </a>
-      </span>
+      <h1 id="name" class="left">
+      </h1>
+      <div class="right">
+        <h2>National Park Service<br>U.S. Department of the Interior</h2>
+        <span class="arrowhead">
+        </span>
+      </div>
     </header>
-    <div id="map-wrapper">
-      <section id="map">
-      </section>
-    </div>
+    <section id="map">
+    </section>
     <footer>
       <ul>
         <li class="home-link"><a href="http://www.nps.gov">Home</a></li>
@@ -51,11 +46,11 @@
     </footer>
     </div>
   </body>
-  <script src="../js/libs/json2.min.js"></script>
+    <script src="js/libs/json2.min.js"></script>
   <script src="http://code.jquery.com/jquery.min.js"></script>
   <script src="http://www.nps.gov/npmap/bootstrap/dist/js/nps-bootstrap.min.js"></script>
-  <script src="js/full.js"></script>
-  <script>
+  <script src="js/load.js"></script>
+    <script>
     (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
       (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
       m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)

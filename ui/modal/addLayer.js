@@ -25,12 +25,13 @@ Builder.ui.modal.addLayer = (function() {
                 success: function(response) {
                   if (value !== types.arcgisserver._url) {
                     types.arcgisserver.fields.$layers.find('option').remove();
-                    types.arcgisserver.fields.$layers.removeAttr('disabled');
                     $.each(response.layers, function(i, layer) {
                       types.arcgisserver.fields.$layers.append($('<option>', {
                         value: layer.id
                       }).text(layer.id + ': ' + layer.name));
                     });
+                    types.arcgisserver.fields.$layers.prop('disabled', false);
+                    types.arcgisserver.fields.$layers.selectpicker('refresh');
                     types.arcgisserver._tiled = response.singleFusedMapCache || false;
                     types.arcgisserver._url = value;
                   }
@@ -39,16 +40,16 @@ Builder.ui.modal.addLayer = (function() {
               });
             } else {
               types.arcgisserver.fields.$layers.find('option').remove();
-              types.arcgisserver.fields.$layers.attr('disabled', 'disabled');
+              types.arcgisserver.fields.$layers.prop('disabled', true);
+              types.arcgisserver.fields.$layers.selectpicker('refresh');
               types.arcgisserver._url = null;
             }
-
-            $('.selectpicker').selectpicker();
           })
         },
         reset: function() {
           types.arcgisserver.fields.$layers.find('option').remove();
-          types.arcgisserver.fields.$layers.attr('disabled', 'disabled');
+          types.arcgisserver.fields.$layers.prop('disabled', true);
+          types.arcgisserver.fields.$layers.selectpicker('refresh');
           types.arcgisserver.fields.$url.val('');
           types.arcgisserver._tiled = false;
           types.arcgisserver._url = null;
@@ -182,7 +183,9 @@ Builder.ui.modal.addLayer = (function() {
   setHeight();
   $type.focus();
   $(window).resize(setHeight);
-  $('.selectpicker').selectpicker();
+  $(types.arcgisserver.fields.$layers).selectpicker({
+    size: 5
+  });
 
   return {
     _editingIndex: -1,
@@ -449,7 +452,7 @@ Builder.ui.modal.addLayer = (function() {
         interval = setInterval(function() {
           if ($('#arcgisserver-layers option').length) {
             clearInterval(interval);
-            types.arcgisserver.fields.$layers.val(layer.layers.split(','));
+            types.arcgisserver.fields.$layers.selectpicker('val', layer.layers.split(','));
           }
         }, 100);
       }

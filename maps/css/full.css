@@ -6,7 +6,8 @@ html, body {
 }
 header {
   background-color: black;
-  height: 70px;
+  color: white;
+  height: 100px;
   left: 0;
   position: absolute;
   top: 0;
@@ -17,21 +18,56 @@ header {
   }
   header .left {
     float: left;
+    font-family: inherit;
+    font-size: 14px;
+    margin: 0;
+    padding: 20px 0 0 10px;
   }
   header .right {
     float: right;
   }
-#map-wrapper {
+    header .right h2 {
+      margin: 20px 80px 0 0;
+      font-family: inherit;
+      font-size: 14px;
+    }
+    header .right .arrowhead {
+      background: url(../img/arrowhead.png) no-repeat;
+      background: -webkit-image-set(url(../img/arrowhead.png) 1x, url(../img/arrowhead@2x.png) 2x) no-repeat;
+      height: 70px;
+      margin: 10px 10px 0 0;
+      position: absolute;
+      right: 0;
+      top: 0;
+      width: 54px;
+    }
+
+@media (max-width: 475px) {
+  .right {
+    float: left !important;
+    padding-left: 10px;
+  }
+    .right h2 {
+      left: 10px;
+      position: absolute;
+      top: 30px;
+    }
+  .left {
+    height: auto !important;
+  }
+}
+@media (max-width: 600px) {
+  footer ul li:not(:first-child) {
+    display: none !important;
+  }
+}
+
+section {
   bottom: 30px;
   left: 0;
   min-height: 275px;
   position: absolute;
-  top: 70px;
-  width: 100%;
-}
-section {
-  height: 100%;
-  position: relative;
+  top: 100px;
   width: 100%;
 }
 footer {
@@ -78,11 +114,12 @@ footer ul li a:hover {
   padding-left: 14px;
 }
 footer .tag-line {
-  background: url(../../img/experience-your-america.png) no-repeat left;
+  background: url(../img/experience-your-america.png) no-repeat left;
+  background: -webkit-image-set(url(../img/experience-your-america.png) 1x, url(../img/experience-your-america@2x.png) 2x) no-repeat left;
   float: right;
   height: 7px;
   margin: 10px 10px 0 0;
-  width: 179px;
+  width: 188px;
 }
 .ir {
   display: block;

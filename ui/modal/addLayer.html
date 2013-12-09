@@ -46,11 +46,6 @@
                   <label for="arcgisserver-layers">Layers</label>
                   <select id="arcgisserver-layers" class="form-control dropup selectpicker" disabled="disabled" data-selected-text-format="count" multiple required></select>
                   <span class="help-block">All of the service's layers will appear here after you fill in the "URL" field above. You must choose at least one.</span>
-                  <!--
-                  <span style="float:right;"><button type="button" class="btn btn-link" style="margin-right:10px;padding:0;" onclick="Builder.ui.modal.addLayer._selectAllArcGisServerLayers();return false;">Select All</button><button type="button" class="btn btn-link" style="padding:0;" onclick="Builder.ui.modal.addLayer._clearAllArcGisServerLayers();return false;">Clear</button></span>
-                  <select id="arcgisserver-layers" multiple="multiple" class="form-control" disabled="disabled" required></select>
-                  <span class="help-block">All of the service's layers will appear here after you fill in the "URL" field above. You must choose at least one. You can choose multiple layers by holding down the "Control" key ("⌘" on Mac OS X) and clicking on the layers you want to add.</span>
-                  -->
                 </div>
               </div>
               <div id="cartodb">
@@ -76,16 +71,8 @@
               </div>
               <div id="github">
                 <div class="form-group">
-                  <label for="github-user">User Name</label>
-                  <input id="github-user" type="text" class="form-control" required></input>
-                </div>
-                <div class="form-group">
-                  <label for="github-repo">Repository</label>
-                  <input id="github-repo" type="text" class="form-control" required></input>
-                </div>
-                <div class="form-group">
-                  <label for="github-path">Path</label>
-                  <input id="github-path" type="text" class="form-control" required></input>
+                  <label for="github-url">URL</label>
+                  <input id="github-url" type="text" placeholder="Must end with '.geojson', 'json', or 'topojson'..." class="form-control" required></input>
                 </div>
                 <label>
                   <div class="checkbox">

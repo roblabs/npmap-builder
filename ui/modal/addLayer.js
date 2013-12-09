@@ -78,15 +78,11 @@ Builder.ui.modal.addLayer = (function() {
       github: {
         fields: {
           $clickable: $('#github-clickable'),
-          $path: $('#github-path'),
-          $repo: $('#github-repo'),
-          $user: $('#github-user')
+          $url: $('#github-url')
         },
         reset: function() {
           types.github.fields.$clickable.prop('checked', 'checked');
-          types.github.fields.$path.val('');
-          types.github.fields.$repo.val('');
-          types.github.fields.$user.val('');
+          types.github.fields.$url.val('');
         }
       },
       kml: {
@@ -281,27 +277,25 @@ Builder.ui.modal.addLayer = (function() {
       } else if ($('#github').is(':visible')) {
         (function() {
           var clickable = types.github.fields.$clickable.prop('checked'),
-            path = types.github.fields.$path.val(),
-            repo = types.github.fields.$repo.val(),
-            user = types.github.fields.$user.val();
+            url = types.github.fields.$url.val().replace('http://github.com/', '').replace('https://github.com/', '').replace('/blob', ''),
+            urls = url.split('/'),
+            branch, path, repo, user;
 
           $.each(types.github.fields, function(field) {
             fields.push(field);
           });
 
-          if (!path) {
-            errors.push(types.github.fields.$path);
+          if (!url) {
+            errors.push(types.github.fields.$url);
           }
 
-          if (!repo) {
-            errors.push(types.github.fields.$repo);
-          }
-
-          if (!user) {
-            errors.push(types.github.fields.$user);
-          }
+          branch = urls[2];
+          repo = urls[1];
+          user = urls[0];
+          path = url.replace(user + '/', '').replace(repo + '/', '').replace(branch + '/', '');
 
           config = {
+            branch: branch,
             path: path,
             repo: repo,
             type: 'github',
@@ -442,7 +436,7 @@ Builder.ui.modal.addLayer = (function() {
       $('#modal-addLayer-description').html('Use the form below to update your overlay.');
       $('#modal-addLayer-title').text('Update Overlay');
       $('#modal-addLayer .btn-primary').text('Save Overlay');
-      
+
       // TODO: Handle checkboxes - clickable
 
       if (type === 'arcgisserver') {

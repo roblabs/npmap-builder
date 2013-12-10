@@ -141,34 +141,35 @@ var Builder = (function() {
       window.open('https://github.com/nationalparkservice/npmap-builder/wiki', '_blank');
     });
     $('#button-saveMap').on('click', function() {
-      var checkboxes = $('#metadata .buttons .popover checkbox'),
-        config = {'json': $.extend(true, {}, NPMap)},
-        serverUrl = 'http://162.243.77.34/builder';
+      var $this = $(this);
 
-      config.description = $('.description a').text();
-      config.isPublic = $(checkboxes[0]).prop('checked');
-      config.isShared = $(checkboxes[1]).prop('checked');
-      config.name = $('.title a').text();
-
-      $('#button-saveMap').attr('disabled', 'disabled');
+      $this.attr('disabled', true);
       $.ajax({
-        beforeSend: function (xhr) {
-          xhr.setRequestHeader ('Authorization', 'Basic ' + btoa('npmap_builder:321redliub_pampn'));
+        error: function() {
+          document.alert('Cannot reach status service. You must be on the National Park Service network to save a map.');
         },
-        contentType: false,
-        data: JSON.stringify(config),
-        error: function(data) {
-          //console.log('error', data);
-          $('#button-saveMap').removeAttr('disabled');
+        success: function(response) {
+          if (response && response.id) {
+            var checkboxes = $('#metadata .buttons .popover checkbox'),
+              params = {
+                id: response.id,
+                json: JSON.stringify($.extend(true, {
+                  description: $('.description a').text(),
+                  isPublic: $(checkboxes[0]).prop('checked'),
+                  isShared: $(checkboxes[1]).prop('checked'),
+                  name: $('.title a').text()
+                }, NPMap))
+              };
+
+            $.ajax({
+              data: params,
+              url: 'http://insidemaps.nps.gov/builder/save'
+            });
+          } else {
+            document.alert('Not logged in. You must be on the National Park Service network to save a map.');
+          }
         },
-        processData: false,
-        success: function(data) {
-          //console.log('success', data);
-          $('#button-saveMap').removeAttr('disabled');
-        },
-        type: 'POST',
-        url: serverUrl,
-        xhrFields: { withCredentials: true },
+        url: 'http://insidemaps.nps.gov/status/get'
       });
     });
     $('#button-settings').on('click', function() {

@@ -3,23 +3,40 @@
     <div class="modal-content">
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-        <h4 id="modal-export-title" class="modal-title">Export Your Map&nbsp;<img src="img/help.png" rel="tooltip" title="You can export your map to a pre-built template, use your map's id to embed it into your nps.gov web page, or embed the map into many other places on the web by using a snippet of code." data-placement="bottom"></h4>
+        <h4 id="modal-export-title" class="modal-title">Export Your Map&nbsp;<img src="img/help.png" rel="tooltip" title="You can export your map to a pre-built template, use your map's id to embed it into an nps.gov web page, or embed the map into many other places on the web by using a snippet of code." data-placement="bottom"></h4>
       </div>
       <div class="modal-body">
         <p id="modal-export-description">Take your map with you. You can embed it in your nps.gov web page or anywhere else on the web.</p>
         <ul class="nav nav-tabs">
-          <li class="active"><a href="#template" data-toggle="tab">Template</a></li>
-          <li><a href="#cms" data-toggle="tab">NPS.gov</a></li>
-          <li><a href="#code" data-toggle="tab">Code</a></li>
+          <li class="active"><a href="#modal-export-template" data-toggle="tab">Template</a></li>
+          <li><a href="#modal-export-cms" data-toggle="tab">NPS.gov</a></li>
+          <li><a href="#modal-export-code" data-toggle="tab">Code</a></li>
         </ul>
         <div class="tab-content">
-          <div id="template" class="tab-pane active">
-            <button class="btn btn-primary">Full</button>
+          <div id="modal-export-template" class="tab-pane active">
+            <div class="well">
+              <div class="row">
+                <div class="col-xs-4 col-sm-4 col-md-4 col-lg-4">
+                  <div class="thumbnail">
+                    <img id="template-full" src="../../img/templates/full.png" alt="Export to the full template">
+                    <div class="caption">
+                      <p>Fullscreen with the National Park Service arrowhead and black band. Mobile-friendly and optimized for retina displays.</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
-          <div id="cms" class="tab-pane">
-            <input type="text">
+          <div id="modal-export-cms" class="tab-pane">
+            <p>To embed this map into your nps.gov web page, paste this id into the content management system's map element. <a href="" target="_blank">More info</a></p>
+            <form role="form">
+              <div class="form-group">
+                <input id="cms-id" type="text" class="form-control" readonly="readonly"></input>
+              </div>
+            </form>
           </div>
-          <div id="code" class="tab-pane">
+          <div id="modal-export-code" class="tab-pane">
+            <p>The script below configures a map for use with <a href="https://github.com/nationalparkservice/npmap.js" target="_blank">NPMap.js</a>. You can use it to add a map to a web page. <a href="https://github.com/nationalparkservice/npmap-builder/wiki/Adding-a-map-to-a-web-page-using-an-npmap.js-config-script" class="more" target="_blank">More info</a></p>
             <form role="form">
               <div class="form-group">
                 <code style="padding:0;"><textarea id="modal-viewConfig-code" class="form-control" readonly="readonly"></textarea></code>

@@ -81,6 +81,9 @@ footer .tag-line {
   margin: 10px 10px 0 0;
   width: 179px;
 }
+a.more:after {
+  content: '\A0\BB';
+}
 .ir {
   display: block;
   text-indent: -999em;

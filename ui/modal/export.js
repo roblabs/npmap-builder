@@ -5,17 +5,45 @@ $('head').append($('<link rel="stylesheet">').attr('href', 'ui/modal/export.css'
 Builder.ui = Builder.ui || {};
 Builder.ui.modal = Builder.ui.modal || {};
 Builder.ui.modal.export = (function() {
+  var $code = $('#modal-export-code textarea');
+
+  function setConfig() {
+    var formatted = '',
+      json = JSON.stringify(NPMap, null, 2).split('\n');
+
+    $.each(json, function(i, v) {
+      if (v !== null) {
+        if (i !== 0 && i !== json.length - 1) {
+          formatted += v + '\n';
+        } else {
+          if (i === json.length - 1) {
+            formatted +=  v;
+          } else {
+            formatted += v + '\n';
+          }
+        }
+      }
+    });
+    $code.val('var NPMap = ' + formatted + ';');
+  }
   function setHeight() {
     $('#modal-export .tab-content').css({
       height: $(document).height() - 289
     });
   }
 
-  $('#modal-export').modal();
+  $('#modal-export').modal().on('show.bs.modal shown.bs.modal', setConfig);
   $('#template .btn-primary').on('click', function() {
     window.open('maps/full.html?config=' + Builder.ui.modal.export.Base64.encode(JSON.stringify(NPMap)) + '&meta=' + Builder.ui.modal.export.Base64.encode(JSON.stringify(Builder.ui.modal.export._getMapMetadata())), '_blank');
   });
+  $('#modal-export-template img').on('click', function() {
+    window.open('maps/' + this.id.replace('template-', '') + '.html?config=' + Builder.ui.modal.export.Base64.encode(JSON.stringify(NPMap)) + '&meta=' + Builder.ui.modal.export.Base64.encode(JSON.stringify(Builder.ui.modal.export._getMapMetadata())), '_blank');
+  });
+  $code.on('click', function() {
+    $(this).select();
+  });
   Builder.buildTooltips();
+  setConfig();
   setHeight();
   $(window).resize(setHeight);
 

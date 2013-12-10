@@ -25,19 +25,6 @@
 #modal-editBaseMaps .well .row:last-child {
   margin-bottom: 0;
 }
-#modal-editBaseMaps .well .row .thumbnail .add {
-  background-color: green;
-  height: 25px;
-  position: absolute;
-  width: 25px;
-}
-#modal-editBaseMaps .well .row .thumbnail .default {
-  background-color: blue;
-  height: 25px;
-  margin-left: 25px;
-  position: absolute;
-  width: 25px;
-}
 #modal-editBaseMaps .well .row div:nth-child(n+4) {
   margin-top: 20px;
 }

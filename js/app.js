@@ -209,7 +209,7 @@ var Builder = (function() {
     $($('#button-settings span')[2]).popover({
       animation: false,
       container: '#metadata .buttons',
-      content: '<div class="checkbox"><label><input type="checkbox" value="public" checked="checked">Is this map public?</label></div><div class="checkbox"><label><input type="checkbox" value="shared" checked="checked">Share this map with others?</label></div><div style="text-align:center;"><button type="button" class="btn btn-primary" onclick="Builder._handlers.settingsButtonOnClick(this);return false;">Start Building!</button></div>',
+      content: '<div class="checkbox"><label><input type="checkbox" value="public" checked="checked" disabled>Is this map public?</label></div><div class="checkbox"><label><input type="checkbox" value="shared" checked="checked" disabled>Share this map with others?</label></div><div style="text-align:center;"><button type="button" class="btn btn-primary" onclick="Builder._handlers.settingsButtonOnClick(this);return false;">Start Building!</button></div>',
       html: true,
       placement: 'bottom',
       trigger: 'manual'

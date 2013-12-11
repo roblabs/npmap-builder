@@ -89,7 +89,7 @@ Builder.ui.modal.editBaseMaps = (function() {
             '<div id="' + id + '" class="basemap col-xs-4 col-sm-4 col-md-4 col-lg-4">' +
               '<div class="thumbnail">' +
                 '<p>' + maps[map].name.replace(provider.toUpperCase() + ' ', '').replace(providerPretty + ' ', '') + '</p>' +
-                '<img src="../../img/base-maps/' + id + '.png" alt="..." style="height:152px;width:152px;">' +
+                '<img src="img/base-maps/' + id + '.png" alt="..." style="height:152px;width:152px;">' +
                 '<div class="caption">' +
                   '<div class="checkbox-inline">' +
                     '<label style="font-weight:normal;margin-bottom:0;">' +

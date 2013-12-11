@@ -24,6 +24,7 @@ section {
     overflow-y: auto;
     position: absolute;
     top: 42px;
+    width: 100%;
   }
 footer {
   background-color: black;

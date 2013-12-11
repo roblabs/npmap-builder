@@ -13,6 +13,7 @@ var Builder = (function() {
   var $buttonAddAnotherLayer,
     $buttonEditBaseMapsAgain,
     $iframe = $('#iframe-map'),
+    mapId = null,
     $modalAddLayer,
     $modalConfirm,
     $modalEditBaseMaps,
@@ -140,36 +141,55 @@ var Builder = (function() {
     $('#button-help').on('click', function() {
       window.open('https://github.com/nationalparkservice/npmap-builder/wiki', '_blank');
     });
-    $('#button-saveMap').on('click', function() {
-      var $this = $(this);
+    $('#button-save').on('click', function() {
+      var $this = $(this),
+        base = (function () {
+          var host = window.location.host;
+
+          if (host.indexOf('insidemaps') === -1 && host.indexOf('localhost') === -1) {
+            return 'http://insidemaps.nps.gov/';
+          }
+
+          return '/';
+        })();
 
       $this.attr('disabled', true);
-      $.ajax({
-        error: function() {
-          document.alert('Cannot reach status service. You must be on the National Park Service network to save a map.');
-        },
-        success: function(response) {
-          if (response && response.id) {
-            var checkboxes = $('#metadata .buttons .popover checkbox'),
-              params = {
-                id: response.id,
-                json: JSON.stringify($.extend(true, {
-                  description: $('.description a').text(),
-                  isPublic: $(checkboxes[0]).prop('checked'),
-                  isShared: $(checkboxes[1]).prop('checked'),
-                  name: $('.title a').text()
-                }, NPMap))
-              };
+      var checkboxes = $('#metadata .buttons .popover checkbox'),
+        data = {
+          json: JSON.stringify($.extend({
+            description: $('.description a').text(),
+            isPublic: true,
+            isShared: true,
+            name: $('.title a').text()
+          }, NPMap), null)
+        };
 
-            $.ajax({
-              data: params,
-              url: 'http://insidemaps.nps.gov/builder/save'
-            });
+      if (mapId) {
+        data.mapId = mapId;
+      }
+
+      $.ajax({
+        data: data,
+        error: function () {
+          $this.attr('disabled', false);
+          alert('Cannot reach status service. You must be on the National Park Service network to save a map.');
+        },
+        dataType: 'json',
+        success: function (response) {
+          $this.attr('disabled', false);
+
+          if (response) {
+            if (response.success) {
+              mapId = response.mapId;
+              // TODO: Show non-modal confirmation.
+            } else {
+              alert(response.error);
+            }
           } else {
-            document.alert('Not logged in. You must be on the National Park Service network to save a map.');
+            alert('Cannot reach status service. You must be on the National Park Service network to save a map.');
           }
         },
-        url: 'http://insidemaps.nps.gov/status/get'
+        url: base + 'builder/save' + (base === '/' ? '' : '&callback=?')
       });
     });
     $('#button-settings').on('click', function() {
@@ -247,7 +267,7 @@ var Builder = (function() {
       });
     $('#metadata .description a').editable({
       animation: false,
-      container: '#metadata span.info',
+      container: '#metadata div.info',
       emptytext: 'Add a description to give your map context.',
       validate: function(value) {
         if ($.trim(value) === '') {

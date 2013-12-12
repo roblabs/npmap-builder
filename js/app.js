@@ -49,6 +49,11 @@ function ready() {
         url: module + '.html'
       });
     }
+    function updateInitialCenterAndZoom() {
+      $('#set-center-and-zoom .lat').html(NPMap.center.lat.toFixed(2));
+      $('#set-center-and-zoom .lng').html(NPMap.center.lng.toFixed(2));
+      $('#set-center-and-zoom .zoom').html(NPMap.zoom);
+    }
 
     $(document).ready(function() {
       if (mapId) {
@@ -403,7 +408,8 @@ function ready() {
                   lng: center.lng
                 };
                 NPMap.zoom = map.getZoom();
-                Builder._updateInitialCenterAndZoom();
+
+                updateInitialCenterAndZoom();
                 Builder.updateMap();
               });
               $($('#set-center-and-zoom .btn-block')[1]).on('click', function() {
@@ -440,9 +446,7 @@ function ready() {
                 });
             },
             load: function() {
-              $('#set-center-and-zoom .lat').html(NPMap.center.lat.toFixed(2));
-              $('#set-center-and-zoom .lng').html(NPMap.center.lng.toFixed(2));
-              $('#set-center-and-zoom .zoom').html(NPMap.zoom);
+              updateInitialCenterAndZoom();
 
               if (typeof NPMap.maxBounds === 'object') {
                 $($('#set-center-and-zoom .btn-block')[1]).addClass('active').text('Remove Bounds Restriction');

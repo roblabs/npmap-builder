@@ -1,3 +1,5 @@
+/* globals alertify */
+
 var Builder, NPMap, mapId;
 
 function ready() {
@@ -511,7 +513,7 @@ function ready() {
                 data: data,
                 error: function () {
                   $this.attr('disabled', false);
-                  console.log('Cannot reach status service. You must be on the National Park Service network to save a map.');
+                  alertify.error('Cannot reach status service. You must be on the National Park Service network to save a map.', null, 0);
                 },
                 dataType: 'json',
                 success: function (response) {
@@ -520,12 +522,12 @@ function ready() {
                   if (response) {
                     if (response.success) {
                       mapId = response.mapId;
-                      // TODO: Show non-modal confirmation.
+                      alertify.success('Your map was saved!', null, 0);
                     } else {
-                      console.log(response.error);
+                      alertify.error('Your map was not saved.', null, 0);
                     }
                   } else {
-                    console.log('Cannot reach status service. You must be on the National Park Service network to save a map.');
+                    alertify.error('Cannot reach status service. You must be on the National Park Service network to save a map.', null, 0);
                   }
                 },
                 url: base + 'builder/save' + (base === '/' ? '' : '&callback=?')

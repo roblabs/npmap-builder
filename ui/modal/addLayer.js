@@ -367,28 +367,7 @@ Builder.ui.modal.addLayer = (function() {
         // TODO: Loop through all properties and "sanitize" them.
         
         if (Builder.ui.modal.addLayer._editingIndex === -1) {
-          NPMap.overlays.push(config);
-
-          if (!$layers.is(':visible')) {
-            $layers.prev().hide();
-            $('#customize .content').css({
-              padding: 0
-            });
-            $layers.show();
-          }
-
-          index = $layers.children().length;
-          $layers.append($([
-            '<li class="dd-item">',
-            '<div class="letter">' + Builder._abcs[index] + '</div>',
-            '<div class="details"><span class="name">' + name + '</span><span class="description">' + (description || '') + '</span><span>',
-            '<div style="float:left;"><button onclick="Builder._handlers.layerEditOnClick(this);"><img src="img/edit-layer.png"></button></div>',
-            '<div style="float:right;">',
-            '<button onclick="Builder._handlers.layerChangeStyleOnClick(this);" style="margin-right:10px;"><img src="img/edit-style.png"></button>',
-            '<button onclick="Builder._handlers.layerRemoveOnClick(this);"><img src="img/remove-layer.png"></button>',
-            '</div></span></div></li>'
-          ].join('')));
-          Builder._refreshLayersUl();
+          Builder.addOverlay(config);
         } else {
           var $li = $($layers.children()[Builder.ui.modal.addLayer._editingIndex]);
 

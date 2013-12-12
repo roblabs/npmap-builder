@@ -493,12 +493,12 @@ function ready() {
                   return '/';
                 })(),
                 data = {
-                  json: JSON.stringify($.extend({
+                  json: JSON.stringify($.extend(NPMap, {
                     description: $('.description a').text(),
                     isPublic: true,
                     isShared: true,
                     name: $('.title a').text()
-                  }, NPMap), null)
+                  }), null)
                 };
 
               $this.attr('disabled', true);

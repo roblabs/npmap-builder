@@ -493,24 +493,19 @@ function ready() {
                   }
 
                   return '/';
-                })(),
-                data = {
-                  json: JSON.stringify($.extend(NPMap, {
-                    description: $('.description a').text(),
-                    isPublic: true,
-                    isShared: true,
-                    name: $('.title a').text()
-                  }), null)
-                };
+                })();
 
               $this.attr('disabled', true);
 
-              if (mapId) {
-                data.mapId = mapId;
-              }
-
               $.ajax({
-                data: data,
+                data: {
+                  description: $('.description a').text() || null,
+                  isPublic: true,
+                  isShared: true,
+                  json: JSON.stringify(NPMap),
+                  mapId: mapId || null,
+                  name: $('.title a').text() || null
+                },
                 error: function () {
                   $this.attr('disabled', false);
                   alertify.error('Cannot reach status service. You must be on the National Park Service network to save a map.', null, 0);
@@ -548,7 +543,7 @@ function ready() {
             $($('#button-settings span')[2]).popover({
               animation: false,
               container: '#metadata .buttons',
-              content: '<div class="checkbox"><label><input type="checkbox" value="public" checked="checked" disabled>Is this map public?</label></div><div class="checkbox"><label><input type="checkbox" value="shared" checked="checked" disabled>Share this map with others?</label></div><div style="text-align:center;"><button type="button" class="btn btn-primary" onclick="Builder.ui.toolbar.handlers.clickSettings(this);">Start Building!</button></div>',
+              content: '<div class="checkbox"><label><input type="checkbox" value="public" checked="checked" disabled>Is this map public?</label></div><div class="checkbox"><label><input type="checkbox" value="shared" checked="checked" disabled>Share this map with others?</label></div><div style="text-align:center;width:100%;"><button type="button" class="btn btn-primary" onclick="Builder.ui.toolbar.handlers.clickSettings(this);">Start Building!</button></div>',
               html: true,
               placement: 'bottom',
               trigger: 'manual'

@@ -15,6 +15,7 @@ function ready() {
       $stepSection = $('section .step'),
       $ul = $('#layers'),
       abcs = ['A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z'],
+      colors,
       descriptionSet = false,
       descriptionZ = null,
       settingsSet = false,
@@ -23,6 +24,63 @@ function ready() {
       titleSet = false,
       titleZ = null;
 
+    function generateLayerChangeStyle(name) {
+      var optionsColor = '',
+        optionsOpacity = '<option value=""></option>';
+
+      if (!colors) {
+        colors = document.getElementById('iframe-map').contentWindow.L.npmap.preset.colors;
+      }
+
+      $.each(colors, function(prop, value) {
+        optionsColor += '<option value="' + value.color + '">' + value.color + '</option>';
+      });
+
+      return '' +
+        '<form id="' + name + '_layer-change-style" role="form" style="width:150px;">' +
+          '<fieldset>' +
+            '<legend>Outline</legend>' +
+            '<div class="form-group">' +
+              '<label for="' + name + '_outline-color">Color</label>' +
+              '<select id="' + name + '_outline-color" class="simplecolorpicker">' + optionsColor + '</select>' +
+            '</div>' +
+            '<div class="form-group">' +
+              '<label for="' + name + '_outline-width">Width</label>' +
+              '<select id="' + name + '_outline-width"><option value="1">1 pt</option><option value="2">2 pt</option><option value="3">3 pt</option><option value="4">4 pt</option><option value="5">5 pt</option></select>' +
+            '</div>' +
+            '<div class="form-group">' +
+              '<label for="' + name + '_outline-opacity">Opacity</label>' +
+              '<select id="' + name + '_outline-opacity"></select>' +
+            '</div>' +
+          '</fieldset>' +
+          '<fieldset>' +
+            '<legend>Fill</legend>' +
+            '<div class="form-group">' +
+              '<label for="' + name + '_fill-color">Color</label>' +
+              '<select id="' + name + '_fill-color" class="simplecolorpicker">' + optionsColor + '</select>' +
+            '</div>' +
+            '<div class="form-group">' +
+              '<label for="' + name + '_fill-opacity">Opacity</label>' +
+              '<select id="' + name + '_fill-opacity"></select>' +
+            '</div>' +
+          '</fieldset>' +
+          '<fieldset>' +
+            '<legend>Marker</legend>' +
+            '<div class="form-group">' +
+              '<label for="' + name + '_marker-color">Color</label>' +
+              '<select id="' + name + '_marker-color" class="simplecolorpicker">' + optionsColor + '</select>' +
+            '</div>' +
+            '<div class="form-group">' +
+              '<label for="' + name + '_marker-size">Size</label>' +
+              '<select id="' + name + '_marker-size"><option value="small">Small</option><option value="medium">Medium</option><option value="large">Large</option></select>' +
+            '</div>' +
+            '<div class="form-group">' +
+              '<label for="' + name + '_marker-icon">Icon</label>' +
+              '<select id="' + name + '_marker-icon"></select>' +
+            '</div>' +
+          '</fieldset>' +
+        '</form>';
+    }
     function getLayerIndexFromButton(el) {
       return $.inArray($(el).parent().parent().parent().prev().text(), abcs);
     }
@@ -208,12 +266,61 @@ function ready() {
           addAndCustomizeData: {
             handlers: {
               clickLayerChangeStyle: function(el) {
-                $(el).popover({
-                  animation: false,
-                  container: 'body',
-                  html: 'This is only a test.',
-                  placement: 'right'
-                });
+                var $el = $(el);
+
+                if ($el.data('popover-created')) {
+                  $el.popover('toggle');
+                } else {
+                  var html,
+                    overlay = NPMap.overlays[getLayerIndexFromButton(el)],
+                    name = overlay.name.replace(' ', '_');
+
+                  switch (overlay.type) {
+                  case 'arcgisserver':
+                    html = 'ArcGIS Online/ArcGIS Server layers cannot be styled.';
+                    break;
+                  case 'cartodb':
+                    html = 'The ability to style CartoDB layers is coming soon.';
+                    break;
+                  case 'geojson':
+                    html = generateLayerChangeStyle(name);
+                    break;
+                  case 'github':
+                    html = generateLayerChangeStyle(name);
+                    break;
+                  case 'kml':
+                    html = generateLayerChangeStyle(name);
+                    break;
+                  case 'mapbox':
+                    html = 'MapBox Hosting layers cannot be styled.';
+                    break;
+                  }
+
+                  $el.popover({
+                    animation: false,
+                    container: 'section',
+                    content: html,
+                    html: true,
+                    placement: 'right',
+                    //title: 'Customize Shapes',
+                    trigger: 'manual'
+                  })
+                    .on('hide.bs.popover', function() {
+                      $.each($('#' + name + '_layer-change-style select.simplecolorpicker'), function(i, el) {
+                        $(el).simplecolorpicker('destroy');
+                      });
+                    })
+                    .on('shown.bs.popover', function() {
+                      $.each($('#' + name + '_layer-change-style .simplecolorpicker'), function(i, el) {
+                        $(el).simplecolorpicker({
+                          picker: true,
+                          theme: 'glyphicons'
+                        });
+                      });
+                    });
+                  $el.popover('show');
+                  $el.data('popover-created', true);
+                }
               },
               clickLayerEdit: function(el) {
                 var index = getLayerIndexFromButton(el);
@@ -386,7 +493,6 @@ function ready() {
               });
             },
             load: function() {
-              // TODO: Update behavior and controls checkboxes.
               $.each($('#additional-tools-and-settings form'), function(i, form) {
                 $.each($(form).find('input'), function(j, input) {
                   var $input = $(input),
@@ -496,7 +602,6 @@ function ready() {
                 })();
 
               $this.attr('disabled', true);
-
               $.ajax({
                 data: {
                   description: $('.description a').text() || null,
@@ -506,23 +611,23 @@ function ready() {
                   mapId: mapId || null,
                   name: $('.title a').text() || null
                 },
+                dataType: 'json',
                 error: function () {
                   $this.attr('disabled', false);
-                  alertify.error('Cannot reach status service. You must be on the National Park Service network to save a map.', null, 0);
+                  alertify.error('Cannot reach status service. You must be connected to the National Park Service network to save a map.');
                 },
-                dataType: 'json',
                 success: function (response) {
                   $this.attr('disabled', false);
 
                   if (response) {
                     if (response.success) {
                       mapId = response.mapId;
-                      alertify.success('Your map was saved!', null, 0);
+                      alertify.success('Your map was saved!');
                     } else {
-                      alertify.error('Your map was not saved.', null, 0);
+                      alertify.error('Your map was not saved.');
                     }
                   } else {
-                    alertify.error('Cannot reach status service. You must be on the National Park Service network to save a map.', null, 0);
+                    alertify.error('Cannot reach status service. You must be connected to the National Park Service network to save a map.');
                   }
                 },
                 url: base + 'builder/save' + (base === '/' ? '' : '&callback=?')

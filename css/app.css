@@ -306,6 +306,9 @@ iframe {
     cursor: default;
     color: #fff;
   }
+#set-center-and-zoom .slider.slider-horizontal {
+  width: 100%;
+}
 /* End components */
 /* End styles */
 /* Start Bootstrap Editable overrides */
@@ -403,3 +406,16 @@ body.dragging, body.dragging * {
   overflow: hidden;
   overflow-y: hidden;
 }
+
+.popover-content fieldset select {
+  position: absolute;
+  right: 15px;
+}
+  .popover-content .icon {
+    position: absolute;
+    right: 15px;
+  }
+  .simplecolorpicker.icon, .simplecolorpicker span.color {
+    text-align: center;
+    width: 25px;
+  }

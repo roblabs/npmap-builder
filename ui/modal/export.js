@@ -46,8 +46,9 @@ Builder.ui.modal.export = (function() {
 
     if (mapId) {
       $('#cms-id').val(mapId);
-      // TODO: Also update template URL.
-
+      $('#modal-export-template img').on('click', function() {
+        window.open('maps/' + this.id.replace('template-', '') + '.html?id=' + mapId, '_blank');
+      });
       $('#modal-export ul a:first').tab('show');
       $(children[0]).removeClass('disabled');
       $(children[1]).removeClass('disabled');
@@ -86,15 +87,6 @@ Builder.ui.modal.export = (function() {
     $(this).select();
   });
   $('#modal-export').modal().on('show.bs.modal shown.bs.modal', update);
-  /*
-  $('#modal-export-template img').on('click', function() {
-    window.open('maps/' + this.id.replace('template-', '') + '.html?config=' + Base64.encode(JSON.stringify(NPMap)) + '&meta=' + Base64.encode(JSON.stringify(getMapMetadata())), '_blank');
-  });
-  */
-  $('#modal-export-template img').on('click', function() {
-    window.open('maps/' + this.id.replace('template-', '') + '.html?id=' + mapId, '_blank');
-  });
-
   Builder.buildTooltips();
   update();
   setHeight();

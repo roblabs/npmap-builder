@@ -712,6 +712,14 @@ function ready() {
     Builder.ui.steps.addAndCustomizeData.load();
     Builder.ui.steps.additionalToolsAndSettings.load();
     Builder.ui.steps.setCenterAndZoom.load();
+    delete NPMap.created;
+    delete NPMap.description;
+    delete NPMap.isPublic;
+    delete NPMap.isShared;
+    delete NPMap.modified;
+    delete NPMap.name;
+    delete NPMap.tags;
+    console.log(NPMap);
   }
 
   Builder.buildTooltips();

@@ -30,3 +30,6 @@
 #layerDescription {
   resize: vertical;
 }
+#modal-addLayer .slider.slider-horizontal {
+  width: 50%;
+}

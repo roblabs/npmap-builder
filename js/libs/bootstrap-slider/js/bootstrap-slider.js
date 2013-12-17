@@ -20,22 +20,25 @@
  * ========================================================= */
 !function($) {
   var Slider = function(element, options) {
-    var tooltip;
+    var showTooltip,
+      size;
 
     if (typeof Modernizr !== 'undefined' && Modernizr.touch) {
       this.touchCapable = true;
     }
 
     this.element = $(element);
+    // TODO: Is this necessary?
+    this.element.hide();
     this.id = this.element.data('slider-id') || options.id;
     this.picker = $('' +
       '<div class="slider">' +
         '<div class="slider-track">' +
           '<div class="slider-selection"></div>' +
-          '<div class="slider-handle value"></div>' +
           '<div class="slider-handle min"></div>' +
           '<div class="slider-handle center"></div>' +
           '<div class="slider-handle max"></div>' +
+          '<div class="slider-handle single"></div>' +
         '</div>' +
         '<div class="tooltip"><div class="tooltip-arrow"></div><div class="tooltip-inner"></div></div>' +
       '</div>' +
@@ -45,7 +48,7 @@
       this.picker[0].id = this.id;
     }
 
-    tooltip = this.element.data('slider-tooltip') || options.tooltip;
+    showTooltip = this.element.data('slider-tooltip') || options.tooltip;
     this.orientation = this.element.data('slider-orientation') || options.orientation;
     this.tooltip = this.picker.find('.tooltip');
     this.tooltipInner = this.tooltip.find('div.tooltip-inner');
@@ -62,8 +65,7 @@
       this.mousePos = 'pageX';
       this.orientation = 'horizontal';
       this.picker
-        .addClass('slider-horizontal')
-        .css('width', '100%');
+        .addClass('slider-horizontal');
       this.sizePos = 'offsetWidth';
       this.stylePos = 'left';
       this.tooltip.addClass('top')[0].style.top = -this.tooltip.outerHeight() - 38 + 'px';
@@ -94,7 +96,7 @@
     this.handleMinStype = this.handleMin[0].style;
     this.handleMax = this.picker.find('.slider-handle.max');
     this.handleMaxStype = this.handleMax[0].style;
-    this.handleSingle = this.picker.find('.slider-handle.value');
+    this.handleSingle = this.picker.find('.slider-handle.single');
     this.handleSingleMaxStype = this.handleSingle[0].style;
 
     if (this.range) {
@@ -111,6 +113,9 @@
       this.handleMin.addClass('hide');
       this.handleMax.addClass('hide');
       this.value = [Math.max(this.min, Math.min(this.max, this.value))];
+      this.tooltip.css({
+        'margin-top': 0
+      });
 
       if (this.selection === 'after') {
         this.value[1] = this.max;
@@ -127,8 +132,7 @@
       (this.value[1] - this.min) * 100 / this.diff,
       this.step * 100 / this.diff
     ];
-    this.size = $(this.picker[0]).width();
-    this.layout();
+    size = this.picker[0][this.sizePos];
 
     if (this.touchCapable) {
       this.picker.on({
@@ -140,13 +144,33 @@
       });
     }
 
-    if (tooltip === 'show') {
+    if (showTooltip === 'show') {
       this.picker.on({
         mouseenter: $.proxy(this.showTooltip, this),
         mouseleave: $.proxy(this.hideTooltip, this)
       });
     } else {
       this.tooltip.addClass('hide');
+    }
+
+    if (size) {
+      this.size = size;
+      this.layout();
+      this.setValue(this.calculateValue());
+    } else {
+      var me = this,
+        interval;
+
+      interval = setInterval(function() {
+        size = me.picker[0][me.sizePos];
+
+        if (size) {
+          clearInterval(interval);
+          me.size = size;
+          me.layout();
+          me.setValue(me.calculateValue());
+        }
+      }, 100);
     }
   };
 
@@ -167,6 +191,7 @@
         val = (this.min + Math.round((this.diff * this.percentage[0]/100)/this.step)*this.step);
         this.value = [val, this.value[1]];
       }
+
       return val;
     },
     getPercentage: function(ev) {
@@ -183,14 +208,14 @@
 
       return this.value[0];
     },
-    hideTooltip: function(){
+    hideTooltip: function() {
       if (this.inDrag === false) {
         this.tooltip.removeClass('in');
       }
 
       this.over = false;
     },
-    layout: function(){
+    layout: function() {
       this.handleMinStype[this.stylePos] = this.percentage[0] + '%';
       this.handleMaxStype[this.stylePos] = this.percentage[1] + '%';
 
@@ -201,16 +226,21 @@
         this.selectionElStyle.left = Math.min(this.percentage[0], this.percentage[1]) + '%';
         this.selectionElStyle.width = Math.abs(this.percentage[0] - this.percentage[1]) + '%';
       }
+
       if (this.range) {
         this.tooltipInner.text(this.formatter(this.value[0]) + ' - ' + this.formatter(this.value[1]));
 
         this.tooltip[0].style[this.stylePos] = this.size * (this.percentage[0] + (this.percentage[1] - this.percentage[0])/2)/100 - (this.orientation === 'vertical' ? this.tooltip.outerHeight()/2 : this.tooltip.outerWidth()/2) + 'px';
+
+        // TODO: Check for center. If it is turned on, associate it with tooltip.
       } else {
+        var base = this.size * this.percentage[0] / 100;
+
         this.tooltipInner.text(
           this.formatter(this.value[0])
         );
-
-        this.tooltip[0].style[this.stylePos] = this.size * this.percentage[0] / 100 - (this.orientation === 'vertical' ? this.tooltip.outerHeight() / 2 : this.tooltip.outerWidth() / 2) + 'px';
+        this.handleSingle[0].style[this.stylePos] = base - (this.orientation === 'vertical' ? this.handleSingle.outerHeight() / 2 : this.handleSingle.outerWidth() / 2) + 'px';
+        this.tooltip[0].style[this.stylePos] = base - (this.orientation === 'vertical' ? this.tooltip.outerHeight() / 2 : this.tooltip.outerWidth() / 2) + 'px';
       }
     },
     mousedown: function(ev) {
@@ -258,6 +288,7 @@
           type: 'slide',
           value: val
         });
+
       this.setValue(val);
       return false;
     },
@@ -279,6 +310,7 @@
           this.dragged = 0;
         }
       }
+
       this.percentage[this.dragged] = percentage;
       this.layout();
       val = this.calculateValue();
@@ -333,7 +365,6 @@
         this.value[0] = Math.max(this.min, Math.min(this.max, this.value[0]));
         this.value[1] = Math.max(this.min, Math.min(this.max, this.value[1]));
       } else {
-        this.handle2.addClass('hide');
         this.value = [Math.max(this.min, Math.min(this.max, this.value))];
 
         if (this.selection === 'after') {
@@ -350,9 +381,11 @@
         this.step * 100 / this.diff
       ];
       this.layout();
+      this.element
+        .data('value', val)
+        .prop('value', val);
     },
-    showTooltip: function(){
-      this.layout();
+    showTooltip: function() {
       this.over = true;
       this.tooltip.addClass('in');
     }
@@ -361,8 +394,8 @@
   $.fn.slider = function(option, val) {
     return this.each(function () {
       var $this = $(this),
-          data = $this.data('slider'),
-          options = typeof option === 'object' && option;
+        data = $this.data('slider'),
+        options = typeof option === 'object' && option;
 
       if (!data)  {
         $this.data('slider', (data = new Slider(this, $.extend({}, $.fn.slider.defaults,options))));

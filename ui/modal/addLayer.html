@@ -43,6 +43,10 @@
                   <input id="arcgisserver-url" type="text" placeholder="Must end with 'MapServer'..." class="form-control" required></input>
                 </div>
                 <div class="form-group">
+                  <label for="arcgisserver-opacity" style="display:block;margin-bottom:-10px;">Opacity</label>
+                  <input type="text" id="arcgisserver-opacity" required>
+                </div>
+                <div class="form-group">
                   <label for="arcgisserver-layers">Layers</label>
                   <select id="arcgisserver-layers" class="form-control dropup selectpicker" disabled="disabled" data-selected-text-format="count" multiple required></select>
                   <span class="help-block">All of the service's layers will appear here after you fill in the "URL" field above. You must choose at least one.</span>
@@ -56,6 +60,10 @@
                 <div class="form-group">
                   <label for="cartodb-table">Table Name</label>
                   <input id="cartodb-table" type="text" class="form-control" required></input>
+                </div>
+                <div class="form-group">
+                  <label for="cartodb-opacity" style="display:block;margin-bottom:-10px;">Opacity</label>
+                  <input type="text" id="cartodb-opacity" required>
                 </div>
               </div>
               <div id="geojson">
@@ -95,6 +103,10 @@
                 <div class="form-group">
                   <label for="mapbox-id">ID</label>
                   <input id="mapbox-id" type="text" placeholder="Must look something like this: 'nps.Air_Atlas_Monitors'..." class="form-control" required></input>
+                </div>
+                <div class="form-group">
+                  <label for="mapbox-opacity" style="display:block;margin-bottom:-10px;">Opacity</label>
+                  <input type="text" id="mapbox-opacity" required>
                 </div>
               </div>
             </form>

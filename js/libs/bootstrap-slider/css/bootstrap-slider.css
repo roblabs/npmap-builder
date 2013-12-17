@@ -54,6 +54,15 @@
       position: absolute;
       width: 10px;
     }
+    .slider.slider-horizontal .slider-handle.single {
+      background-image: url('../img/slider-single.png');
+      border: 0px solid transparent;
+      height: 14px;
+      margin-left: 0px;
+      margin-top: -4px;
+      position: absolute;
+      width: 13px;
+    }
 .slider.slider-horizontal {
   border-bottom-color: #0480be;
   border-width: 0 10px 10px 10px;
@@ -94,15 +103,9 @@
 .slider .tooltip-inner {
   white-space: nowrap;
 }
-/*
-.slider-handle {
-  background-image: url('../img/slider-arrow.png');
-  border: 0px solid transparent;
-  height: 24px;
-  position: absolute;
-  width: 14px;
+.slider .tooltip.top {
+  min-width: 32px;
 }
-*/
 .slider-selection {
      -moz-border-radius: 4px;
   -webkit-border-radius: 4px;

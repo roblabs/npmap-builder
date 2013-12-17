@@ -15,6 +15,7 @@ Builder.ui.modal.addLayer = (function() {
         _url: null,
         fields: {
           $layers: $('#arcgisserver-layers'),
+          $opacity: $('#arcgisserver-opacity'),
           $url: $('#arcgisserver-url').bind('change paste keyup', function() {
             var value = $(this).val(),
                 lower = value.toLowerCase();
@@ -50,6 +51,7 @@ Builder.ui.modal.addLayer = (function() {
           types.arcgisserver.fields.$layers.find('option').remove();
           types.arcgisserver.fields.$layers.prop('disabled', true);
           types.arcgisserver.fields.$layers.selectpicker('refresh');
+          types.arcgisserver.fields.$opacity.slider('setValue', 100);
           types.arcgisserver.fields.$url.val('');
           types.arcgisserver._tiled = false;
           types.arcgisserver._url = null;
@@ -57,10 +59,12 @@ Builder.ui.modal.addLayer = (function() {
       },
       cartodb: {
         fields: {
+          $opacity: $('#cartodb-opacity'),
           $table: $('#cartodb-table'),
           $user: $('#cartodb-user')
         },
         reset: function() {
+          types.cartodb.fields.$opacity.slider('setValue', 100);
           types.cartodb.fields.$table.val('');
           types.cartodb.fields.$user.val('');
         }
@@ -97,10 +101,12 @@ Builder.ui.modal.addLayer = (function() {
       },
       mapbox: {
         fields: {
-          $id: $('#mapbox-id')
+          $id: $('#mapbox-id'),
+          $opacity: $('#mapbox-opacity')
         },
         reset: function() {
           types.mapbox.fields.$id.val('');
+          types.mapbox.fields.$opacity.slider('setValue', 100);
         }
       }
     };
@@ -114,7 +120,7 @@ Builder.ui.modal.addLayer = (function() {
   $('#modal-addLayer').modal({
     backdrop: 'static'
   })
-    .on('hidden.bs.modal', function() {
+    .on('hide.bs.modal', function() {
       $attribution.val(null);
       $description.val(null);
       $name.val(null);
@@ -182,6 +188,21 @@ Builder.ui.modal.addLayer = (function() {
   $(types.arcgisserver.fields.$layers).selectpicker({
     size: 5
   });
+  $(types.arcgisserver.fields.$opacity).slider({
+    max: 100,
+    min: 0,
+    value: 100
+  });
+  $(types.cartodb.fields.$opacity).slider({
+    max: 100,
+    min: 0,
+    value: 100
+  });
+  $(types.mapbox.fields.$opacity).slider({
+    max: 100,
+    min: 0,
+    value: 100
+  });
 
   return {
     _editingIndex: -1,
@@ -222,7 +243,7 @@ Builder.ui.modal.addLayer = (function() {
 
           config = {
             layers: layers,
-            opacity: 1,
+            opacity: parseInt(types.arcgisserver.fields.$opacity.val(), 10) / 100,
             tiled: types.arcgisserver._tiled,
             type: 'arcgisserver',
             url: url
@@ -230,23 +251,23 @@ Builder.ui.modal.addLayer = (function() {
         })();
       } else if ($('#cartodb').is(':visible')) {
         (function() {
-          var $table = $('#cartodb-table'),
-            table = $table.val(),
-            $user = $('#cartodb-user'),
-            user = $user.val();
+          var table = types.cartodb.fields.$table.val(),
+            user = types.cartodb.fields.$user.val();
 
-          fields.push($table);
-          fields.push($user);
+          $.each(types.cartodb.fields, function(field) {
+            fields.push(field);
+          });
 
           if (!table) {
-            errors.push($table);
+            errors.push(types.cartodb.fields.$table.val());
           }
 
           if (!user) {
-            errors.push($user);
+            errors.push(types.cartodb.fields.$user.val());
           }
 
           config = {
+            opacity: parseInt(types.cartodb.fields.$opacity.val(), 10) / 100,
             table: table,
             type: 'cartodb',
             user: user
@@ -320,8 +341,8 @@ Builder.ui.modal.addLayer = (function() {
           }
 
           config = {
-            'type': 'kml',
-            'url': url
+            type: 'kml',
+            url: url
           };
 
           if (!clickable) {
@@ -330,18 +351,20 @@ Builder.ui.modal.addLayer = (function() {
         })();
       } else if ($('#mapbox').is(':visible')) {
         (function() {
-          var $id = $('#mapbox-id'),
-            id = $id.val();
+          var id = types.mapbox.fields.$id.val();
 
-          fields.push($id);
+          $.each(types.mapbox.fields, function(field) {
+            fields.push(field);
+          });
 
           if (!id) {
-            errors.push($id);
+            errors.push(types.mapbox.fields.$id.val());
           }
 
           config = {
-            'id': id,
-            'type': 'mapbox'
+            id: id,
+            opacity: parseInt(types.mapbox.fields.$opacity.val(), 10) / 100,
+            type: 'mapbox'
           };
         })();
       }
@@ -351,8 +374,7 @@ Builder.ui.modal.addLayer = (function() {
           $el.parent().addClass('has-error');
         });
       } else {
-        var $layers = $('#layers'),
-          index;
+        var $layers = $('#layers');
 
         if (attribution) {
           config.attribution = attribution;
@@ -406,8 +428,12 @@ Builder.ui.modal.addLayer = (function() {
 
         if (prop === 'attribution' || prop === 'description' || prop === 'name') {
           $('#layer' + (prop.charAt(0).toUpperCase() + prop.slice(1))).val(value);
-        } else if (prop !== 'type') {
-          $('#' + type + '-' + prop).val(value);
+        } else {
+          if (prop === 'opacity') {
+            $('#' + type + '-opacity').slider('setValue', value * 100);
+          } else if (prop !== 'type') {
+            $('#' + type + '-' + prop).val(value);
+          }
         }
       }
 

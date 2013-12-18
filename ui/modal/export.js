@@ -47,7 +47,7 @@ Builder.ui.modal.export = (function() {
     if (mapId) {
       $('#cms-id').val(mapId);
       $('#modal-export-template img').on('click', function() {
-        window.open('maps/' + this.id.replace('template-', '') + '.html?id=' + mapId, '_blank');
+        window.open('/maps/' + this.id.replace('template-', '') + '.html?mapId=' + mapId, '_blank');
       });
       $('#modal-export ul a:first').tab('show');
       $(children[0]).removeClass('disabled');

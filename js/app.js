@@ -114,6 +114,10 @@ function ready() {
       $('#set-center-and-zoom .lng').html(NPMap.center.lng.toFixed(2));
       $('#set-center-and-zoom .zoom').html(NPMap.zoom);
     }
+    function updateSaveStatus(date) {
+      $('.info-saved p').text('Saved ' + moment(date).format('MM/DD/YYYY') + ' at ' + moment(date).format('h:mm:ssa'));
+      $('.info-saved').show();
+    }
 
     $(document).ready(function() {
       if (mapId) {
@@ -260,6 +264,8 @@ function ready() {
             if (NPMap.name) {
               $('#metadata .title a').text(NPMap.name);
             }
+
+            updateSaveStatus(NPMap.modified);
           }
         },
         steps: {
@@ -594,14 +600,17 @@ function ready() {
                 base = (function () {
                   var host = window.location.host;
 
+                  /*
                   if (host.indexOf('insidemaps') === -1 && host.indexOf('localhost') === -1) {
                     return 'http://insidemaps.nps.gov/';
                   }
+                  */
 
                   return '/';
                 })();
 
-              $this.attr('disabled', true);
+              Builder.showLoading();
+              $this.blur();
               $.ajax({
                 data: {
                   description: $('.description a').text() || null,
@@ -613,15 +622,16 @@ function ready() {
                 },
                 dataType: 'json',
                 error: function () {
-                  $this.attr('disabled', false);
+                  Builder.hideLoading();
                   alertify.error('Cannot reach status service. You must be connected to the National Park Service network to save a map.');
                 },
                 success: function (response) {
-                  $this.attr('disabled', false);
+                  Builder.hideLoading();
 
                   if (response) {
                     if (response.success) {
                       mapId = response.mapId;
+                      updateSaveStatus(response.modified);
                       alertify.success('Your map was saved!');
                     } else {
                       alertify.error('Your map was not saved.');
@@ -648,7 +658,7 @@ function ready() {
             $($('#button-settings span')[2]).popover({
               animation: false,
               container: '#metadata .buttons',
-              content: '<div class="checkbox"><label><input type="checkbox" value="public" checked="checked" disabled>Is this map public?</label></div><div class="checkbox"><label><input type="checkbox" value="shared" checked="checked" disabled>Share this map with others?</label></div><div style="text-align:center;width:100%;"><button type="button" class="btn btn-primary" onclick="Builder.ui.toolbar.handlers.clickSettings(this);">Start Building!</button></div>',
+              content: '<div class="checkbox"><label><input type="checkbox" value="public" checked="checked" disabled>Is this map public?</label></div><div class="checkbox"><label><input type="checkbox" value="shared" checked="checked" disabled>Share this map with others?</label></div><div style="text-align:center;"><button type="button" class="btn btn-primary" onclick="Builder.ui.toolbar.handlers.clickSettings(this);">Start Building!</button></div>',
               html: true,
               placement: 'bottom',
               trigger: 'manual'
@@ -670,6 +680,10 @@ function ready() {
           animation: false
         });
       },
+      hideLoading: function() {
+        $('#loading').hide();
+        document.body.removeChild(document.getElementById('loading-backdrop'));
+      },
       removeOverlay: function(index) {
         NPMap.overlays.splice(index, 1);
         this.updateMap();
@@ -682,6 +696,13 @@ function ready() {
         $($modalConfirm.find('.modal-body')[0]).html(content);
         $($modalConfirm.find('h4')[0]).html(title);
         $modalConfirm.modal('show');
+      },
+      showLoading: function() {
+        var div = document.createElement('div');
+        div.className = 'modal-backdrop in';
+        div.id = 'loading-backdrop';
+        document.body.appendChild(div);
+        $('#loading').show();
       },
       updateMap: function(callback) {
         $iframe.attr('src', 'iframe.html?c=' + encodeURIComponent(JSON.stringify(NPMap)));
@@ -712,6 +733,13 @@ function ready() {
     Builder.ui.steps.addAndCustomizeData.load();
     Builder.ui.steps.additionalToolsAndSettings.load();
     Builder.ui.steps.setCenterAndZoom.load();
+    delete NPMap.created;
+    delete NPMap.description;
+    delete NPMap.isPublic;
+    delete NPMap.isShared;
+    delete NPMap.modified;
+    delete NPMap.name;
+    delete NPMap.tags;
   }
 
   Builder.buildTooltips();

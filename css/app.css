@@ -419,3 +419,24 @@ body.dragging, body.dragging * {
     text-align: center;
     width: 25px;
   }
+
+#loading {
+  display: none;
+  margin-left: -150px;
+  margin-top: -10px;
+  left: 50%;
+  position: fixed;
+  top: 50%;
+  width: 300px;
+  z-index: 999999999;
+}
+.info-saved {
+  bottom: 14px;
+  color: white;
+  display: none;
+  position: absolute;
+  right: 195px;
+}
+  .info-saved p {
+    margin-bottom: -3px;
+  }

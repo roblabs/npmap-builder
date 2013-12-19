@@ -428,15 +428,17 @@ function ready() {
                     '<span class="description">' + (overlay.description || '') + '</span>',
                     '<span>',
                       '<div style="float:left;">',
-                        '<button onclick="Builder.ui.steps.addAndCustomizeData.handlers.clickLayerEdit(this);">',
+                        '<button onclick="Builder.ui.steps.addAndCustomizeData.handlers.clickLayerEdit(this);" data-container="section" data-placement="bottom" rel="tooltip" title="Edit Overlay">',
                           '<img src="img/edit-layer.png">',
                         '</button>',
                       '</div>',
                       '<div style="float:right;">',
+                        /*
                         '<button onclick="Builder.ui.steps.addAndCustomizeData.handlers.clickLayerChangeStyle(this);" style="margin-right:10px;">',
                           '<img src="img/edit-style.png">',
                         '</button>',
-                        '<button onclick="Builder.ui.steps.addAndCustomizeData.handlers.clickLayerRemove(this);">',
+                        */
+                        '<button onclick="Builder.ui.steps.addAndCustomizeData.handlers.clickLayerRemove(this);" data-container="section" data-placement="bottom" rel="tooltip" title="Delete Overlay">',
                           '<img src="img/remove-layer.png">',
                         '</button>',
                       '</div>',
@@ -532,6 +534,7 @@ function ready() {
                 if ($this.hasClass('active')) {
                   delete NPMap.maxBounds;
                   $this.removeClass('active').text('Restrict Bounds');
+                  $this.next().hide();
                 } else {
                   var bounds = getLeafletMap().getBounds(),
                     northEast = bounds.getNorthEast(),
@@ -543,6 +546,7 @@ function ready() {
                   ];
 
                   $(this).addClass('active').text('Remove Bounds Restriction');
+                  $this.next().show();
                 }
 
                 Builder.updateMap();

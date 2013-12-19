@@ -70,6 +70,7 @@ Builder.ui.modal.editBaseMaps = (function() {
       }
     }
 
+    $($('#' + active).find('input')[0]).prop('disabled', true);
     $($('#' + active).find('input')[1]).prop('checked', true);
   }
 
@@ -99,7 +100,7 @@ Builder.ui.modal.editBaseMaps = (function() {
                   '</div>' +
                   '<div class="radio-inline">' +
                     '<label style="font-weight:normal;margin-bottom:0;">' +
-                      '<input type="radio" name="default-basemap">' +
+                      '<input type="radio" name="default-basemap" onclick="Builder.ui.modal.editBaseMaps.handleRadio(this);">' +
                         ' Make default?' +
                     '</label>' +
                   '</div>' +
@@ -130,5 +131,15 @@ Builder.ui.modal.editBaseMaps = (function() {
   update();
   $(window).resize(setHeight);
 
-  return {};
+  return {
+    handleRadio: function(el) {
+      var $checkbox = $($(el).parent().parent().prev().children().children()[0]);
+      
+      $.each($('#modal-editBaseMaps :checkbox'), function(i, checkbox) {
+        $(checkbox).prop('disabled', false);
+      });
+
+      $checkbox.prop('checked', true).prop('disabled', true);
+    }
+  };
 })();

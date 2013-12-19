@@ -309,6 +309,10 @@ iframe {
 #set-center-and-zoom .slider.slider-horizontal {
   width: 100%;
 }
+#set-center-and-zoom .bottom .help-block {
+  display: none;
+  margin: 10px 0 0 0;
+}
 /* End components */
 /* End styles */
 /* Start Bootstrap Editable overrides */

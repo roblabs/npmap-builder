@@ -117,6 +117,24 @@ Builder.ui.modal.addLayer = (function() {
     });
   }
 
+  if (typeof Builder._pendingLayerEditIndex !== 'undefined') {
+    var overlay = NPMap.overlays[Builder._pendingLayerEditIndex],
+      type = overlay.type;
+
+    delete Builder._pendingLayerEditIndex;
+
+    $('#layerType').val(type);
+    $.each(types, function(prop) {
+      var $el = $('#' + type);
+
+      if (prop === type) {
+        $el.show();
+      } else {
+        $el.hide();
+      }
+    });
+  }
+
   $('#modal-addLayer').modal({
     backdrop: 'static'
   })

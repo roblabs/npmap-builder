@@ -334,12 +334,15 @@ function ready() {
                 function callback() {
                   Builder.ui.modal.addLayer._load(NPMap.overlays[index]);
                   Builder.ui.modal.addLayer._editingIndex = index;
+                  $modalAddLayer.off('shown.bs.modal', callback);
                 }
 
                 if ($modalAddLayer) {
-                  $modalAddLayer.modal('show');
-                  callback();
+                  $modalAddLayer
+                    .on('shown.bs.modal', callback)
+                    .modal('show');
                 } else {
+                  Builder._pendingLayerEditIndex = index;
                   loadModule('Builder.ui.modal.addLayer', function() {
                     $modalAddLayer = $('#modal-addLayer');
                     callback();

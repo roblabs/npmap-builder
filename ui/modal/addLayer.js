@@ -316,7 +316,12 @@ Builder.ui.modal.addLayer = (function() {
       } else if ($('#github').is(':visible')) {
         (function() {
           var clickable = types.github.fields.$clickable.prop('checked'),
-            url = types.github.fields.$url.val().replace('http://github.com/', '').replace('https://github.com/', '').replace('/blob', ''),
+            url = types.github.fields.$url.val()
+              .replace('http://github.com/', '')
+              .replace('https://github.com/', '')
+              .replace('http://raw.github.com/', '')
+              .replace('https://raw.github.com/', '')
+              .replace('/blob', ''),
             urls = url.split('/'),
             branch, path, repo, user;
 
@@ -462,7 +467,8 @@ Builder.ui.modal.addLayer = (function() {
 
       // TODO: Handle checkboxes - clickable
 
-      if (type === 'arcgisserver') {
+      switch (type) {
+      case 'arcgisserver':
         var interval;
 
         types.arcgisserver.fields.$url.trigger('change');
@@ -472,6 +478,10 @@ Builder.ui.modal.addLayer = (function() {
             types.arcgisserver.fields.$layers.selectpicker('val', layer.layers.split(','));
           }
         }, 100);
+        break;
+      case 'github':
+        types.github.fields.$url.val('https://github.com/' + layer.user + '/' + layer.repo + '/blob/' + layer.branch + '/' + layer.path);
+        break;
       }
     },
     _clearAllArcGisServerLayers: function() {

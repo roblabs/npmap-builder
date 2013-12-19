@@ -763,7 +763,7 @@ mapId = (function() {
   for (var i = 0; i < search.length; i++) {
     var param = search[i].split('=');
 
-    if (param[0] === 'id') {
+    if (param[0].toLowerCase() === 'mapid') {
       id = param[1];
       break;
     }

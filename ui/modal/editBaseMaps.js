@@ -10,6 +10,8 @@ Builder.ui.modal.editBaseMaps = (function() {
 
   function getProvider(provider) {
     switch (provider) {
+    case 'bing':
+      return 'Bing';
     case 'esri':
       return 'Esri';
     case 'mapbox':

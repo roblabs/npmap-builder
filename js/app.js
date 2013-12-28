@@ -1,4 +1,4 @@
-/* globals alertify */
+/* globals alertify, moment */
 
 var Builder, NPMap, mapId;
 
@@ -18,6 +18,7 @@ function ready() {
       colors,
       descriptionSet = false,
       descriptionZ = null,
+      firstLoad = true,
       settingsSet = false,
       settingsZ = null,
       stepLis = $('#steps li'),
@@ -25,8 +26,7 @@ function ready() {
       titleZ = null;
 
     function generateLayerChangeStyle(name) {
-      var optionsColor = '',
-        optionsOpacity = '<option value=""></option>';
+      var optionsColor = '';
 
       if (!colors) {
         colors = document.getElementById('iframe-map').contentWindow.L.npmap.preset.colors;
@@ -117,6 +117,7 @@ function ready() {
     function updateSaveStatus(date) {
       $('.info-saved p').text('Saved ' + moment(date).format('MM/DD/YYYY') + ' at ' + moment(date).format('h:mm:ssa'));
       $('.info-saved').show();
+      $('#button-save').prop('disabled', true);
     }
 
     $(document).ready(function() {
@@ -605,7 +606,7 @@ function ready() {
             $('#button-save').on('click', function() {
               var $this = $(this),
                 base = (function () {
-                  var host = window.location.host;
+                  //var host = window.location.host;
 
                   /*
                   if (host.indexOf('insidemaps') === -1 && host.indexOf('localhost') === -1) {
@@ -722,6 +723,12 @@ function ready() {
             if (callback) {
               callback(npmap.config);
             }
+
+            if (firstLoad) {
+              firstLoad = false;
+            } else {
+              $('#button-save').prop('disabled', false);
+            }
           }
         }, 100);
       }
@@ -747,6 +754,7 @@ function ready() {
     delete NPMap.modified;
     delete NPMap.name;
     delete NPMap.tags;
+    firstLoad = true;
   }
 
   Builder.buildTooltips();

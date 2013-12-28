@@ -455,7 +455,11 @@ Builder.ui.modal.addLayer = (function() {
           if (prop === 'opacity') {
             $('#' + type + '-opacity').slider('setValue', value * 100);
           } else if (prop !== 'type') {
-            $('#' + type + '-' + prop).val(value);
+            if (prop === 'clickable') {
+              $('#' + type + '-clickable').prop('checked', value);
+            } else {
+              $('#' + type + '-' + prop).val(value);
+            }
           }
         }
       }

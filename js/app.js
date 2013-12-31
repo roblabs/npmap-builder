@@ -133,6 +133,7 @@ function ready() {
     });
 
     return {
+      _afterUpdateCallbacks: {},
       ui: {
         app: {
           init: function() {
@@ -499,6 +500,30 @@ function ready() {
                       NPMap[value] = checked;
                     }
 
+                    if (value === 'fullscreenControl') {
+                      if (checked) {
+                        Builder._afterUpdateCallbacks.fullscreenControl = function(config) {
+                          var $map = $('#map'),
+                            map = config.L;
+
+                          map.on('enterfullscreen', function() {
+                            $map.css({
+                              left: 0,
+                              position: 'fixed'
+                            });
+                          });
+                          map.on('exitfullscreen', function() {
+                            $map.css({
+                              left: '268px',
+                              position: 'absolute'
+                            });
+                          });
+                        };
+                      } else {
+                        delete Builder._afterUpdateCallbacks.fullscreenControl;
+                      }
+                    }
+
                     Builder.updateMap();
                   });
                 });
@@ -714,14 +739,21 @@ function ready() {
       },
       updateMap: function(callback) {
         $iframe.attr('src', 'iframe.html?c=' + encodeURIComponent(JSON.stringify(NPMap)));
+
         var interval = setInterval(function() {
           var npmap = document.getElementById('iframe-map').contentWindow.NPMap;
 
-          if (npmap && npmap.config && npmap.config.center) {
+          if (npmap && npmap.config && npmap.config.L) {
+            var config = npmap.config;
+
             clearInterval(interval);
 
             if (callback) {
-              callback(npmap.config);
+              callback(config);
+            }
+
+            for (var prop in Builder._afterUpdateCallbacks) {
+              Builder._afterUpdateCallbacks[prop](config);
             }
 
             if (firstLoad) {

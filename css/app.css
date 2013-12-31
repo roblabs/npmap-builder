@@ -14,6 +14,7 @@ section {
   position: absolute;
   top: 154px;
   width: 100%;
+  z-index: 1;
 }
   section div:first-child {
     display: block;

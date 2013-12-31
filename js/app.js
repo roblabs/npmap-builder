@@ -81,6 +81,9 @@ function ready() {
           '</fieldset>' +
         '</form>';
     }
+    function getIframeConfig() {
+      return document.getElementById('iframe-map').contentWindow.NPMap.config;
+    }
     function getLayerIndexFromButton(el) {
       return $.inArray($(el).parent().parent().parent().prev().text(), abcs);
     }
@@ -473,6 +476,23 @@ function ready() {
             }
           },
           additionalToolsAndSettings: {
+            hookUpFullScreenControl: function(config) {
+              var $map = $('#map'),
+                map = config.L;
+
+              map.on('enterfullscreen', function() {
+                $map.css({
+                  left: 0,
+                  position: 'fixed'
+                });
+              });
+              map.on('exitfullscreen', function() {
+                $map.css({
+                  left: '268px',
+                  position: 'absolute'
+                });
+              });
+            },
             init: function() {
               $.each($('#additional-tools-and-settings form'), function(i, form) {
                 $.each($(form).find('input'), function(j, input) {
@@ -502,23 +522,7 @@ function ready() {
 
                     if (value === 'fullscreenControl') {
                       if (checked) {
-                        Builder._afterUpdateCallbacks.fullscreenControl = function(config) {
-                          var $map = $('#map'),
-                            map = config.L;
-
-                          map.on('enterfullscreen', function() {
-                            $map.css({
-                              left: 0,
-                              position: 'fixed'
-                            });
-                          });
-                          map.on('exitfullscreen', function() {
-                            $map.css({
-                              left: '268px',
-                              position: 'absolute'
-                            });
-                          });
-                        };
+                        Builder._afterUpdateCallbacks.fullscreenControl = Builder.ui.steps.additionalToolsAndSettings.hookUpFullScreenControl;
                       } else {
                         delete Builder._afterUpdateCallbacks.fullscreenControl;
                       }
@@ -533,10 +537,23 @@ function ready() {
               $.each($('#additional-tools-and-settings form'), function(i, form) {
                 $.each($(form).find('input'), function(j, input) {
                   var $input = $(input),
-                    property = NPMap[$input.attr('value')];
+                    name = $input.attr('value'),
+                    property = NPMap[name];
 
                   if (typeof property !== 'undefined') {
                     $input.attr('checked', property);
+
+                    if (name === 'fullscreenControl' && property) {
+                      var interval = setInterval(function() {
+                        var config = getIframeConfig();
+
+                        if (config && config.L) {
+                          clearInterval(interval);
+                          Builder._afterUpdateCallbacks.fullscreenControl = Builder.ui.steps.additionalToolsAndSettings.hookUpFullScreenControl;
+                          Builder.ui.steps.additionalToolsAndSettings.hookUpFullScreenControl(getIframeConfig());
+                        }
+                      }, 100);
+                    }
                   }
                 });
               });

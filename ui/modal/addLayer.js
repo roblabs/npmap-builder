@@ -6,6 +6,7 @@ Builder.ui = Builder.ui || {};
 Builder.ui.modal = Builder.ui.modal || {};
 Builder.ui.modal.addLayer = (function() {
   var $attribution = $('#layerAttribution'),
+    $clickable = $('#layerClickable'),
     $description = $('#layerDescription'),
     $name = $('#layerName'),
     $type = $('#layerType'),
@@ -69,33 +70,43 @@ Builder.ui.modal.addLayer = (function() {
           types.cartodb.fields.$user.val('');
         }
       },
+      csv: {
+        fields: {
+          $cluster: $('#csv-cluster'),
+          $url: $('#csv-url')
+        },
+        reset: function() {
+          types.csv.fields.$cluster.prop(false);
+          types.csv.fields.$url.val('');
+        }
+      },
       geojson: {
         fields: {
-          $clickable: $('#geojson-clickable'),
+          $cluster: $('#geojson-cluster'),
           $url: $('#geojson-url')
         },
         reset: function() {
-          types.geojson.fields.$clickable.prop('checked', 'checked');
+          types.geojson.fields.$cluster.prop(false);
           types.geojson.fields.$url.val('');
         }
       },
       github: {
         fields: {
-          $clickable: $('#github-clickable'),
+          $cluster: $('#github-cluster'),
           $url: $('#github-url')
         },
         reset: function() {
-          types.github.fields.$clickable.prop('checked', 'checked');
+          types.github.fields.$cluster.prop(false);
           types.github.fields.$url.val('');
         }
       },
       kml: {
         fields: {
-          $clickable: $('#kml-clickable'),
+          $cluster: $('#kml-cluster'),
           $url: $('#kml-url')
         },
         reset: function() {
-          types.kml.fields.$clickable.prop('checked', 'checked');
+          types.kml.fields.$cluster.prop(false);
           types.kml.fields.$url.val('');
         }
       },
@@ -140,6 +151,7 @@ Builder.ui.modal.addLayer = (function() {
   })
     .on('hide.bs.modal', function() {
       $attribution.val(null);
+      $clickable.prop('checked', 'checked');
       $description.val(null);
       $name.val(null);
       $type.val('arcgisserver').trigger('change');
@@ -226,10 +238,11 @@ Builder.ui.modal.addLayer = (function() {
     _editingIndex: -1,
     _click: function() {
       var attribution = $attribution.val() || null,
+        clickable = $clickable.prop('checked'),
         config,
         description = $description.val() || null,
         errors = [],
-        fields = [$attribution, $description, $name],
+        fields = [$attribution, $clickable, $description, $name],
         name = $name.val() || null;
 
       if (!name) {
@@ -291,9 +304,31 @@ Builder.ui.modal.addLayer = (function() {
             user: user
           };
         })();
+      } else if ($('#csv').is(':visible')) {
+        (function() {
+          var cluster = types.csv.fields.$cluster.prop('checked'),
+            url = types.csv.fields.$url.val();
+
+          $.each(types.csv.fields, function(field) {
+            fields.push(field);
+          });
+
+          if (!url) {
+            errors.push(types.csv.fields.$url);
+          }
+
+          config = {
+            type: 'csv',
+            url: url
+          };
+
+          if (cluster) {
+            config.cluster = true;
+          }
+        })();
       } else if ($('#geojson').is(':visible')) {
         (function() {
-          var clickable = types.geojson.fields.$clickable.prop('checked'),
+          var cluster = types.geojson.fields.$cluster.prop('checked'),
             url = types.geojson.fields.$url.val();
 
           $.each(types.geojson.fields, function(field) {
@@ -309,13 +344,13 @@ Builder.ui.modal.addLayer = (function() {
             url: url
           };
 
-          if (!clickable) {
-            config.clickable = false;
+          if (cluster) {
+            config.cluster = true;
           }
         })();
       } else if ($('#github').is(':visible')) {
         (function() {
-          var clickable = types.github.fields.$clickable.prop('checked'),
+          var cluster = types.github.fields.$cluster.prop('checked'),
             url = types.github.fields.$url.val()
               .replace('http://github.com/', '')
               .replace('https://github.com/', '')
@@ -346,13 +381,13 @@ Builder.ui.modal.addLayer = (function() {
             user: user
           };
 
-          if (!clickable) {
-            config.clickable = false;
+          if (cluster) {
+            config.cluster = true;
           }
         })();
       } else if ($('#kml').is(':visible')) {
         (function() {
-          var clickable = types.kml.fields.$clickable.prop('checked'),
+          var cluster = types.kml.fields.$cluster.prop('checked'),
             url = types.kml.fields.$url.val();
 
           $.each(types.kml.fields, function(field) {
@@ -368,8 +403,8 @@ Builder.ui.modal.addLayer = (function() {
             url: url
           };
 
-          if (!clickable) {
-            config.clickable = false;
+          if (cluster) {
+            config.cluster = true;
           }
         })();
       } else if ($('#mapbox').is(':visible')) {
@@ -401,6 +436,10 @@ Builder.ui.modal.addLayer = (function() {
 
         if (attribution) {
           config.attribution = attribution;
+        }
+
+        if (typeof clickable === 'boolean') {
+          config.clickable = clickable;
         }
 
         if (description) {
@@ -456,7 +495,7 @@ Builder.ui.modal.addLayer = (function() {
             $('#' + type + '-opacity').slider('setValue', value * 100);
           } else if (prop !== 'type') {
             if (prop === 'clickable') {
-              $('#' + type + '-clickable').prop('checked', value);
+              $('#layerClickable').prop('checked', value);
             } else {
               $('#' + type + '-' + prop).val(value);
             }
@@ -468,8 +507,6 @@ Builder.ui.modal.addLayer = (function() {
       $('#modal-addLayer-description').html('Use the form below to update your overlay.');
       $('#modal-addLayer-title').text('Update Overlay');
       $('#modal-addLayer .btn-primary').text('Save Overlay');
-
-      // TODO: Handle checkboxes - clickable
 
       switch (type) {
       case 'arcgisserver':

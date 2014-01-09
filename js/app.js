@@ -657,7 +657,8 @@ function ready() {
                   */
 
                   return '/';
-                })();
+                })(),
+                error = 'You must be connected to the National Park Service network to save a map.';
 
               Builder.showLoading();
               $this.blur();
@@ -671,11 +672,11 @@ function ready() {
                   name: $('.title a').text() || null
                 },
                 dataType: 'json',
-                error: function () {
+                error: function() {
                   Builder.hideLoading();
-                  alertify.error('Cannot reach status service. You must be connected to the National Park Service network to save a map.');
+                  alertify.error(error);
                 },
-                success: function (response) {
+                success: function(response) {
                   Builder.hideLoading();
 
                   if (response) {
@@ -684,10 +685,10 @@ function ready() {
                       updateSaveStatus(response.modified);
                       alertify.success('Your map was saved!');
                     } else {
-                      alertify.error('Your map was not saved.');
+                      alertify.error('Sorry, but there was an error saving your map. Please try again.');
                     }
                   } else {
-                    alertify.error('Cannot reach status service. You must be connected to the National Park Service network to save a map.');
+                    alertify.error(error);
                   }
                 },
                 url: base + 'builder/save' + (base === '/' ? '' : '&callback=?')

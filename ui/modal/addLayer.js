@@ -6,7 +6,6 @@ Builder.ui = Builder.ui || {};
 Builder.ui.modal = Builder.ui.modal || {};
 Builder.ui.modal.addLayer = (function() {
   var $attribution = $('#layerAttribution'),
-    $clickable = $('#layerClickable'),
     $description = $('#layerDescription'),
     $name = $('#layerName'),
     $type = $('#layerType'),
@@ -15,6 +14,7 @@ Builder.ui.modal.addLayer = (function() {
         _tiled: false,
         _url: null,
         fields: {
+          $clickable: $('#arcgisserver-clickable'),
           $layers: $('#arcgisserver-layers'),
           $opacity: $('#arcgisserver-opacity'),
           $url: $('#arcgisserver-url').bind('change paste keyup', function() {
@@ -49,6 +49,7 @@ Builder.ui.modal.addLayer = (function() {
           })
         },
         reset: function() {
+          types.arcgisserver.fields.$clickable.prop('checked', 'checked');
           types.arcgisserver.fields.$layers.find('option').remove();
           types.arcgisserver.fields.$layers.prop('disabled', true);
           types.arcgisserver.fields.$layers.selectpicker('refresh');
@@ -60,11 +61,13 @@ Builder.ui.modal.addLayer = (function() {
       },
       cartodb: {
         fields: {
+          $clickable: $('#cartodb-clickable'),
           $opacity: $('#cartodb-opacity'),
           $table: $('#cartodb-table'),
           $user: $('#cartodb-user')
         },
         reset: function() {
+          types.cartodb.fields.$clickable.prop('checked', 'checked');
           types.cartodb.fields.$opacity.slider('setValue', 100);
           types.cartodb.fields.$table.val('');
           types.cartodb.fields.$user.val('');
@@ -72,56 +75,103 @@ Builder.ui.modal.addLayer = (function() {
       },
       csv: {
         fields: {
+          $clickable: $('#csv-clickable'),
           $cluster: $('#csv-cluster'),
           $url: $('#csv-url')
         },
         reset: function() {
+          types.csv.fields.$clickable.prop('checked', 'checked');
           types.csv.fields.$cluster.prop(false);
           types.csv.fields.$url.val('');
         }
       },
       geojson: {
         fields: {
+          $clickable: $('#geojson-clickable'),
           $cluster: $('#geojson-cluster'),
           $url: $('#geojson-url')
         },
         reset: function() {
+          types.geojson.fields.$clickable.prop('checked', 'checked');
           types.geojson.fields.$cluster.prop(false);
           types.geojson.fields.$url.val('');
         }
       },
       github: {
         fields: {
+          $clickable: $('#github-clickable'),
           $cluster: $('#github-cluster'),
           $url: $('#github-url')
         },
         reset: function() {
+          types.github.fields.$clickable.prop('checked', 'checked');
           types.github.fields.$cluster.prop(false);
           types.github.fields.$url.val('');
         }
       },
       kml: {
         fields: {
+          $clickable: $('#kml-clickable'),
           $cluster: $('#kml-cluster'),
           $url: $('#kml-url')
         },
         reset: function() {
+          types.kml.fields.$clickable.prop('checked', 'checked');
           types.kml.fields.$cluster.prop(false);
           types.kml.fields.$url.val('');
         }
       },
       mapbox: {
         fields: {
+          $clickable: $('#mapbox-clickable'),
           $id: $('#mapbox-id'),
           $opacity: $('#mapbox-opacity')
         },
         reset: function() {
+          types.mapbox.fields.$clickable.prop('checked', 'checked');
           types.mapbox.fields.$id.val('');
           types.mapbox.fields.$opacity.slider('setValue', 100);
+        }
+      },
+      tiled: {
+        fields: {
+          $opacity: $('#tiled-opacity'),
+          $url: $('#tiled-url')
+        },
+        reset: function() {
+          types.tiled.fields.$opacity.slider('setValue', 100);
+          types.tiled.fields.$url.val('');
+        }
+      },
+      wms: {
+        fields: {
+          $format: $('#wms-format'),
+          $layers: $('#wms-layers'),
+          $opacity: $('#wms-opacity'),
+          $transparent: $('#wms-transparent'),
+          $url: $('#wms-url')
+        },
+        reset: function() {
+          types.wms.fields.$format.find('option').remove();
+          types.wms.fields.$format.prop('disabled', true);
+          types.wms.fields.$layers.find('option').remove();
+          types.wms.fields.$layers.prop('disabled', true);
+          types.wms.fields.$layers.selectpicker('refresh');
+          types.wms.fields.$opacity.slider('setValue', 100);
+          types.wms.fields.$transparent.prop(false);
+          types.wms.fields.$url.val('');
         }
       }
     };
 
+  function resetFields() {
+    $attribution.val(null);
+    $description.val(null);
+    $name.val(null);
+    $.each(types, function(type) {
+      types[type].reset();
+    });
+  }
   function setHeight() {
     $('#modal-addLayer .tab-content').css({
       height: $(document).height() - 289
@@ -150,16 +200,10 @@ Builder.ui.modal.addLayer = (function() {
     backdrop: 'static'
   })
     .on('hide.bs.modal', function() {
-      $attribution.val(null);
-      $clickable.prop('checked', 'checked');
-      $description.val(null);
-      $name.val(null);
+      resetFields();
       $type.val('arcgisserver').trigger('change');
       $('#modal-addLayer .tab-content').css({
         top: 0
-      });
-      $.each(types, function(type) {
-        types[type].reset();
       });
       $.each($('#modal-addLayer .form-group'), function(index, formGroup) {
         var $formGroup = $(formGroup);
@@ -168,7 +212,6 @@ Builder.ui.modal.addLayer = (function() {
           $formGroup.removeClass('has-error');
         }
       });
-
       Builder.ui.modal.addLayer._editingIndex = -1;
       $('#layerType').removeAttr('disabled');
       $('#modal-addLayer-description').html('You can add an overlay to your map either by typing in information about the overlay or searching the NPMap Catalog for datasets to add <em>(coming soon)</em>. Hover over the help icon above for more information.');
@@ -212,6 +255,7 @@ Builder.ui.modal.addLayer = (function() {
     valueKey: 'n'
   }]);
   Builder.buildTooltips();
+  resetFields();
   setHeight();
   $type.focus();
   $(window).resize(setHeight);
@@ -233,16 +277,20 @@ Builder.ui.modal.addLayer = (function() {
     min: 0,
     value: 100
   });
+  $(types.tiled.fields.$opacity).slider({
+    max: 100,
+    min: 0,
+    value: 100
+  });
 
   return {
     _editingIndex: -1,
     _click: function() {
       var attribution = $attribution.val() || null,
-        clickable = $clickable.prop('checked'),
         config,
         description = $description.val() || null,
         errors = [],
-        fields = [$attribution, $clickable, $description, $name],
+        fields = [$attribution, $description, $name],
         name = $name.val() || null;
 
       if (!name) {
@@ -255,7 +303,8 @@ Builder.ui.modal.addLayer = (function() {
 
       if ($('#arcgisserver').is(':visible')) {
         (function() {
-          var layers = types.arcgisserver.fields.$layers.val(),
+          var clickable = types.arcgisserver.fields.$clickable.prop('checked'),
+            layers = types.arcgisserver.fields.$layers.val(),
             url = types.arcgisserver.fields.$url.val();
 
           $.each(types.arcgisserver.fields, function(field) {
@@ -279,10 +328,15 @@ Builder.ui.modal.addLayer = (function() {
             type: 'arcgisserver',
             url: url
           };
+
+          if (clickable === false) {
+            config.clickable = false;
+          }
         })();
       } else if ($('#cartodb').is(':visible')) {
         (function() {
-          var table = types.cartodb.fields.$table.val(),
+          var clickable = types.cartodb.fields.$clickable.prop('checked'),
+            table = types.cartodb.fields.$table.val(),
             user = types.cartodb.fields.$user.val();
 
           $.each(types.cartodb.fields, function(field) {
@@ -303,10 +357,15 @@ Builder.ui.modal.addLayer = (function() {
             type: 'cartodb',
             user: user
           };
+
+          if (clickable === false) {
+            config.clickable = false;
+          }
         })();
       } else if ($('#csv').is(':visible')) {
         (function() {
-          var cluster = types.csv.fields.$cluster.prop('checked'),
+          var clickable = types.csv.fields.$clickable.prop('checked'),
+            cluster = types.csv.fields.$cluster.prop('checked'),
             url = types.csv.fields.$url.val();
 
           $.each(types.csv.fields, function(field) {
@@ -322,13 +381,18 @@ Builder.ui.modal.addLayer = (function() {
             url: url
           };
 
+          if (clickable === false) {
+            config.clickable = false;
+          }
+
           if (cluster) {
             config.cluster = true;
           }
         })();
       } else if ($('#geojson').is(':visible')) {
         (function() {
-          var cluster = types.geojson.fields.$cluster.prop('checked'),
+          var clickable = types.geojson.fields.$clickable.prop('checked'),
+            cluster = types.geojson.fields.$cluster.prop('checked'),
             url = types.geojson.fields.$url.val();
 
           $.each(types.geojson.fields, function(field) {
@@ -344,13 +408,18 @@ Builder.ui.modal.addLayer = (function() {
             url: url
           };
 
+          if (clickable === false) {
+            config.clickable = false;
+          }
+
           if (cluster) {
             config.cluster = true;
           }
         })();
       } else if ($('#github').is(':visible')) {
         (function() {
-          var cluster = types.github.fields.$cluster.prop('checked'),
+          var clickable = types.github.fields.$clickable.prop('checked'),
+            cluster = types.github.fields.$cluster.prop('checked'),
             url = types.github.fields.$url.val()
               .replace('http://github.com/', '')
               .replace('https://github.com/', '')
@@ -381,13 +450,18 @@ Builder.ui.modal.addLayer = (function() {
             user: user
           };
 
+          if (clickable === false) {
+            config.clickable = false;
+          }
+
           if (cluster) {
             config.cluster = true;
           }
         })();
       } else if ($('#kml').is(':visible')) {
         (function() {
-          var cluster = types.kml.fields.$cluster.prop('checked'),
+          var clickable = types.kml.fields.$clickable.prop('checked'),
+            cluster = types.kml.fields.$cluster.prop('checked'),
             url = types.kml.fields.$url.val();
 
           $.each(types.kml.fields, function(field) {
@@ -403,13 +477,18 @@ Builder.ui.modal.addLayer = (function() {
             url: url
           };
 
+          if (clickable === false) {
+            config.clickable = false;
+          }
+
           if (cluster) {
             config.cluster = true;
           }
         })();
       } else if ($('#mapbox').is(':visible')) {
         (function() {
-          var id = types.mapbox.fields.$id.val();
+          var clickable = types.mapbox.fields.$clickable.prop('checked'),
+            id = types.mapbox.fields.$id.val();
 
           $.each(types.mapbox.fields, function(field) {
             fields.push(field);
@@ -424,7 +503,44 @@ Builder.ui.modal.addLayer = (function() {
             opacity: parseInt(types.mapbox.fields.$opacity.val(), 10) / 100,
             type: 'mapbox'
           };
+
+          if (clickable === false) {
+            config.clickable = false;
+          }
         })();
+      } else if ($('#tiled').is(':visible')) {
+        (function() {
+          var url = types.tiled.fields.$url.val();
+
+          $.each(types.tiled.fields, function(field) {
+            fields.push(field);
+          });
+
+          if (!url) {
+            errors.push(types.tiled.fields.$url.val());
+          }
+
+          config = {
+            opacity: parseInt(types.tiled.fields.$opacity.val(), 10) / 100,
+            type: 'tiled',
+            url: url
+          };
+        })();
+      } else if ($('#wms').is(':visible')) {
+        /*
+        http://nowcoast.noaa.gov/wms/com.esri.wms.Esrimap/obs?request=GetCapabilities&service=WMS
+        
+        attribution: 'NOAA',
+        crs: null, (not implemented)
+        format: 'image/png',
+        layers: 'RAS_RIDGE_NEXRAD',
+        opacity: 0.5,
+        styles: '', (not implemented)
+        transparent: true,
+        type: 'wms',
+        url: 'http://nowcoast.noaa.gov/wms/com.esri.wms.Esrimap/obs',
+        version: '1.1.1' (autopopulate, no input)
+        */
       }
 
       if (errors.length) {
@@ -491,14 +607,12 @@ Builder.ui.modal.addLayer = (function() {
         if (prop === 'attribution' || prop === 'description' || prop === 'name') {
           $('#layer' + (prop.charAt(0).toUpperCase() + prop.slice(1))).val(value);
         } else {
-          if (prop === 'opacity') {
+          if (prop === 'clickable' || prop === 'cluster') {
+            $('#' + type + '-' + prop).prop('checked', value);
+          } else if (prop === 'opacity') {
             $('#' + type + '-opacity').slider('setValue', value * 100);
           } else if (prop !== 'type') {
-            if (prop === 'clickable') {
-              $('#layerClickable').prop('checked', value);
-            } else {
-              $('#' + type + '-' + prop).val(value);
-            }
+            $('#' + type + '-' + prop).val(value);
           }
         }
       }

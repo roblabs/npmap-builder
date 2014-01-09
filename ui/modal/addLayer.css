@@ -24,7 +24,7 @@
     margin: 5px 0;
     padding-left: 10px;
   }
-#cartodb, #geojson, #github, #kml, #mapbox {
+#cartodb, #csv, #geojson, #github, #kml, #mapbox, #tiled, #wms {
   display: none;
 }
 #layerDescription {

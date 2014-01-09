@@ -25,7 +25,7 @@
                   <option value="kml">KML</option>
                   <option value="mapbox">MapBox Hosting</option>
                   <option value="tiled">Simple Tiled</option>
-                  <option value="wms">WMS</option>
+                  <!--<option value="wms">WMS</option>-->
                 </select>
               </div>
               <div class="form-group">
@@ -40,11 +40,6 @@
                 <label for="layerAttribution">Attribution (optional)</label>
                 <input id="layerAttribution" type="text" class="form-control"></input>
               </div>
-              <label>
-                <div class="checkbox">
-                  <input id="layerClickable" type="checkbox" checked="checked"></input>Is this overlay clickable?
-                </div>
-              </label>
               <div id="arcgisserver">
                 <div class="form-group">
                   <label for="arcgisserver-url">URL</label>
@@ -59,6 +54,11 @@
                   <select id="arcgisserver-layers" class="form-control dropup selectpicker" disabled="disabled" data-selected-text-format="count" multiple required></select>
                   <span class="help-block">All of the service's layers will appear here after you fill in the "URL" field above. You must choose at least one.</span>
                 </div>
+                <label>
+                  <div class="checkbox">
+                    <input id="arcgisserver-clickable" type="checkbox" checked="checked"></input>Is this overlay clickable?
+                  </div>
+                </label>
               </div>
               <div id="cartodb">
                 <div class="form-group">
@@ -73,6 +73,11 @@
                   <label for="cartodb-opacity" style="display:block;margin-bottom:-10px;">Opacity</label>
                   <input type="text" id="cartodb-opacity" required>
                 </div>
+                <label>
+                  <div class="checkbox">
+                    <input id="cartodb-clickable" type="checkbox" checked="checked"></input>Is this overlay clickable?
+                  </div>
+                </label>
               </div>
               <div id="csv">
                 <div class="form-group">
@@ -80,6 +85,11 @@
                   <input id="csv-url" type="text" placeholder="Must end with '.csv'..." class="form-control" required></input>
                 </div>
                 <label>
+                  <div class="checkbox">
+                    <input id="csv-clickable" type="checkbox" checked="checked"></input>Is this overlay clickable?
+                  </div>
+                </label>
+                <label style="display:block;">
                   <div class="checkbox">
                     <input id="csv-cluster" type="checkbox"></input>Should points in this overlay be clustered?
                   </div>
@@ -91,6 +101,11 @@
                   <input id="geojson-url" type="text" placeholder="Must end with '.geojson', '.json', or '.topojson'..." class="form-control" required></input>
                 </div>
                 <label>
+                  <div class="checkbox">
+                    <input id="geojson-clickable" type="checkbox" checked="checked"></input>Is this overlay clickable?
+                  </div>
+                </label>
+                <label style="display:block;">
                   <div class="checkbox">
                     <input id="geojson-cluster" type="checkbox"></input>Should points in this overlay be clustered?
                   </div>
@@ -104,6 +119,11 @@
                 </div>
                 <label>
                   <div class="checkbox">
+                    <input id="github-clickable" type="checkbox" checked="checked"></input>Is this overlay clickable?
+                  </div>
+                </label>
+                <label style="display:block;">
+                  <div class="checkbox">
                     <input id="github-cluster" type="checkbox"></input>Should points in this overlay be clustered?
                   </div>
                 </label>
@@ -115,6 +135,11 @@
                   <input id="kml-url" type="text" placeholder="Must end with '.kml'..." class="form-control" required></input>
                 </div>
                 <label>
+                  <div class="checkbox">
+                    <input id="kml-clickable" type="checkbox" checked="checked"></input>Is this overlay clickable?
+                  </div>
+                </label>
+                <label style="display:block;">
                   <div class="checkbox">
                     <input id="kml-cluster" type="checkbox"></input>Should points in this overlay be clustered?
                   </div>
@@ -129,10 +154,46 @@
                   <label for="mapbox-opacity" style="display:block;margin-bottom:-10px;">Opacity</label>
                   <input type="text" id="mapbox-opacity" required>
                 </div>
+                <label>
+                  <div class="checkbox">
+                    <input id="mapbox-clickable" type="checkbox" checked="checked"></input>Is this overlay clickable?
+                  </div>
+                </label>
               </div>
               <div id="tiled">
+                <div class="form-group">
+                  <label for="tiled-url">URL Template</label>
+                  <input id="tiled-url" type="text" class="form-control" required></input>
+                  <span class="help-block">The URL template can contain {s} (subdomain), {z} (zoom level), {x} (x tile coordinate), and {y} (y tile coordinate). X, Y, and Z are required. An example for OpenStreetMap: http://{s}.tile.osm.org/{z}/{x}/{y}.png.</span>
+                </div>
+                <div class="form-group">
+                  <label for="tiled-opacity" style="display:block;margin-bottom:-10px;">Opacity</label>
+                  <input type="text" id="tiled-opacity" required>
+                </div>
               </div>
               <div id="wms">
+                <div class="form-group">
+                  <label for="wms-url">URL</label>
+                  <input id="wms-url" type="text" class="form-control" required></input>
+                  <span class="help-block">Enter the WMS service's URL here, and the form below will autopopulate so you can choose the dependent properties.</span>
+                </div>
+                <div class="form-group">
+                  <label for="wms-format">Format</label>
+                  <select id="wms-format" class="form-control" disabled="disabled" required></select>
+                </div>
+                <div class="form-group">
+                  <label for="wms-layers">Format</label>
+                  <select id="wms-layers" class="form-control dropup selectpicker" disabled="disabled" data-selected-text-format="count" multiple required></select>
+                </div>
+                <div class="form-group">
+                  <label for="wms-opacity" style="display:block;margin-bottom:-10px;">Opacity</label>
+                  <input type="text" id="wms-opacity" required>
+                </div>
+                <label>
+                  <div class="checkbox">
+                    <input id="wms-transparent" type="checkbox"></input>Do you want the service to return transparent tiles?
+                  </div>
+                </label>
               </div>
             </form>
           </div>

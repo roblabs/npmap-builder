@@ -245,7 +245,15 @@ iframe {
     bottom: 14px;
     position: absolute;
     right: 20px;
+    width: 200px;
   }
+    #metadata .buttons .btn-toolbar {
+      margin-left: 0;
+    }
+      #metadata .buttons .btn-toolbar .btn-group {
+        float: right;
+        margin-left: 0;
+      }
     #metadata .buttons button span {
       top: 3px;
     }

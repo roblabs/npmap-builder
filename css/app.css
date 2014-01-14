@@ -124,7 +124,9 @@ iframe {
     }
     .step .header img {
       float: left;
+      height: 16px;
       margin-top: 1px;
+      width: 16px;
     }
   .step .content {
     padding: 16px 28px;

@@ -179,7 +179,9 @@ function ready() {
               .on('hidden', function() {
                 var next = $(this).next();
 
-                if (!descriptionSet) {
+                if (descriptionSet) {
+                  $('#button-save').prop('disabled', false);
+                } else {
                   $($('#button-settings span')[2]).popover('show');
                   next.css({
                     'z-index': descriptionZ
@@ -230,6 +232,8 @@ function ready() {
 
                 if (!description || description === 'Add a description to give your map context.') {
                   $('#metadata .description a').editable('toggle');
+                } else {
+                  $('#button-save').prop('disabled', false);
                 }
 
                 if (!titleSet) {

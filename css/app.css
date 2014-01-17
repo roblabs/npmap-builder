@@ -247,7 +247,7 @@ iframe {
     bottom: 14px;
     position: absolute;
     right: 20px;
-    width: 200px;
+    width: 220px;
   }
     #metadata .buttons .btn-toolbar {
       margin-left: 0;
@@ -450,7 +450,7 @@ body.dragging, body.dragging * {
   color: white;
   display: none;
   position: absolute;
-  right: 195px;
+  right: 235px;
 }
   .info-saved p {
     margin-bottom: -3px;

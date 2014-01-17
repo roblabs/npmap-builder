@@ -20,4 +20,4 @@ The NPMap team is here to help you get the most out the beta test. We will answe
 
 ## Data
 
-If you need help getting your data into a format that is compatible with the Builder, open a data support request in [GitHub Issues](https://github.com/nationalparkservice/npmap-builder/issues). The NPMap team will provide limited data support during the beta.
+If you need help getting your data into a format that is compatible with the Builder, open a data support request in [GitHub Issues](https://github.com/nationalparkservice/npmap-builder/issues).

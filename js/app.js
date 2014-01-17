@@ -6,25 +6,38 @@ function ready() {
   Builder = (function() {
     var $buttonAddAnotherLayer = $('#button-addAnotherLayer'),
       $buttonEditBaseMapsAgain = $('#button-editBaseMapsAgain'),
+      $buttonExport = $('#button-export'),
+      $buttonSave = $('#button-save'),
       $iframe = $('#iframe-map'),
       $layers = $('#layers'),
       $modalAddLayer,
       $modalConfirm = $('#modal-confirm'),
       $modalEditBaseMaps,
       $modalExport,
+      $modalViewConfig,
       $stepSection = $('section .step'),
       $ul = $('#layers'),
       abcs = ['A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z'],
       colors,
+      description = null,
       descriptionSet = false,
       descriptionZ = null,
       firstLoad = true,
       settingsSet = false,
       settingsZ = null,
       stepLis = $('#steps li'),
+      title = null,
       titleSet = false,
       titleZ = null;
 
+    function disableSave() {
+      $buttonSave.prop('disabled', true);
+      $buttonExport.text('Export Your Map');
+    }
+    function enableSave() {
+      $buttonSave.prop('disabled', false);
+      $buttonExport.text('Save & Export Your Map');
+    }
     function generateLayerChangeStyle(name) {
       var optionsColor = '';
 
@@ -112,6 +125,70 @@ function ready() {
         url: module + '.html'
       });
     }
+    function saveMap(callback) {
+      var $this = $(this),
+        base = (function () {
+          //var host = window.location.host;
+
+          /*
+          if (host.indexOf('insidemaps') === -1 && host.indexOf('localhost') === -1) {
+            return 'http://insidemaps.nps.gov/';
+          }
+          */
+
+          return '/';
+        })(),
+        error = 'You must be connected to the National Park Service network to save a map.';
+
+      Builder.showLoading();
+      $this.blur();
+      $.ajax({
+        data: {
+          description: $('.description a').text() || null,
+          isPublic: true,
+          isShared: true,
+          json: JSON.stringify(NPMap),
+          mapId: mapId || null,
+          name: $('.title a').text() || null
+        },
+        dataType: 'json',
+        error: function() {
+          Builder.hideLoading();
+          alertify.error(error);
+
+          if (callback) {
+            callback(false);
+          }
+        },
+        success: function(response) {
+          Builder.hideLoading();
+
+          if (response) {
+            if (response.success) {
+              mapId = response.mapId;
+              updateSaveStatus(response.modified);
+              alertify.success('Your map was saved!');
+              if (callback) {
+                callback(true);
+              }
+            } else {
+              alertify.error('Sorry, but there was an error saving your map. Please try again.');
+
+              if (callback) {
+                callback(false);
+              }
+            }
+          } else {
+            alertify.error(error);
+
+            if (callback) {
+              callback(false);
+            }
+          }
+        },
+        url: base + 'builder/save' + (base === '/' ? '' : '&callback=?')
+      });
+    }
     function updateInitialCenterAndZoom() {
       $('#set-center-and-zoom .lat').html(NPMap.center.lat.toFixed(2));
       $('#set-center-and-zoom .lng').html(NPMap.center.lng.toFixed(2));
@@ -120,7 +197,7 @@ function ready() {
     function updateSaveStatus(date) {
       $('.info-saved p').text('Saved ' + moment(date).format('MM/DD/YYYY') + ' at ' + moment(date).format('h:mm:ssa'));
       $('.info-saved').show();
-      $('#button-save').prop('disabled', true);
+      disableSave();
     }
 
     $(document).ready(function() {
@@ -177,12 +254,16 @@ function ready() {
               }
             })
               .on('hidden', function() {
-                var next = $(this).next();
+                var newDescription = $('#metadata .description a').text(),
+                  next = $(this).next();
 
                 if (descriptionSet) {
-                  $('#button-save').prop('disabled', false);
+                  if (newDescription !== description) {
+                    enableSave();
+                  }
                 } else {
                   $($('#button-settings span')[2]).popover('show');
+
                   next.css({
                     'z-index': descriptionZ
                   });
@@ -197,8 +278,11 @@ function ready() {
                     next.css({
                       'z-index': 1031
                     });
+                    $('#metadata .buttons .popover button').focus();
                   }
                 }
+
+                description = newDescription;
               })
               .on('shown', function() {
                 var next = $(this).parent().next();
@@ -227,13 +311,16 @@ function ready() {
               }
             })
               .on('hidden', function() {
-                var description = $('#metadata .description a').text(),
-                    next = $(this).next();
+                var newDescription = $('#metadata .description a').text(),
+                  newTitle = $('#metadata .title a').text(),
+                  next = $(this).next();
 
-                if (!description || description === 'Add a description to give your map context.') {
+                if (!newDescription || newDescription === 'Add a description to give your map context.') {
                   $('#metadata .description a').editable('toggle');
                 } else {
-                  $('#button-save').prop('disabled', false);
+                  if (newTitle !== title) {
+                    enableSave();
+                  }
                 }
 
                 if (!titleSet) {
@@ -245,6 +332,8 @@ function ready() {
                   });
                   titleSet = true;
                 }
+
+                title = newTitle;
               })
               .on('shown', function() {
                 var next = $(this).next();
@@ -634,14 +723,37 @@ function ready() {
             }
           },
           init: function() {
-            $('#button-export').on('click', function() {
-              if ($modalExport) {
-                $modalExport.modal('show');
+            $buttonExport.on('click', function() {
+              function openExport() {
+                if ($modalExport) {
+                  $modalExport.modal('show');
+                } else {
+                  loadModule('Builder.ui.modal.export', function() {
+                    $modalExport = $('#modal-export');
+                  });
+                }
+              }
+
+              if ($(this).text().indexOf('Save') === -1) {
+                openExport();
               } else {
-                loadModule('Builder.ui.modal.export', function() {
-                  $modalExport = $('#modal-export');
+                saveMap(function(success) {
+                  if (mapId) {
+                    if (!success) {
+                      alertify.log('Because your map couldn\'t be saved, but was successfully saved at one point, any exports you do here will not include any changes made to the map since the last time it was saved.', 'error', 15000);
+                    }
+
+                    openExport();
+                  } else {
+                    alertify.log('The map cannot be exported until it is saved. Please try again. If this error persists, please report an issue by clicking on the feedback button above.', 'error', 15000);
+                  }
                 });
               }
+            });
+            $('#button-config').on('click', function() {
+              loadModule('Builder.ui.modal.viewConfig', function() {
+                $modalViewConfig = $('#modal-viewConfig');
+              });
             });
             $('#button-feedback').on('click', function() {
               window.open('https://github.com/nationalparkservice/npmap-builder/issues', '_blank');
@@ -649,55 +761,7 @@ function ready() {
             $('#button-help').on('click', function() {
               window.open('https://github.com/nationalparkservice/npmap-builder/wiki', '_blank');
             });
-            $('#button-save').on('click', function() {
-              var $this = $(this),
-                base = (function () {
-                  //var host = window.location.host;
-
-                  /*
-                  if (host.indexOf('insidemaps') === -1 && host.indexOf('localhost') === -1) {
-                    return 'http://insidemaps.nps.gov/';
-                  }
-                  */
-
-                  return '/';
-                })(),
-                error = 'You must be connected to the National Park Service network to save a map.';
-
-              Builder.showLoading();
-              $this.blur();
-              $.ajax({
-                data: {
-                  description: $('.description a').text() || null,
-                  isPublic: true,
-                  isShared: true,
-                  json: JSON.stringify(NPMap),
-                  mapId: mapId || null,
-                  name: $('.title a').text() || null
-                },
-                dataType: 'json',
-                error: function() {
-                  Builder.hideLoading();
-                  alertify.error(error);
-                },
-                success: function(response) {
-                  Builder.hideLoading();
-
-                  if (response) {
-                    if (response.success) {
-                      mapId = response.mapId;
-                      updateSaveStatus(response.modified);
-                      alertify.success('Your map was saved!');
-                    } else {
-                      alertify.error('Sorry, but there was an error saving your map. Please try again.');
-                    }
-                  } else {
-                    alertify.error(error);
-                  }
-                },
-                url: base + 'builder/save' + (base === '/' ? '' : '&callback=?')
-              });
-            });
+            $('#button-save').on('click', saveMap);
             $('#button-settings').on('click', function() {
               var $this = $(this),
                 $span = $($this.children('span')[2]);
@@ -781,7 +845,7 @@ function ready() {
             if (firstLoad) {
               firstLoad = false;
             } else {
-              $('#button-save').prop('disabled', false);
+              enableSave();
             }
           }
         }, 100);

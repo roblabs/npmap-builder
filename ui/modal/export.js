@@ -5,8 +5,7 @@ $('head').append($('<link rel="stylesheet">').attr('href', 'ui/modal/export.css'
 Builder.ui = Builder.ui || {};
 Builder.ui.modal = Builder.ui.modal || {};
 Builder.ui.modal.export = (function() {
-  var $cmsId = $('#cms-id'),
-    $code = $('#modal-export-code textarea');
+  var $cmsId = $('#cms-id');
 
   function returnFalse() {
     return false;
@@ -29,7 +28,6 @@ Builder.ui.modal.export = (function() {
         }
       }
     });
-    $code.val('var NPMap = ' + formatted + ';');
 
     if (mapId) {
       $('#cms-id').val(mapId);
@@ -68,9 +66,6 @@ Builder.ui.modal.export = (function() {
   }
 
   $cmsId.on('click', function() {
-    $(this).select();
-  });
-  $code.on('click', function() {
     $(this).select();
   });
   $('#modal-export').modal().on('show.bs.modal shown.bs.modal', update);

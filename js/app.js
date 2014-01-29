@@ -4,11 +4,14 @@ var Builder, NPMap, mapId;
 
 function ready() {
   Builder = (function() {
-    var $buttonAddAnotherLayer = $('#button-addAnotherLayer'),
+    var $activeChangeStyleButton = null,
+      $buttonAddAnotherLayer = $('#button-addAnotherLayer'),
       $buttonEditBaseMapsAgain = $('#button-editBaseMapsAgain'),
       $buttonExport = $('#button-export'),
       $buttonSave = $('#button-save'),
       $iframe = $('#iframe-map'),
+      $lat = $('#set-center-and-zoom .lat'),
+      $lng = $('#set-center-and-zoom .lng'),
       $layers = $('#layers'),
       $modalAddLayer,
       $modalConfirm = $('#modal-confirm'),
@@ -17,12 +20,15 @@ function ready() {
       $modalViewConfig,
       $stepSection = $('section .step'),
       $ul = $('#layers'),
+      $zoom = $('#set-center-and-zoom .zoom'),
       abcs = ['A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z'],
-      colors,
       description = null,
       descriptionSet = false,
       descriptionZ = null,
       firstLoad = true,
+      optionsColor = '',
+      optionsMaki = '',
+      optionsNpmaki = '',
       settingsSet = false,
       settingsZ = null,
       stepLis = $('#steps li'),
@@ -39,46 +45,106 @@ function ready() {
       $buttonExport.text('Save & Export Your Map');
     }
     function generateLayerChangeStyle(name) {
-      var optionsColor = '';
+      var sortable;
 
-      if (!colors) {
-        colors = document.getElementById('iframe-map').contentWindow.L.npmap.preset.colors;
+      if (!optionsColor.length) {
+        $.each(document.getElementById('iframe-map').contentWindow.L.npmap.preset.colors, function(prop, value) {
+          var color = value.color;
+
+          optionsColor += '<option value="' + color + '">' + color + '</option>';
+        });
       }
 
-      $.each(colors, function(prop, value) {
-        optionsColor += '<option value="' + value.color + '">' + value.color + '</option>';
-      });
+      if (!optionsMaki.length) {
+        // TODO: Add A-Z and 0-9
+
+
+
+
+
+
+
+        sortable = [];
+        $.each(document.getElementById('iframe-map').contentWindow.L.npmap.preset.maki, function(prop, value) {
+          sortable.push({
+            icon: value.icon,
+            name: value.name
+          });
+        });
+        sortable.sort(function(a, b) {
+          if (a.name < b.name) {
+            return -1;
+          }
+
+          if (a.name > b.name) {
+            return 1;
+          }
+
+          return 0;
+        });
+        $.each(sortable, function(i, icon) {
+          optionsMaki += '<option value="' + icon.icon + '">' + icon.name + '</option>';
+        });
+      }
+
+      if (!optionsNpmaki.length) {
+        sortable = [];
+        $.each(document.getElementById('iframe-map').contentWindow.L.npmap.preset.npmaki, function(prop, value) {
+          sortable.push({
+            icon: value.icon,
+            name: value.name
+          });
+        });
+        sortable.sort(function(a, b) {
+          if (a.name < b.name) {
+            return -1;
+          }
+
+          if (a.name > b.name) {
+            return 1;
+          }
+
+          return 0;
+        });
+        $.each(sortable, function(i, icon) {
+          optionsNpmaki += '<option value="' + icon.icon + '">' + icon.name + '</option>';
+        });
+      }
 
       return '' +
-        '<form id="' + name + '_layer-change-style" role="form" style="width:150px;">' +
+        '<form class="change-style" id="' + name + '_layer-change-style" role="form">' +
           '<fieldset>' +
-            '<legend>Outline</legend>' +
+            '<legend>Lines</legend>' +
             '<div class="form-group">' +
-              '<label for="' + name + '_outline-color">Color</label>' +
-              '<select id="' + name + '_outline-color" class="simplecolorpicker">' + optionsColor + '</select>' +
+              '<label for="' + name + '_stroke">Color</label>' +
+              '<select id="' + name + '_stroke" class="simplecolorpicker">' + optionsColor + '</select>' +
             '</div>' +
             '<div class="form-group">' +
-              '<label for="' + name + '_outline-width">Width</label>' +
-              '<select id="' + name + '_outline-width"><option value="1">1 pt</option><option value="2">2 pt</option><option value="3">3 pt</option><option value="4">4 pt</option><option value="5">5 pt</option></select>' +
+              '<label for="' + name + '_stroke-width">Width</label>' +
+              '<select id="' + name + '_stroke-width"><option value="1">1 pt</option><option value="2">2 pt</option><option value="3">3 pt</option><option value="4">4 pt</option><option value="5">5 pt</option></select>' +
             '</div>' +
             '<div class="form-group">' +
-              '<label for="' + name + '_outline-opacity">Opacity</label>' +
-              '<select id="' + name + '_outline-opacity"></select>' +
+              '<label for="' + name + '_stroke-opacity">Opacity</label>' +
+              '<select id="' + name + '_stroke-opacity"><option value="0.1">0.1</option><option value="0.2">0.2</option><option value="0.3">0.3</option><option value="0.4">0.4</option><option value="0.5">0.5</option><option value="0.6">0.6</option><option value="0.7">0.7</option><option value="0.8">0.8</option><option value="0.9">0.9</option><option value="1">1</option></select>' +
             '</div>' +
           '</fieldset>' +
           '<fieldset>' +
             '<legend>Fill</legend>' +
             '<div class="form-group">' +
-              '<label for="' + name + '_fill-color">Color</label>' +
-              '<select id="' + name + '_fill-color" class="simplecolorpicker">' + optionsColor + '</select>' +
+              '<label for="' + name + '_fill">Color</label>' +
+              '<select id="' + name + '_fill" class="simplecolorpicker">' + optionsColor + '</select>' +
             '</div>' +
             '<div class="form-group">' +
               '<label for="' + name + '_fill-opacity">Opacity</label>' +
-              '<select id="' + name + '_fill-opacity"></select>' +
+              '<select id="' + name + '_fill-opacity"><option value="0.1">0.1</option><option value="0.2">0.2</option><option value="0.3">0.3</option><option value="0.4">0.4</option><option value="0.5">0.5</option><option value="0.6">0.6</option><option value="0.7">0.7</option><option value="0.8">0.8</option><option value="0.9">0.9</option><option value="1">1</option></select>' +
             '</div>' +
           '</fieldset>' +
           '<fieldset>' +
             '<legend>Marker</legend>' +
+            '<div class="form-group">' +
+              '<label for="' + name + '_marker-library">Library</label>' +
+              '<select id="' + name + '_marker-library" onchange="Builder.ui.steps.addAndCustomizeData.handlers.changeMarkerLibrary(this);return false;"><option value="maki">Maki</option><option value="npmaki">NPMaki</option></select>' +
+            '</div>' +
             '<div class="form-group">' +
               '<label for="' + name + '_marker-color">Color</label>' +
               '<select id="' + name + '_marker-color" class="simplecolorpicker">' + optionsColor + '</select>' +
@@ -88,8 +154,8 @@ function ready() {
               '<select id="' + name + '_marker-size"><option value="small">Small</option><option value="medium">Medium</option><option value="large">Large</option></select>' +
             '</div>' +
             '<div class="form-group">' +
-              '<label for="' + name + '_marker-icon">Icon</label>' +
-              '<select id="' + name + '_marker-icon"></select>' +
+              '<label for="' + name + '_marker-symbol">Symbol</label>' +
+              '<select id="' + name + '_marker-symbol"></select>' +
             '</div>' +
           '</fieldset>' +
         '</form>';
@@ -127,36 +193,26 @@ function ready() {
     }
     function saveMap(callback) {
       var $this = $(this),
-        base = (function () {
-          //var host = window.location.host;
-
-          /*
-          if (host.indexOf('insidemaps') === -1 && host.indexOf('localhost') === -1) {
-            return 'http://insidemaps.nps.gov/';
-          }
-          */
-
-          return '/';
-        })(),
+        base = '/',
         error = 'You must be connected to the National Park Service network to save a map.';
 
       Builder.showLoading();
       $this.blur();
       $.ajax({
         data: {
-          description: $('.description a').text() || null,
+          description: description,
           isPublic: true,
           isShared: true,
           json: JSON.stringify(NPMap),
           mapId: mapId || null,
-          name: $('.title a').text() || null
+          name: title
         },
         dataType: 'json',
         error: function() {
           Builder.hideLoading();
           alertify.error(error);
 
-          if (callback) {
+          if (typeof callback === 'function') {
             callback(false);
           }
         },
@@ -190,9 +246,9 @@ function ready() {
       });
     }
     function updateInitialCenterAndZoom() {
-      $('#set-center-and-zoom .lat').html(NPMap.center.lat.toFixed(2));
-      $('#set-center-and-zoom .lng').html(NPMap.center.lng.toFixed(2));
-      $('#set-center-and-zoom .zoom').html(NPMap.zoom);
+      $lat.html(NPMap.center.lat.toFixed(2));
+      $lng.html(NPMap.center.lng.toFixed(2));
+      $zoom.html(NPMap.zoom);
     }
     function updateSaveStatus(date) {
       $('.info-saved p').text('Saved ' + moment(date).format('MM/DD/YYYY') + ' at ' + moment(date).format('h:mm:ssa'));
@@ -214,6 +270,17 @@ function ready() {
 
     return {
       _afterUpdateCallbacks: {},
+      _defaultStyles: {
+        'fill': '#d39800',
+        'fill-opacity': 0.2,
+        'marker-color': '#000000',
+        'marker-library': 'maki',
+        'marker-size': 'medium',
+        'marker-symbol': null,
+        'stroke': '#d39800',
+        'stroke-opacity': 0.8,
+        'stroke-width': 3
+      },
       ui: {
         app: {
           init: function() {
@@ -369,6 +436,35 @@ function ready() {
         steps: {
           addAndCustomizeData: {
             handlers: {
+              changeMarkerLibrary: function(el) {
+                var $el = $('#' + el.id.replace('_marker-library', '') + '_marker-symbol'),
+                  options = $(el).val() === 'maki' ? optionsMaki : optionsNpmaki;
+
+                $el.html(options);
+                $el.val(null);
+              },
+              clickApplyStyles: function(elName, overlayName) {
+                var overlay;
+
+                for (var i = 0; i < NPMap.overlays.length; i++) {
+                  var o = NPMap.overlays[i];
+
+                  if (o.name === overlayName) {
+                    overlay = o;
+                    break;
+                  }
+                }
+
+                $.each($('#' + elName + '_layer-change-style .form-group'), function(j, el) {
+                  var $select = $($(el).children('select')[0]);
+
+                  overlay.styles[$select.attr('id').replace(elName + '_', '')] = $select.val();
+                });
+
+                $activeChangeStyleButton.popover('toggle');
+                $('#mask').hide();
+                Builder.updateMap();
+              },
               clickLayerChangeStyle: function(el) {
                 var $el = $(el);
 
@@ -377,53 +473,92 @@ function ready() {
                 } else {
                   var html,
                     overlay = NPMap.overlays[getLayerIndexFromButton(el)],
-                    name = overlay.name.replace(' ', '_');
+                    name = overlay.name.replace(' ', '_'),
+                    type = overlay.type;
 
-                  switch (overlay.type) {
-                  case 'arcgisserver':
-                    html = 'ArcGIS Online/ArcGIS Server layers cannot be styled.';
-                    break;
-                  case 'cartodb':
-                    html = 'The ability to style CartoDB layers is coming soon.';
-                    break;
-                  case 'geojson':
+                  if (type === 'cartodb' || type === 'csv' || type === 'geojson' || type === 'kml') {
                     html = generateLayerChangeStyle(name);
-                    break;
-                  case 'github':
-                    html = generateLayerChangeStyle(name);
-                    break;
-                  case 'kml':
-                    html = generateLayerChangeStyle(name);
-                    break;
-                  case 'mapbox':
-                    html = 'MapBox Hosting layers cannot be styled.';
-                    break;
                   }
+
+                  html += '<div style="text-align:center;"><button class="btn btn-primary" onclick="Builder.ui.steps.addAndCustomizeData.handlers.clickApplyStyles(\'' + name + '\',\'' + overlay.name + '\');" type="button">Apply Styles</button></div>';
 
                   $el.popover({
                     animation: false,
-                    container: 'section',
+                    container: 'body',
                     content: html,
                     html: true,
                     placement: 'right',
-                    //title: 'Customize Shapes',
+                    title: null,
                     trigger: 'manual'
                   })
                     .on('hide.bs.popover', function() {
+                      $activeChangeStyleButton = null;
                       $.each($('#' + name + '_layer-change-style select.simplecolorpicker'), function(i, el) {
                         $(el).simplecolorpicker('destroy');
                       });
                     })
                     .on('shown.bs.popover', function() {
+                      var $select, prop, value;
+
+                      $activeChangeStyleButton = $el;
+                      $('#mask').show();
                       $.each($('#' + name + '_layer-change-style .simplecolorpicker'), function(i, el) {
                         $(el).simplecolorpicker({
                           picker: true,
                           theme: 'glyphicons'
                         });
                       });
+
+                      if (!overlay.styles) {
+                        if (!overlay.styles) {
+                          overlay.styles = $.extend({}, Builder._defaultStyles);
+                        }
+                      }
+
+                      for (prop in Builder._defaultStyles) {
+                        $select = $('#' + name + '_' + prop);
+                        value = Builder._defaultStyles[prop];
+
+                        if (prop === 'fill' || prop === 'marker-color' || prop === 'stroke') {
+                          $select.simplecolorpicker('selectColor', value);
+                        } else {
+                          if (prop === 'marker-symbol') {
+                            if (Builder._defaultStyles['marker-library'] === 'maki') {
+                              $select.html(optionsMaki);
+                            } else {
+                              $select.html(optionsNpmaki);
+                            }
+                          }
+
+                          $select.val(value);
+                        }
+                      }
+
+                      for (prop in overlay.styles) {
+                        $select = $('#' + name + '_' + prop);
+                        value = overlay.styles[prop];
+
+                        if (prop === 'fill' || prop === 'marker-color' || prop === 'stroke') {
+                          $select.simplecolorpicker('selectColor', value);
+                        } else {
+                          if (prop === 'marker-symbol') {
+                            if (overlay.styles['marker-library'] === 'maki') {
+                              $select.html(optionsMaki);
+                            } else {
+                              $select.html(optionsNpmaki);
+                            }
+                          }
+
+                          $select.val(value);
+                        }
+                      }
                     });
                   $el.popover('show');
+                  $('.popover.right.in').css({
+                    'z-index': 1031
+                  });
                   $el.data('popover-created', true);
+                  $activeChangeStyleButton = $el;
                 }
               },
               clickLayerEdit: function(el) {
@@ -510,7 +645,8 @@ function ready() {
               }
             },
             overlayToLi: function(overlay) {
-              var index;
+              var index,
+                styleable = (overlay.type === 'cartodb' || overlay.type === 'csv' || overlay.type === 'geojson' || overlay.type === 'kml');
 
               if (!$layers.is(':visible')) {
                 $layers.prev().hide();
@@ -521,32 +657,27 @@ function ready() {
               }
 
               index = $layers.children().length;
-              $layers.append($([
-                '<li class="dd-item">',
-                  '<div class="letter">' + abcs[index] + '</div>',
-                  '<div class="details">',
-                    '<span class="name">' + overlay.name + '</span>',
-                    '<span class="description">' + (overlay.description || '') + '</span>',
-                    '<span>',
-                      '<div style="float:left;">',
-                        '<button onclick="Builder.ui.steps.addAndCustomizeData.handlers.clickLayerEdit(this);" data-container="section" data-placement="bottom" rel="tooltip" title="Edit Overlay">',
-                          '<img src="img/edit-layer.png">',
-                        '</button>',
-                      '</div>',
-                      '<div style="float:right;">',
-                        /*
-                        '<button onclick="Builder.ui.steps.addAndCustomizeData.handlers.clickLayerChangeStyle(this);" style="margin-right:10px;">',
-                          '<img src="img/edit-style.png">',
-                        '</button>',
-                        */
-                        '<button onclick="Builder.ui.steps.addAndCustomizeData.handlers.clickLayerRemove(this);" data-container="section" data-placement="bottom" rel="tooltip" title="Delete Overlay">',
-                          '<img src="img/remove-layer.png">',
-                        '</button>',
-                      '</div>',
-                    '</span>',
-                  '</div>',
-                '</li>'
-              ].join('')));
+              $layers.append($('<li>', {
+                html: '' +
+                  '<li class="dd-item">' +
+                    '<div class="letter">' + abcs[index] + '</div>' +
+                    '<div class="details">' +
+                      '<span class="name">' + overlay.name + '</span>' +
+                      '<span class="description">' + (overlay.description || '') + '</span>' +
+                      '<span class="actions">' +
+                        '<div style="float:left;">' +
+                          '<button class="btn btn-default btn-xs" data-container="section" onclick="Builder.ui.steps.addAndCustomizeData.handlers.clickLayerEdit(this);" type="button"><span class="glyphicon glyphicon-edit"> Edit</span></button>' +
+                        '</div>' +
+                        '<div style="float:right;">' +
+                          //(styleable ? '<button class="btn btn-default btn-xs" data-container="section" data-placement="bottom" onclick="Builder.ui.steps.addAndCustomizeData.handlers.clickLayerChangeStyle(this);" rel="tooltip" style="margin-right:5px;" title="Change Style" type="button"><span class="glyphicon glyphicon-map-marker"></span></button>' : '') +
+                          '<button class="btn btn-default btn-xs" data-container="section" data-placement="bottom" onclick="Builder.ui.steps.addAndCustomizeData.handlers.clickLayerRemove(this);" rel="tooltip" title="Delete Overlay" type="button"><span class="glyphicon glyphicon-trash"></span></button>' +
+                          '</button>' +
+                        '</div>' +
+                      '</span>' +
+                    '</div>' +
+                  '</li>' +
+                ''
+              }));
               Builder.ui.steps.addAndCustomizeData.refreshUl();
             },
             refreshUl: function() {
@@ -717,7 +848,7 @@ function ready() {
               $(el).parents('.popover').css({
                 'z-index': settingsZ
               });
-              $('#mask').remove();
+              $('#mask').hide();
               $($('#button-settings span')[2]).popover('hide');
               settingsSet = true;
             }
@@ -912,10 +1043,7 @@ if (mapId) {
     url: 'http://www.nps.gov/maps/builder/configs/' + mapId + '.jsonp'
   });
 } else {
-  var mask = document.createElement('div');
-  mask.className = 'modal-backdrop in';
-  mask.id = 'mask';
-  document.body.appendChild(mask);
+  $('#mask').show();
 
   NPMap = {
     baseLayers: ['nps-lightStreets'],

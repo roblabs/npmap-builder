@@ -9,6 +9,7 @@ Builder.ui.modal.addLayer = (function() {
     $description = $('#layerDescription'),
     $name = $('#layerName'),
     $type = $('#layerType'),
+    styles,
     types = {
       arcgisserver: {
         _tiled: false,
@@ -548,14 +549,11 @@ Builder.ui.modal.addLayer = (function() {
           $el.parent().addClass('has-error');
         });
       } else {
-        var $layers = $('#layers');
+        var $layers = $('#layers'),
+          type = config.type;
 
         if (attribution) {
           config.attribution = attribution;
-        }
-
-        if (typeof clickable === 'boolean') {
-          config.clickable = clickable;
         }
 
         if (description) {
@@ -564,8 +562,17 @@ Builder.ui.modal.addLayer = (function() {
 
         config.name = name;
 
+        /*
+        if (styles) {
+          config.styles = styles;
+          styles = null;
+        } else if (type === 'cartodb' || type === 'csv' || type === 'geojson' || type === 'kml') {
+          config.styles = $.extend({}, Builder._defaultStyles);
+        }
+        */
+
         // TODO: Loop through all properties and "sanitize" them.
-        
+
         if (Builder.ui.modal.addLayer._editingIndex === -1) {
           Builder.addOverlay(config);
         } else {
@@ -599,6 +606,7 @@ Builder.ui.modal.addLayer = (function() {
     _load: function(layer) {
       var type = layer.type;
 
+      styles = layer.styles || null;
       $type.val(type).trigger('change');
 
       for (var prop in layer) {

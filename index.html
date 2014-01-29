@@ -12,6 +12,7 @@
     <meta name="msapplication-TileImage" content="http://www.nps.gov/npmap/windows-8-tile.png">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
     <link href="http://d1smq4hh6dg11v.cloudfront.net/bootstrap/3.0.3/css/nps-bootstrap.min.css" rel="stylesheet">
+    <link href="http://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet">
     <link href="js/libs/alertify/css/alertify-core.css" rel="stylesheet">
     <link href="js/libs/alertify/css/alertify-bootstrap.css" rel="stylesheet">
     <link href="js/libs/bootstrap-editable/css/bootstrap-editable.min.css" rel="stylesheet">
@@ -56,21 +57,21 @@
           <span class="btn-toolbar">
             <span class="btn-group">
               <button type="button" id="button-save" class="btn btn-default" data-container="#metadata .buttons" data-placement="bottom" rel="tooltip" title="Save Your Map">
-                <span class="glyphicon glyphicon-floppy-disk"></span>
+                <span class="fa fa-save">
               </button>
               <button type="button" id="button-settings" class="btn btn-default" data-container="#metadata .buttons" rel="tooltip" title="Update the Map Settings">
-                <span class="glyphicon glyphicon-cog"></span>
+                <span class="fa fa-cog"></span>
                 <span class="caret"></span>
                 <span style="height:100%;left:0;position:absolute;top:0;width:100%;"></span>
               </button>
               <button type="button" id="button-help" class="btn btn-default" data-container="#metadata .buttons" data-placement="bottom" rel="tooltip" title="Open the Help Docs">
-                <span class="glyphicon glyphicon-question-sign"></span>
+                <span class="fa fa-question">
               </button>
               <button type="button" id="button-feedback" class="btn btn-default" data-container="#metadata .buttons" data-placement="bottom" rel="tooltip" title="Submit Feedback">
-                <span class="glyphicon glyphicon-comment"></span>
+                <span class="fa fa-comment">
               </button>
               <button type="button" id="button-config" class="btn btn-default" data-container="#metadata .buttons" data-placement="bottom" rel="tooltip" title="View Configuration Code">
-                <span class="glyphicon glyphicon-cutlery"></span>
+                <span class="fa fa-code">
               </button>
             </span>
           </span>
@@ -90,8 +91,8 @@
           <p class="help-block" style="margin:10px 0 0 0;">Initial Center: <span class="lat">39.00</span>, <span class="lng">-96.00</span><br>Initial Zoom: <span class="zoom">4</span></p>
           <div class="bottom" style="border-top:dotted 1px #908e7d;margin-top:14px;padding-top:20px;">
             <p>Use map to:</p>
-            <button class="btn btn-default btn-block">Set Center & Zoom</button>
-            <button class="btn btn-default btn-block">Restrict Bounds</button>
+            <button class="btn btn-subtle btn-block">Set Center & Zoom</button>
+            <button class="btn btn-subtle btn-block">Restrict Bounds</button>
             <p class="help-block">The map's viewport is constrained to the bounds of the area you defined.</p>
           </div>
         </div>
@@ -211,10 +212,11 @@
     </section>
     <footer>
       <ul>
-        <li class="home-link"><a href="http://www.nps.gov">Home</a></li>
-        <li><a href="http://www.nps.gov/faqs.htm">Frequently Asked Questions</a></li>
-        <li><a href="http://www.nps.gov/aboutus/website-policies.htm">Website Policies</a></li>
-        <li><a href="http://www.nps.gov/contacts.htm">Contact Us</a></li>
+        <li class="home-link"><a href="http://insidemaps.nps.gov/builder">Home</a></li>
+        <li><a href="http://www.nps.gov/npmap" target="_blank">About NPMap</a></li>
+        <li><a href="mailto:npmap@nps.gov">Contact Us</a></li>
+        <li><a href="https://github.com/nationalparkservice/npmap-builder/issues">Submit Feedback</a></li>
+        <li><a href="https://github.com/nationalparkservice/npmap-builder/wiki">View Help</a></li>
       </ul>
       <span class="tag-line ir">Experience Your America</span>
     </footer>
@@ -237,6 +239,7 @@
     <div id="loading" class="progress progress-striped active">
       <div class="progress-bar" role="progressbar" aria-valuemax="100" aria-valuemin="100" aria-valuenow="100" style="width:100%;"></div>
     </div>
+    <div id="mask" class="modal-backdrop in"></div>
     <script src="js/libs/json2.min.js"></script>
     <script src="http://code.jquery.com/jquery.min.js"></script>
     <script src="http://d1smq4hh6dg11v.cloudfront.net/bootstrap/3.0.3/js/nps-bootstrap.min.js"></script>

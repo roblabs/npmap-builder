@@ -81,7 +81,7 @@ footer .tag-line {
   float: right;
   height: 7px;
   margin: 10px 10px 0 0;
-  width: 179px;
+  width: 190px;
 }
 a.more:after {
   content: '\A0\BB';
@@ -148,6 +148,15 @@ iframe {
     .step .footer .btn-primary span {
       font-weight: normal;
     }
+.change-style {
+  width: 200px;
+}
+  .change-style select {
+    width: 125px;
+  }
+#mask {
+  display: none;
+}
 /* Layers */
 #layers {
   color: #454545;
@@ -209,7 +218,7 @@ iframe {
     white-space: nowrap;
     width: 100%;
   }
-  #layers li .details span:last-child {
+  #layers li .details span.actions {
     bottom: 18px;
     display: block;
     height: 20px;
@@ -245,6 +254,7 @@ iframe {
   }
   #metadata .buttons {
     bottom: 14px;
+    height: 34px;
     position: absolute;
     right: 20px;
     width: 220px;
@@ -405,6 +415,7 @@ body.dragging, body.dragging * {
 #layers li.placeholder:before {
   position: absolute;
 }
+/*
 .dd-item button {
   background-color: transparent;
   border: none;
@@ -416,6 +427,7 @@ body.dragging, body.dragging * {
   height: 21px;
   width: 55px;
 }
+*/
 /* Bootstrap Overrides */
 .modal {
   overflow: hidden;

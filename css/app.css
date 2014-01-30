@@ -149,10 +149,20 @@ iframe {
       font-weight: normal;
     }
 .change-style {
-  width: 200px;
+  margin-bottom: 15px;
+  width: 225px;
 }
-  .change-style select {
-    width: 125px;
+  .change-style .tab-content {
+    height: 240px;
+    overflow: auto;
+    padding: 18px 5px;
+  }
+  .change-style .tab-content select {
+    right: 20px;
+    width: 95px;
+  }
+  .change-style .tab-content .icon {
+    right: 20px;
   }
 #mask {
   display: none;
@@ -462,7 +472,7 @@ body.dragging, body.dragging * {
   color: white;
   display: none;
   position: absolute;
-  right: 235px;
+  right: 225px;
 }
   .info-saved p {
     margin-bottom: -3px;

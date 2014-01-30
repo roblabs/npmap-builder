@@ -179,6 +179,8 @@ Builder.ui.modal.addLayer = (function() {
     });
   }
 
+  setHeight();
+
   if (typeof Builder._pendingLayerEditIndex !== 'undefined') {
     var overlay = NPMap.overlays[Builder._pendingLayerEditIndex],
       type = overlay.type;
@@ -257,7 +259,6 @@ Builder.ui.modal.addLayer = (function() {
   }]);
   Builder.buildTooltips();
   resetFields();
-  setHeight();
   $type.focus();
   $(window).resize(setHeight);
   $(types.arcgisserver.fields.$layers).selectpicker({
@@ -529,18 +530,18 @@ Builder.ui.modal.addLayer = (function() {
         })();
       } else if ($('#wms').is(':visible')) {
         /*
-        http://nowcoast.noaa.gov/wms/com.esri.wms.Esrimap/obs?request=GetCapabilities&service=WMS
-        
-        attribution: 'NOAA',
-        crs: null, (not implemented)
-        format: 'image/png',
-        layers: 'RAS_RIDGE_NEXRAD',
-        opacity: 0.5,
-        styles: '', (not implemented)
-        transparent: true,
-        type: 'wms',
-        url: 'http://nowcoast.noaa.gov/wms/com.esri.wms.Esrimap/obs',
-        version: '1.1.1' (autopopulate, no input)
+          http://nowcoast.noaa.gov/wms/com.esri.wms.Esrimap/obs?request=GetCapabilities&service=WMS
+          
+          attribution: 'NOAA',
+          crs: null, (not implemented)
+          format: 'image/png',
+          layers: 'RAS_RIDGE_NEXRAD',
+          opacity: 0.5,
+          styles: '', (not implemented)
+          transparent: true,
+          type: 'wms',
+          url: 'http://nowcoast.noaa.gov/wms/com.esri.wms.Esrimap/obs',
+          version: '1.1.1' (autopopulate, no input)
         */
       }
 
@@ -562,14 +563,12 @@ Builder.ui.modal.addLayer = (function() {
 
         config.name = name;
 
-        /*
         if (styles) {
           config.styles = styles;
           styles = null;
         } else if (type === 'cartodb' || type === 'csv' || type === 'geojson' || type === 'kml') {
           config.styles = $.extend({}, Builder._defaultStyles);
         }
-        */
 
         // TODO: Loop through all properties and "sanitize" them.
 

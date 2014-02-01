@@ -68,7 +68,7 @@ function ready() {
         return '' +
           '<form class="change-style" id="' + name + '_layer-change-style" role="form">' +
             '<div class="checkbox">' +
-              '<label><input type="checkbox" checked="checked"> This overlay contain points</label>' +
+              '<label><input type="checkbox" checked="checked" id="cartodb-has-points" onchange="Builder.ui.steps.addAndCustomizeData.handlers.changeCartoDbHasPoints(this);return false;"> This overlay contain points</label>' +
             '</div>' +
             '<fieldset>' +
               '<div class="form-group">' +
@@ -78,6 +78,10 @@ function ready() {
               '<div class="form-group">' +
                 '<label for="' + name + '_marker-size">Point Size</label>' +
                 '<select id="' + name + '_marker-size"><option value="small">Small</option><option value="medium">Medium</option><option value="large">Large</option></select>' +
+              '</div>' +
+              '<div class="form-group">' +
+                '<label for="' + name + '_marker-opacity">Point Opacity</label>' +
+                '<select id="' + name + '_marker-opacity"><option value="0.1">0.1</option><option value="0.2">0.2</option><option value="0.3">0.3</option><option value="0.4">0.4</option><option value="0.5">0.5</option><option value="0.6">0.6</option><option value="0.7">0.7</option><option value="0.8">0.8</option><option value="0.9">0.9</option><option value="1">1</option></select>' +
               '</div>' +
             '</fieldset>' +
             '<fieldset>' +
@@ -539,6 +543,31 @@ function ready() {
         steps: {
           addAndCustomizeData: {
             handlers: {
+              cancelApplyStyles: function() {
+                $activeChangeStyleButton.popover('toggle');
+                $('#mask').hide();
+              },
+              changeCartoDbHasPoints: function(el) {
+                var $el = $(el),
+                  $next = $($el.parent().parent().next()),
+                  $popover = $next.parents('.popover');
+
+                if ($el.prop('checked')) {
+                  if ($next.is(':hidden')) {
+                    $next.show();
+                    $popover.css({
+                      top: (parseInt($popover.css('top').replace('px', ''), 10) - $next.outerHeight() + 45) + 'px'
+                    });
+                  }
+                } else {
+                  if ($next.is(':visible')) {
+                    $popover.css({
+                      top: (parseInt($popover.css('top').replace('px', ''), 10) + $next.outerHeight() - 45) + 'px'
+                    });
+                    $next.hide();
+                  }
+                }
+              },
               changeMarkerLibrary: function(el) {
                 var $el = $('#' + el.id.replace('_marker-library', '') + '_marker-symbol'),
                   options = $(el).val() === 'maki' ? optionsMaki : optionsNpmaki;
@@ -558,13 +587,33 @@ function ready() {
                   }
                 }
 
-                $.each($('#' + elName + '_layer-change-style .form-group'), function(j, el) {
-                  var $select = $($(el).children('select')[0]),
-                    sansName = $select.attr('id').replace(elName + '_', ''),
-                    type = sansName.split('_')[0];
+                if (overlay.type === 'cartodb') {
+                  var ignorePointStyles = !$('#cartodb-has-points').prop('checked');
 
-                  overlay.styles[type][sansName.replace(type + '_', '')] = $select.val();
-                });
+                  $.each($('#' + elName + '_layer-change-style .form-group'), function(j, el) {
+                    var $select = $($(el).children('select')[0]),
+                      sansName = $select.attr('id').replace(elName + '_', '');
+
+                    if (sansName.indexOf('marker') === -1) {
+                      overlay.styles[sansName] = $select.val();
+                    } else {
+                      if (ignorePointStyles) {
+                        delete overlay.styles['marker-color'];
+                        delete overlay.styles['marker-size'];
+                      } else {
+                        overlay.styles[sansName] = $select.val();
+                      }
+                    }
+                  });
+                } else {
+                  $.each($('#' + elName + '_layer-change-style .form-group'), function(j, el) {
+                    var $select = $($(el).children('select')[0]),
+                      sansName = $select.attr('id').replace(elName + '_', ''),
+                      type = sansName.split('_')[0];
+
+                    overlay.styles[type][sansName.replace(type + '_', '')] = $select.val();
+                  });
+                }
 
                 $activeChangeStyleButton.popover('toggle');
                 $('#mask').hide();
@@ -580,7 +629,7 @@ function ready() {
                     name = overlay.name.split(' ').join('_'),
                     html;
 
-                  html = generateLayerChangeStyle(name) + '<div style="text-align:center;"><button class="btn btn-primary" onclick="Builder.ui.steps.addAndCustomizeData.handlers.clickApplyStyles(\'' + name + '\',\'' + overlay.name + '\');" type="button">Apply Styles</button></div>';
+                  html = generateLayerChangeStyle(name) + '<div style="text-align:center;"><button class="btn btn-primary" onclick="Builder.ui.steps.addAndCustomizeData.handlers.clickApplyStyles(\'' + name + '\',\'' + overlay.name + '\');" type="button">Apply Styles</button><button class="btn btn-default" onclick="Builder.ui.steps.addAndCustomizeData.handlers.cancelApplyStyles();" style="margin-left:5px;">Cancel</button></div>';
 
                   $el.popover({
                     animation: false,
@@ -598,7 +647,8 @@ function ready() {
                       });
                     })
                     .on('shown.bs.popover', function() {
-                      var $select, prop, style, type, value;
+                      var styles = overlay.type === 'cartodb' ? Builder._defaultStylesCollapsed : Builder._defaultStyles,
+                        $select, prop, style, type, value;
 
                       $activeChangeStyleButton = $el;
                       $('#mask').show();
@@ -610,17 +660,13 @@ function ready() {
                       });
 
                       if (!overlay.styles) {
-                        if (!overlay.styles) {
-                          overlay.styles = $.extend({}, Builder._defaultStyles);
-                        }
+                        overlay.styles = styles;
                       }
 
-                      for (type in Builder._defaultStyles) {
-                        style = Builder._defaultStyles[type];
-
-                        for (prop in style) {
-                          $select = $('#' + name + '_' + type + '_' + prop);
-                          value = style[prop];
+                      if (overlay.type === 'cartodb') {
+                        for (prop in Builder._defaultStylesCollapsed) {
+                          $select = $('#' + name + '_' + prop);
+                          value = Builder._defaultStylesCollapsed[prop];
 
                           if (prop === 'fill' || prop === 'marker-color' || prop === 'stroke') {
                             $select.simplecolorpicker('selectColor', value);
@@ -636,14 +682,10 @@ function ready() {
                             $select.val(value);
                           }
                         }
-                      }
 
-                      for (type in overlay.styles) {
-                        style = overlay.styles[type];
-
-                        for (prop in style) {
-                          $select = $('#' + name + '_' + type + '_' + prop);
-                          value = style[prop];
+                        for (prop in overlay.styles) {
+                          $select = $('#' + name + '_' + prop);
+                          value = overlay.styles[prop];
 
                           if (prop === 'fill' || prop === 'marker-color' || prop === 'stroke') {
                             $select.simplecolorpicker('selectColor', value);
@@ -657,6 +699,60 @@ function ready() {
                             }
 
                             $select.val(value);
+                          }
+                        }
+
+                        if (!overlay.styles['marker-color'] && !overlay.styles['marker-size']) {
+                          $('#cartodb-has-points').prop('checked', false);
+                        } else {
+                          $('#cartodb-has-points').prop('checked', true);
+                        }
+
+                        $('#cartodb-has-points').trigger('change');
+                      } else {
+                        for (type in styles) {
+                          style = styles[type];
+
+                          for (prop in style) {
+                            $select = $('#' + name + '_' + type + '_' + prop);
+                            value = style[prop];
+
+                            if (prop === 'fill' || prop === 'marker-color' || prop === 'stroke') {
+                              $select.simplecolorpicker('selectColor', value);
+                            } else {
+                              if (prop === 'marker-symbol') {
+                                if (Builder._defaultStyles.point['marker-library'] === 'maki') {
+                                  $select.html(optionsMaki);
+                                } else {
+                                  $select.html(optionsNpmaki);
+                                }
+                              }
+
+                              $select.val(value);
+                            }
+                          }
+                        }
+
+                        for (type in overlay.styles) {
+                          style = overlay.styles[type];
+
+                          for (prop in style) {
+                            $select = $('#' + name + '_' + type + '_' + prop);
+                            value = style[prop];
+
+                            if (prop === 'fill' || prop === 'marker-color' || prop === 'stroke') {
+                              $select.simplecolorpicker('selectColor', value);
+                            } else {
+                              if (prop === 'marker-symbol') {
+                                if (overlay.styles.point['marker-library'] === 'maki') {
+                                  $select.html(optionsMaki);
+                                } else {
+                                  $select.html(optionsNpmaki);
+                                }
+                              }
+
+                              $select.val(value);
+                            }
                           }
                         }
                       }
@@ -692,6 +788,9 @@ function ready() {
               },
               clickLayerRemove: function(el) {
                 Builder.showConfirm('Yes, remove the layer', 'Once the layer is removed, you cannot get it back.', 'Are you sure?', function() {
+                  
+
+
                   Builder.ui.steps.addAndCustomizeData.removeLi(el);
                   Builder.removeOverlay(getLayerIndexFromButton(el));
                 });
@@ -765,27 +864,23 @@ function ready() {
               }
 
               index = $layers.children().length;
-              $layers.append($('<li>', {
-                html: '' +
-                  '<li class="dd-item">' +
-                    '<div class="letter">' + abcs[index] + '</div>' +
-                    '<div class="details">' +
-                      '<span class="name">' + overlay.name + '</span>' +
-                      '<span class="description">' + (overlay.description || '') + '</span>' +
-                      '<span class="actions">' +
-                        '<div style="float:left;">' +
-                          '<button class="btn btn-default btn-xs" data-container="section" onclick="Builder.ui.steps.addAndCustomizeData.handlers.clickLayerEdit(this);" type="button"><span class="glyphicon glyphicon-edit"> Edit</span></button>' +
-                        '</div>' +
-                        '<div style="float:right;">' +
-                          (styleable ? '<button class="btn btn-default btn-xs" data-container="section" data-placement="bottom" onclick="Builder.ui.steps.addAndCustomizeData.handlers.clickLayerChangeStyle(this);" rel="tooltip" style="margin-right:5px;" title="Change Style" type="button"><span class="glyphicon glyphicon-map-marker"></span></button>' : '') +
-                          '<button class="btn btn-default btn-xs" data-container="section" data-placement="bottom" onclick="Builder.ui.steps.addAndCustomizeData.handlers.clickLayerRemove(this);" rel="tooltip" title="Delete Overlay" type="button"><span class="glyphicon glyphicon-trash"></span></button>' +
-                          '</button>' +
-                        '</div>' +
-                      '</span>' +
+              $layers.append($('<li class="dd-item">').html('' +
+                '<div class="letter">' + abcs[index] + '</div>' +
+                '<div class="details">' +
+                  '<span class="name">' + overlay.name + '</span>' +
+                  '<span class="description">' + (overlay.description || '') + '</span>' +
+                  '<span class="actions">' +
+                    '<div style="float:left;">' +
+                      '<button class="btn btn-default btn-xs" data-container="section" onclick="Builder.ui.steps.addAndCustomizeData.handlers.clickLayerEdit(this);" type="button"><span class="glyphicon glyphicon-edit"> Edit</span></button>' +
                     '</div>' +
-                  '</li>' +
-                ''
-              }));
+                    '<div style="float:right;margin-right:10px;">' +
+                      (styleable ? '<button class="btn btn-default btn-xs" data-container="section" data-placement="bottom" onclick="Builder.ui.steps.addAndCustomizeData.handlers.clickLayerChangeStyle(this);" rel="tooltip" style="margin-right:5px;" title="Change Style" type="button"><span class="glyphicon glyphicon-map-marker"></span></button>' : '') +
+                      '<button class="btn btn-default btn-xs" data-container="section" data-placement="bottom" onclick="Builder.ui.steps.addAndCustomizeData.handlers.clickLayerRemove(this);" rel="tooltip" title="Delete Overlay" type="button"><span class="glyphicon glyphicon-trash"></span></button>' +
+                      '</button>' +
+                    '</div>' +
+                  '</span>' +
+                '</div>' +
+              ''));
               Builder.ui.steps.addAndCustomizeData.refreshUl();
             },
             refreshUl: function() {
@@ -803,7 +898,6 @@ function ready() {
             },
             removeLi: function(el) {
               $($(el).parents('li')[0]).remove();
-              
               Builder.ui.steps.addAndCustomizeData.refreshUl();
             }
           },

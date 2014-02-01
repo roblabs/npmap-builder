@@ -98,30 +98,6 @@ Builder.ui.modal.addLayer = (function() {
           types.geojson.fields.$url.val('');
         }
       },
-      github: {
-        fields: {
-          $clickable: $('#github-clickable'),
-          $cluster: $('#github-cluster'),
-          $url: $('#github-url')
-        },
-        reset: function() {
-          types.github.fields.$clickable.prop('checked', 'checked');
-          types.github.fields.$cluster.prop(false);
-          types.github.fields.$url.val('');
-        }
-      },
-      kml: {
-        fields: {
-          $clickable: $('#kml-clickable'),
-          $cluster: $('#kml-cluster'),
-          $url: $('#kml-url')
-        },
-        reset: function() {
-          types.kml.fields.$clickable.prop('checked', 'checked');
-          types.kml.fields.$cluster.prop(false);
-          types.kml.fields.$url.val('');
-        }
-      },
       mapbox: {
         fields: {
           $clickable: $('#mapbox-clickable'),
@@ -143,7 +119,8 @@ Builder.ui.modal.addLayer = (function() {
           types.tiled.fields.$opacity.slider('setValue', 100);
           types.tiled.fields.$url.val('');
         }
-      },
+      }
+      /*,
       wms: {
         fields: {
           $format: $('#wms-format'),
@@ -163,6 +140,7 @@ Builder.ui.modal.addLayer = (function() {
           types.wms.fields.$url.val('');
         }
       }
+      */
     };
 
   function resetFields() {
@@ -203,6 +181,7 @@ Builder.ui.modal.addLayer = (function() {
     backdrop: 'static'
   })
     .on('hide.bs.modal', function() {
+      styles = null;
       resetFields();
       $type.val('arcgisserver').trigger('change');
       $('#modal-addLayer .tab-content').css({
@@ -231,6 +210,7 @@ Builder.ui.modal.addLayer = (function() {
   $('#modal-addLayer .btn-primary').click(function() {
     Builder.ui.modal.addLayer._click();
   });
+  /*
   $('#modal-addLayer-search').typeahead([{
     header: '<h3 class="modal-addLayer-search-type">ArcGIS Online</h3>',
     limit: 10,
@@ -257,8 +237,9 @@ Builder.ui.modal.addLayer = (function() {
     prefetch: 'data/tilestream-search.json',
     valueKey: 'n'
   }]);
+  */
   Builder.buildTooltips();
-  resetFields();
+  //resetFields(); // This introduced an issue with the sliders, forcing them to be initialized with default values.
   $type.focus();
   $(window).resize(setHeight);
   $(types.arcgisserver.fields.$layers).selectpicker({
@@ -418,48 +399,6 @@ Builder.ui.modal.addLayer = (function() {
             config.cluster = true;
           }
         })();
-      } else if ($('#github').is(':visible')) {
-        (function() {
-          var clickable = types.github.fields.$clickable.prop('checked'),
-            cluster = types.github.fields.$cluster.prop('checked'),
-            url = types.github.fields.$url.val()
-              .replace('http://github.com/', '')
-              .replace('https://github.com/', '')
-              .replace('http://raw.github.com/', '')
-              .replace('https://raw.github.com/', '')
-              .replace('/blob', ''),
-            urls = url.split('/'),
-            branch, path, repo, user;
-
-          $.each(types.github.fields, function(field) {
-            fields.push(field);
-          });
-
-          if (!url) {
-            errors.push(types.github.fields.$url);
-          }
-
-          branch = urls[2];
-          repo = urls[1];
-          user = urls[0];
-          path = url.replace(user + '/', '').replace(repo + '/', '').replace(branch + '/', '');
-
-          config = {
-            branch: branch,
-            path: path,
-            repo: repo,
-            type: 'github',
-            user: user
-          };
-
-          if (clickable === false) {
-            config.clickable = false;
-          }
-
-          if (cluster) {
-            config.cluster = true;
-          }
-        })();
       } else if ($('#kml').is(':visible')) {
         (function() {
           var clickable = types.kml.fields.$clickable.prop('checked'),
@@ -565,9 +504,10 @@ Builder.ui.modal.addLayer = (function() {
 
         if (styles) {
           config.styles = styles;
-          styles = null;
-        } else if (type === 'cartodb' || type === 'csv' || type === 'geojson' || type === 'kml') {
+        } else if (type === 'csv' || type === 'geojson' || type === 'kml') {
           config.styles = $.extend({}, Builder._defaultStyles);
+        } else if (type === 'cartodb') {
+          config.styles = $.extend({}, Builder._defaultStylesCollapsed);
         }
 
         // TODO: Loop through all properties and "sanitize" them.
@@ -640,9 +580,6 @@ Builder.ui.modal.addLayer = (function() {
             types.arcgisserver.fields.$layers.selectpicker('val', layer.layers.split(','));
           }
         }, 100);
-        break;
-      case 'github':
-        types.github.fields.$url.val('https://github.com/' + layer.user + '/' + layer.repo + '/blob/' + layer.branch + '/' + layer.path);
         break;
       }
     },

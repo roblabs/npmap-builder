@@ -21,11 +21,9 @@
                   <option value="cartodb">CartoDB</option>
                   <option value="csv">CSV</option>
                   <option value="geojson">GeoJSON</option>
-                  <!--<option value="github">GitHub</option>-->
                   <option value="kml">KML</option>
                   <option value="mapbox">MapBox Hosting</option>
                   <option value="tiled">Simple Tiled</option>
-                  <!--<option value="wms">WMS</option>-->
                 </select>
               </div>
               <div class="form-group">
@@ -111,24 +109,6 @@
                   </div>
                 </label>
               </div>
-              <!--
-              <div id="github">
-                <div class="form-group">
-                  <label for="github-url">URL</label>
-                  <input id="github-url" type="text" placeholder="Must end with '.geojson', 'json', or 'topojson'..." class="form-control" required></input>
-                </div>
-                <label style="display:block;">
-                  <div class="checkbox">
-                    <input id="github-clickable" type="checkbox" checked="checked"></input>Is this overlay clickable?
-                  </div>
-                </label>
-                <label style="display:block;">
-                  <div class="checkbox">
-                    <input id="github-cluster" type="checkbox"></input>Should points in this overlay be clustered?
-                  </div>
-                </label>
-              </div>
-              -->
               <div id="kml">
                 <div class="form-group">
                   <label for="kml-url">URL</label>
@@ -171,6 +151,7 @@
                   <input type="text" id="tiled-opacity" required>
                 </div>
               </div>
+              <!--
               <div id="wms">
                 <div class="form-group">
                   <label for="wms-url">URL</label>
@@ -195,14 +176,17 @@
                   </div>
                 </label>
               </div>
+              -->
             </form>
           </div>
+          <!--
           <div id="search" class="tab-pane">
             <form role="form">
               <label for="modal-addLayer-search">Start typing below to search for an overlay.</label>
               <input id="modal-addLayer-search" type="text" class="form-control"></input>
             </form>
           </div>
+          -->
         </div>
       </div>
       <div class="modal-footer">

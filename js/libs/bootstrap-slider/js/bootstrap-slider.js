@@ -28,7 +28,6 @@
     }
 
     this.element = $(element);
-    // TODO: Is this necessary?
     this.element.hide();
     this.id = this.element.data('slider-id') || options.id;
     this.picker = $('' +

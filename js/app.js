@@ -45,7 +45,7 @@ function ready() {
       $buttonExport.text('Save & Export Your Map');
     }
     function generateLayerChangeStyle(name) {
-      var sortable;
+      var i, overlay, sortable;
 
       if (!optionsColor.length) {
         $.each(document.getElementById('iframe-map').contentWindow.L.npmap.preset.colors, function(prop, value) {
@@ -55,146 +55,195 @@ function ready() {
         });
       }
 
-      if (!optionsMaki.length) {
-        var numbers = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
-          i;
+      for (i = 0; i < NPMap.overlays.length; i++) {
+        var o = NPMap.overlays[i];
 
-        sortable = [];
+        if (o.name.split(' ').join('_') === name) {
+          overlay = o;
+          break;
+        }
+      }
 
-        for (i = 0; i < abcs.length; i++) {
-          var letter = abcs[i];
+      if (overlay.type === 'cartodb') {
+        return '' +
+          '<form class="change-style" id="' + name + '_layer-change-style" role="form">' +
+            '<div class="checkbox">' +
+              '<label><input type="checkbox" checked="checked"> This overlay contain points</label>' +
+            '</div>' +
+            '<fieldset>' +
+              '<div class="form-group">' +
+                '<label for="' + name + '_marker-color">Point Color</label>' +
+                '<select id="' + name + '_marker-color" class="simplecolorpicker">' + optionsColor + '</select>' +
+              '</div>' +
+              '<div class="form-group">' +
+                '<label for="' + name + '_marker-size">Point Size</label>' +
+                '<select id="' + name + '_marker-size"><option value="small">Small</option><option value="medium">Medium</option><option value="large">Large</option></select>' +
+              '</div>' +
+            '</fieldset>' +
+            '<fieldset>' +
+              '<div class="form-group">' +
+                '<label for="' + name + '_stroke">Line Color</label>' +
+                '<select id="' + name + '_stroke" class="simplecolorpicker">' + optionsColor + '</select>' +
+              '</div>' +
+              '<div class="form-group">' +
+                '<label for="' + name + '_stroke-width">Line Width</label>' +
+                '<select id="' + name + '_stroke-width"><option value="1">1 pt</option><option value="2">2 pt</option><option value="3">3 pt</option><option value="4">4 pt</option><option value="5">5 pt</option></select>' +
+              '</div>' +
+              '<div class="form-group">' +
+                '<label for="' + name + '_stroke-opacity">Line Opacity</label>' +
+                '<select id="' + name + '_stroke-opacity"><option value="0.1">0.1</option><option value="0.2">0.2</option><option value="0.3">0.3</option><option value="0.4">0.4</option><option value="0.5">0.5</option><option value="0.6">0.6</option><option value="0.7">0.7</option><option value="0.8">0.8</option><option value="0.9">0.9</option><option value="1">1</option></select>' +
+              '</div>' +
+              '<div class="form-group">' +
+                '<label for="' + name + '_fill">Fill Color</label>' +
+                '<select id="' + name + '_fill" class="simplecolorpicker">' + optionsColor + '</select>' +
+              '</div>' +
+              '<div class="form-group">' +
+                '<label for="' + name + '_fill-opacity">Fill Opacity</label>' +
+                '<select id="' + name + '_fill-opacity"><option value="0.1">0.1</option><option value="0.2">0.2</option><option value="0.3">0.3</option><option value="0.4">0.4</option><option value="0.5">0.5</option><option value="0.6">0.6</option><option value="0.7">0.7</option><option value="0.8">0.8</option><option value="0.9">0.9</option><option value="1">1</option></select>' +
+              '</div>' +
+            '</fieldset>' +
+          '</form>';
+      } else {
+        if (!optionsMaki.length) {
+          var numbers = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
 
-          sortable.push({
-            icon: letter.toLowerCase(),
-            name: 'Letter "' + letter + '"'
+          sortable = [];
+
+          for (i = 0; i < abcs.length; i++) {
+            var letter = abcs[i];
+
+            sortable.push({
+              icon: letter.toLowerCase(),
+              name: 'Letter "' + letter + '"'
+            });
+          }
+
+          for (i = 0; i < numbers.length; i++) {
+            var number = numbers[i];
+
+            sortable.push({
+              icon: number,
+              name: 'Number "' + number + '"'
+            });
+          }
+
+          $.each(document.getElementById('iframe-map').contentWindow.L.npmap.preset.maki, function(prop, value) {
+            sortable.push({
+              icon: value.icon,
+              name: value.name
+            });
+          });
+          sortable.sort(function(a, b) {
+            if (a.name < b.name) {
+              return -1;
+            }
+
+            if (a.name > b.name) {
+              return 1;
+            }
+
+            return 0;
+          });
+          $.each(sortable, function(i, icon) {
+            optionsMaki += '<option value="' + icon.icon + '">' + icon.name + '</option>';
           });
         }
 
-        for (i = 0; i < numbers.length; i++) {
-          var number = numbers[i];
+        if (!optionsNpmaki.length) {
+          sortable = [];
+          $.each(document.getElementById('iframe-map').contentWindow.L.npmap.preset.npmaki, function(prop, value) {
+            sortable.push({
+              icon: value.icon,
+              name: value.name
+            });
+          });
+          sortable.sort(function(a, b) {
+            if (a.name < b.name) {
+              return -1;
+            }
 
-          sortable.push({
-            icon: number,
-            name: 'Number "' + number + '"'
+            if (a.name > b.name) {
+              return 1;
+            }
+
+            return 0;
+          });
+          $.each(sortable, function(i, icon) {
+            optionsNpmaki += '<option value="' + icon.icon + '">' + icon.name + '</option>';
           });
         }
 
-        $.each(document.getElementById('iframe-map').contentWindow.L.npmap.preset.maki, function(prop, value) {
-          sortable.push({
-            icon: value.icon,
-            name: value.name
-          });
-        });
-        sortable.sort(function(a, b) {
-          if (a.name < b.name) {
-            return -1;
-          }
-
-          if (a.name > b.name) {
-            return 1;
-          }
-
-          return 0;
-        });
-        $.each(sortable, function(i, icon) {
-          optionsMaki += '<option value="' + icon.icon + '">' + icon.name + '</option>';
-        });
+        return '' +
+          '<form class="change-style" id="' + name + '_layer-change-style" role="form">' +
+            '<ul class="nav nav-tabs">' +
+              '<li class="active"><a href="#point" data-toggle="tab">Point</a></li>' +
+              '<li class=""><a href="#line" data-toggle="tab">Line</a></li>' +
+              '<li class=""><a href="#polygon" data-toggle="tab">Polygon</a></li>' +
+            '</ul>' +
+            '<div class="tab-content">' +
+              '<div class="tab-pane active in" id="point">' +
+                '<fieldset>' +
+                  '<div class="form-group">' +
+                    '<label for="' + name + '_point_marker-library">Library</label>' +
+                    '<select id="' + name + '_point_marker-library" onchange="Builder.ui.steps.addAndCustomizeData.handlers.changeMarkerLibrary(this);return false;"><option value="maki">Maki</option><option value="npmaki">NPMaki</option></select>' +
+                  '</div>' +
+                  '<div class="form-group">' +
+                    '<label for="' + name + '_point_marker-color">Color</label>' +
+                    '<select id="' + name + '_point_marker-color" class="simplecolorpicker">' + optionsColor + '</select>' +
+                  '</div>' +
+                  '<div class="form-group">' +
+                    '<label for="' + name + '_point_marker-size">Size</label>' +
+                    '<select id="' + name + '_point_marker-size"><option value="small">Small</option><option value="medium">Medium</option><option value="large">Large</option></select>' +
+                  '</div>' +
+                  '<div class="form-group">' +
+                    '<label for="' + name + '_point_marker-symbol">Icon</label>' +
+                    '<select id="' + name + '_point_marker-symbol"></select>' +
+                  '</div>' +
+                '</fieldset>' +
+              '</div>' +
+              '<div class="tab-pane" id="line">' +
+                '<fieldset>' +
+                  '<div class="form-group">' +
+                    '<label for="' + name + '_line_stroke">Color</label>' +
+                    '<select id="' + name + '_line_stroke" class="simplecolorpicker">' + optionsColor + '</select>' +
+                  '</div>' +
+                  '<div class="form-group">' +
+                    '<label for="' + name + '_line_stroke-width">Width</label>' +
+                    '<select id="' + name + '_line_stroke-width"><option value="1">1 pt</option><option value="2">2 pt</option><option value="3">3 pt</option><option value="4">4 pt</option><option value="5">5 pt</option></select>' +
+                  '</div>' +
+                  '<div class="form-group">' +
+                    '<label for="' + name + '_line_stroke-opacity">Opacity</label>' +
+                    '<select id="' + name + '_line_stroke-opacity"><option value="0.1">0.1</option><option value="0.2">0.2</option><option value="0.3">0.3</option><option value="0.4">0.4</option><option value="0.5">0.5</option><option value="0.6">0.6</option><option value="0.7">0.7</option><option value="0.8">0.8</option><option value="0.9">0.9</option><option value="1">1</option></select>' +
+                  '</div>' +
+                '</fieldset>' +
+              '</div>' +
+              '<div class="tab-pane" id="polygon">' +
+                '<fieldset>' +
+                  '<div class="form-group">' +
+                    '<label for="' + name + '_polygon_fill">Color</label>' +
+                    '<select id="' + name + '_polygon_fill" class="simplecolorpicker">' + optionsColor + '</select>' +
+                  '</div>' +
+                  '<div class="form-group">' +
+                    '<label for="' + name + '_polygon_fill-opacity">Opacity</label>' +
+                    '<select id="' + name + '_polygon_fill-opacity"><option value="0.1">0.1</option><option value="0.2">0.2</option><option value="0.3">0.3</option><option value="0.4">0.4</option><option value="0.5">0.5</option><option value="0.6">0.6</option><option value="0.7">0.7</option><option value="0.8">0.8</option><option value="0.9">0.9</option><option value="1">1</option></select>' +
+                  '</div>' +
+                  '<div class="form-group">' +
+                    '<label for="' + name + '_polygon_stroke">Outline Color</label>' +
+                    '<select id="' + name + '_polygon_stroke" class="simplecolorpicker">' + optionsColor + '</select>' +
+                  '</div>' +
+                  '<div class="form-group">' +
+                    '<label for="' + name + '_polygon_stroke-width">Outline Width</label>' +
+                    '<select id="' + name + '_polygon_stroke-width"><option value="1">1 pt</option><option value="2">2 pt</option><option value="3">3 pt</option><option value="4">4 pt</option><option value="5">5 pt</option></select>' +
+                  '</div>' +
+                  '<div class="form-group">' +
+                    '<label for="' + name + '_polygon_stroke-opacity">Outline Opacity</label>' +
+                    '<select id="' + name + '_polygon_stroke-opacity"><option value="0.1">0.1</option><option value="0.2">0.2</option><option value="0.3">0.3</option><option value="0.4">0.4</option><option value="0.5">0.5</option><option value="0.6">0.6</option><option value="0.7">0.7</option><option value="0.8">0.8</option><option value="0.9">0.9</option><option value="1">1</option></select>' +
+                  '</div>' +
+                '</fieldset>' +
+              '</div>' +
+            '</div>' +
+          '</form>';
       }
-
-      if (!optionsNpmaki.length) {
-        sortable = [];
-        $.each(document.getElementById('iframe-map').contentWindow.L.npmap.preset.npmaki, function(prop, value) {
-          sortable.push({
-            icon: value.icon,
-            name: value.name
-          });
-        });
-        sortable.sort(function(a, b) {
-          if (a.name < b.name) {
-            return -1;
-          }
-
-          if (a.name > b.name) {
-            return 1;
-          }
-
-          return 0;
-        });
-        $.each(sortable, function(i, icon) {
-          optionsNpmaki += '<option value="' + icon.icon + '">' + icon.name + '</option>';
-        });
-      }
-
-      return '' +
-        '<form class="change-style" id="' + name + '_layer-change-style" role="form">' +
-          '<ul class="nav nav-tabs">' +
-            '<li class="active"><a href="#point" data-toggle="tab">Point</a></li>' +
-            '<li class=""><a href="#line" data-toggle="tab">Line</a></li>' +
-            '<li class=""><a href="#polygon" data-toggle="tab">Polygon</a></li>' +
-          '</ul>' +
-          '<div class="tab-content">' +
-            '<div class="tab-pane active in" id="point">' +
-              '<fieldset>' +
-                '<div class="form-group">' +
-                  '<label for="' + name + '_point_marker-library">Library</label>' +
-                  '<select id="' + name + '_point_marker-library" onchange="Builder.ui.steps.addAndCustomizeData.handlers.changeMarkerLibrary(this);return false;"><option value="maki">Maki</option><option value="npmaki">NPMaki</option></select>' +
-                '</div>' +
-                '<div class="form-group">' +
-                  '<label for="' + name + '_point_marker-color">Color</label>' +
-                  '<select id="' + name + '_point_marker-color" class="simplecolorpicker">' + optionsColor + '</select>' +
-                '</div>' +
-                '<div class="form-group">' +
-                  '<label for="' + name + '_point_marker-size">Size</label>' +
-                  '<select id="' + name + '_point_marker-size"><option value="small">Small</option><option value="medium">Medium</option><option value="large">Large</option></select>' +
-                '</div>' +
-                '<div class="form-group">' +
-                  '<label for="' + name + '_point_marker-symbol">Icon</label>' +
-                  '<select id="' + name + '_point_marker-symbol"></select>' +
-                '</div>' +
-              '</fieldset>' +
-            '</div>' +
-            '<div class="tab-pane" id="line">' +
-              '<fieldset>' +
-                '<div class="form-group">' +
-                  '<label for="' + name + '_line_stroke">Color</label>' +
-                  '<select id="' + name + '_line_stroke" class="simplecolorpicker">' + optionsColor + '</select>' +
-                '</div>' +
-                '<div class="form-group">' +
-                  '<label for="' + name + '_line_stroke-width">Width</label>' +
-                  '<select id="' + name + '_line_stroke-width"><option value="1">1 pt</option><option value="2">2 pt</option><option value="3">3 pt</option><option value="4">4 pt</option><option value="5">5 pt</option></select>' +
-                '</div>' +
-                '<div class="form-group">' +
-                  '<label for="' + name + '_line_stroke-opacity">Opacity</label>' +
-                  '<select id="' + name + '_line_stroke-opacity"><option value="0.1">0.1</option><option value="0.2">0.2</option><option value="0.3">0.3</option><option value="0.4">0.4</option><option value="0.5">0.5</option><option value="0.6">0.6</option><option value="0.7">0.7</option><option value="0.8">0.8</option><option value="0.9">0.9</option><option value="1">1</option></select>' +
-                '</div>' +
-              '</fieldset>' +
-            '</div>' +
-            '<div class="tab-pane" id="polygon">' +
-              '<fieldset>' +
-                '<div class="form-group">' +
-                  '<label for="' + name + '_polygon_fill">Color</label>' +
-                  '<select id="' + name + '_polygon_fill" class="simplecolorpicker">' + optionsColor + '</select>' +
-                '</div>' +
-                '<div class="form-group">' +
-                  '<label for="' + name + '_polygon_fill-opacity">Opacity</label>' +
-                  '<select id="' + name + '_polygon_fill-opacity"><option value="0.1">0.1</option><option value="0.2">0.2</option><option value="0.3">0.3</option><option value="0.4">0.4</option><option value="0.5">0.5</option><option value="0.6">0.6</option><option value="0.7">0.7</option><option value="0.8">0.8</option><option value="0.9">0.9</option><option value="1">1</option></select>' +
-                '</div>' +
-                '<div class="form-group">' +
-                  '<label for="' + name + '_polygon_stroke">Outline Color</label>' +
-                  '<select id="' + name + '_polygon_stroke" class="simplecolorpicker">' + optionsColor + '</select>' +
-                '</div>' +
-                '<div class="form-group">' +
-                  '<label for="' + name + '_polygon_stroke-width">Outline Width</label>' +
-                  '<select id="' + name + '_polygon_stroke-width"><option value="1">1 pt</option><option value="2">2 pt</option><option value="3">3 pt</option><option value="4">4 pt</option><option value="5">5 pt</option></select>' +
-                '</div>' +
-                '<div class="form-group">' +
-                  '<label for="' + name + '_polygon_stroke-opacity">Outline Opacity</label>' +
-                  '<select id="' + name + '_polygon_stroke-opacity"><option value="0.1">0.1</option><option value="0.2">0.2</option><option value="0.3">0.3</option><option value="0.4">0.4</option><option value="0.5">0.5</option><option value="0.6">0.6</option><option value="0.7">0.7</option><option value="0.8">0.8</option><option value="0.9">0.9</option><option value="1">1</option></select>' +
-                '</div>' +
-              '</fieldset>' +
-            '</div>' +
-          '</div>' +
-        '</form>';
     }
     function getIframeConfig() {
       return document.getElementById('iframe-map').contentWindow.NPMap.config;
@@ -306,6 +355,15 @@ function ready() {
 
     return {
       _afterUpdateCallbacks: {},
+      _defaultStylesCollapsed: {
+        'fill': '#d39800',
+        'fill-opacity': 0.2,
+        'marker-color': '#000000',
+        'marker-size': 'small',
+        'stroke': '#d39800',
+        'stroke-opacity': 0.8,
+        'stroke-width': 3
+      },
       _defaultStyles: {
         line: {
           'stroke': '#d39800',
@@ -519,7 +577,7 @@ function ready() {
                   $el.popover('toggle');
                 } else {
                   var overlay = NPMap.overlays[getLayerIndexFromButton(el)],
-                    name = overlay.name.replace(' ', '_'),
+                    name = overlay.name.split(' ').join('_'),
                     html;
 
                   html = generateLayerChangeStyle(name) + '<div style="text-align:center;"><button class="btn btn-primary" onclick="Builder.ui.steps.addAndCustomizeData.handlers.clickApplyStyles(\'' + name + '\',\'' + overlay.name + '\');" type="button">Apply Styles</button></div>';

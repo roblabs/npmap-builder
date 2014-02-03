@@ -26,13 +26,18 @@ function ready() {
       description = null,
       descriptionSet = false,
       descriptionZ = null,
-      firstLoad = true,
+      firstLoad = false,
       optionsColor = '',
       optionsMaki = '',
       optionsNpmaki = '',
       settingsSet = false,
       settingsZ = null,
       stepLis = $('#steps li'),
+      tagsToReplace = {
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;'
+      },
       title = null,
       titleSet = false,
       titleZ = null;
@@ -40,6 +45,14 @@ function ready() {
     function disableSave() {
       $buttonSave.prop('disabled', true);
       $buttonExport.text('Export Your Map');
+    }
+    function escapeHtml(unsafe) {
+      return unsafe
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
     }
     function enableSave() {
       $buttonSave.prop('disabled', false);
@@ -281,10 +294,28 @@ function ready() {
         url: module + '.html'
       });
     }
+    function replaceTag(tag) {
+      return tagsToReplace[tag] || tag;
+    }
+    function safeTagsReplace(str) {
+      return str.replace(/[&<>]/g, replaceTag);
+    }
     function saveMap(callback) {
       var $this = $(this),
         base = '/',
         error = 'You must be connected to the National Park Service network to save a map.';
+
+      for (var i = 0; i < NPMap.overlays.length; i++) {
+        var overlay = NPMap.overlays[i];
+
+        if (overlay.popup) {
+          overlay.popup = escapeHtml(overlay.popup);
+        }
+
+        if (overlay.tooltip) {
+          overlay.tooltip = escapeHtml(overlay.tooltip);
+        }
+      }
 
       Builder.showLoading();
       $this.blur();
@@ -314,26 +345,34 @@ function ready() {
               mapId = response.mapId;
               updateSaveStatus(response.modified);
               alertify.success('Your map was saved!');
-              if (callback) {
+              if (typeof callback === 'function') {
                 callback(true);
               }
             } else {
               alertify.error('Sorry, but there was an error saving your map. Please try again.');
 
-              if (callback) {
+              if (typeof callback === 'function') {
                 callback(false);
               }
             }
           } else {
             alertify.error(error);
 
-            if (callback) {
+            if (typeof callback === 'function') {
               callback(false);
             }
           }
         },
         url: base + 'builder/save' + (base === '/' ? '' : '&callback=?')
       });
+    }
+    function unescapeHtml(unsafe) {
+      return unsafe
+        .replace(/&amp;/g, '&')
+        .replace(/&lt;/g, '<')
+        .replace(/&gt;/g, '>')
+        .replace(/&quot;/g, '\"')
+        .replace(/&#039;/g, '\'');
     }
     function updateInitialCenterAndZoom() {
       $lat.html(NPMap.center.lat.toFixed(2));
@@ -418,6 +457,10 @@ function ready() {
         },
         metadata: {
           init: function() {
+            description = NPMap.description;
+            firstLoad = true;
+            title = NPMap.name;
+
             $('#metadata .description a').text(NPMap.description).editable({
               animation: false,
               container: '#metadata div.info',
@@ -593,7 +636,7 @@ function ready() {
               },
               clickApplyInteractivity: function(elName, overlayName) {
                 var popup = '',
-                  description, overlay, tooltip, title;
+                  d, overlay, t, tooltip;
 
                 for (var i = 0; i < NPMap.overlays.length; i++) {
                   var o = NPMap.overlays[i];
@@ -604,26 +647,26 @@ function ready() {
                   }
                 }
 
-                description = $('#' + elName + '_description').val();
-                title = $('#' + elName + '_title').val();
+                d = $('#' + elName + '_description').val();
+                t = $('#' + elName + '_title').val();
                 tooltip = $('#' + elName + '_tooltip').val();
                 
-                if (title) {
-                  popup += '<div class="title">' + title + '</div>';
+                if (t) {
+                  popup += '<div class="title">' + t + '</div>';
                 }
 
-                if (description) {
-                  popup += '<div class="content">' + description + '</div>';
+                if (d) {
+                  popup += '<div class="content">' + d + '</div>';
                 }
 
                 if (popup.length) {
-                  overlay.popup = popup;
+                  overlay.popup = escapeHtml(popup);
                 } else {
                   delete overlay.popup;
                 }
 
                 if (tooltip) {
-                  overlay.tooltip = tooltip;
+                  overlay.tooltip = escapeHtml(tooltip);
                 } else {
                   delete overlay.tooltip;
                 }
@@ -890,32 +933,32 @@ function ready() {
 
                       if (overlay.popup) {
                         var div = document.createElement('div'),
-                          description, title;
-                        
-                        div.innerHTML = overlay.popup;
+                          d, t;
+
+                        div.innerHTML = unescapeHtml(overlay.popup);
 
                         for (var i = 0; i < div.childNodes.length; i++) {
                           var $childNode = $(div.childNodes[i]);
 
                           if ($childNode.hasClass('title')) {
-                            title = $childNode.html();
+                            t = $childNode.html();
                           } else if ($childNode.hasClass('content')) {
-                            description = $childNode.html();
+                            d = $childNode.html();
                           }
                         }
 
-                        if (description) {
-                          $('#' + name + '_description').val(description);
+                        if (d) {
+                          $('#' + name + '_description').val(d);
                         }
 
-                        if (title) {
-                          $('#' + name + '_title').val(title);
+                        if (t) {
+                          $('#' + name + '_title').val(t);
                         }
                       }
 
                       if (overlay.tooltip) {
                         $($('#' + name + '_layer-configure-interactivity .checkbox input')[0]).prop('checked', true).trigger('change');
-                        $('#' + name + '_tooltip').val(overlay.tooltip);
+                        $('#' + name + '_tooltip').val(unescapeHtml(overlay.tooltip));
                       }
 
                       Builder.buildTooltips();
@@ -1296,13 +1339,13 @@ function ready() {
         NPMap.overlays.splice(index, 1);
         this.updateMap();
       },
-      showConfirm: function(button, content, title, callback) {
+      showConfirm: function(button, content, t, callback) {
         $($modalConfirm.find('.btn-primary')[0]).html(button).on('click', function() {
           $modalConfirm.modal('hide');
           callback();
         });
         $($modalConfirm.find('.modal-body')[0]).html(content);
-        $($modalConfirm.find('h4')[0]).html(title);
+        $($modalConfirm.find('h4')[0]).html(t);
         $modalConfirm.modal('show');
       },
       showLoading: function() {
@@ -1354,6 +1397,9 @@ function ready() {
     Builder.ui.steps.addAndCustomizeData.load();
     Builder.ui.steps.additionalToolsAndSettings.load();
     Builder.ui.steps.setCenterAndZoom.load();
+    
+
+
     delete NPMap.created;
     delete NPMap.description;
     delete NPMap.isPublic;
@@ -1361,7 +1407,6 @@ function ready() {
     delete NPMap.modified;
     delete NPMap.name;
     delete NPMap.tags;
-    firstLoad = true;
   }
 
   Builder.buildTooltips();
@@ -1404,7 +1449,9 @@ if (mapId) {
   $('#mask').show();
 
   NPMap = {
-    baseLayers: ['nps-lightStreets'],
+    baseLayers: [
+      'nps-lightStreets'
+    ],
     center: {
       lat: 39,
       lng: -96

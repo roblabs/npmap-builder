@@ -472,8 +472,35 @@ body.dragging, body.dragging * {
   color: white;
   display: none;
   position: absolute;
-  right: 225px;
+  right: 150px;
 }
   .info-saved p {
     margin-bottom: -3px;
   }
+.configure-interactivity textarea {
+  resize: none;
+  width: 244px;
+}
+.configure-interactivity .tokens {
+  margin-bottom: 20px;
+}
+  .configure-interactivity .tokens span {
+    -webkit-border-radius: 6px / 4px;
+       -moz-border-radius: 6px / 4px;
+            border-radius: 6px / 4px;
+    -webkit-background-clip: padding-box;
+      -moz-background-clip: padding;
+           background-clip: padding-box;
+    background-color: #fbebae;
+    cursor: pointer;
+    float: left;
+    font-size: 11px;
+    margin-left: 3px;
+    margin-top: 3px;
+    padding: 4px 6px;
+  }
+  /*
+  .configure-interactivity .tokens span:first-child {
+    margin-left: 0;
+  }
+  */

@@ -268,6 +268,16 @@ Builder.ui.modal.addLayer = (function() {
 
   return {
     _editingIndex: -1,
+
+
+
+
+
+
+
+
+
+
     _click: function() {
       var attribution = $attribution.val() || null,
         config,
@@ -515,13 +525,22 @@ Builder.ui.modal.addLayer = (function() {
         if (Builder.ui.modal.addLayer._editingIndex === -1) {
           Builder.addOverlay(config);
         } else {
-          var $li = $($layers.children()[Builder.ui.modal.addLayer._editingIndex]);
+          var $li = $($layers.children()[Builder.ui.modal.addLayer._editingIndex]),
+            $interactivity = $($li.find('.interactivity')[0]);
 
           NPMap.overlays[Builder.ui.modal.addLayer._editingIndex] = config;
           $($li.find('.name')[0]).text(config.name);
 
           if (config.description) {
             $($li.find('.description')[0]).text(config.description);
+          }
+
+          if (typeof config.clickable === 'undefined' || config.clickable === true) {
+            $interactivity.show();
+          } else {
+            $interactivity.hide();
+            delete config.popup;
+            delete config.tooltip;
           }
         }
 

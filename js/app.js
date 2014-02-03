@@ -5,6 +5,7 @@ var Builder, NPMap, mapId;
 function ready() {
   Builder = (function() {
     var $activeChangeStyleButton = null,
+      $activeConfigureInteractivityButton = null,
       $buttonAddAnotherLayer = $('#button-addAnotherLayer'),
       $buttonEditBaseMapsAgain = $('#button-editBaseMapsAgain'),
       $buttonExport = $('#button-export'),
@@ -543,6 +544,10 @@ function ready() {
         steps: {
           addAndCustomizeData: {
             handlers: {
+              cancelApplyInteractivity: function() {
+                $activeConfigureInteractivityButton.popover('toggle');
+                $('#mask').hide();
+              },
               cancelApplyStyles: function() {
                 $activeChangeStyleButton.popover('toggle');
                 $('#mask').hide();
@@ -568,12 +573,64 @@ function ready() {
                   }
                 }
               },
+              changeEnableTooltips: function(el) {
+                var $el = $(el),
+                  $tip = $($($el.parent().parent().next().children('textarea')[0])[0]),
+                  checked = $el.prop('checked');
+
+                $tip.prop('disabled', !checked);
+
+                if (!checked) {
+                  $tip.val('');
+                }
+              },
               changeMarkerLibrary: function(el) {
                 var $el = $('#' + el.id.replace('_marker-library', '') + '_marker-symbol'),
                   options = $(el).val() === 'maki' ? optionsMaki : optionsNpmaki;
 
                 $el.html(options);
                 $el.val(null);
+              },
+              clickApplyInteractivity: function(elName, overlayName) {
+                var popup = '',
+                  description, overlay, tooltip, title;
+
+                for (var i = 0; i < NPMap.overlays.length; i++) {
+                  var o = NPMap.overlays[i];
+
+                  if (o.name === overlayName) {
+                    overlay = o;
+                    break;
+                  }
+                }
+
+                description = $('#' + elName + '_description').val();
+                title = $('#' + elName + '_title').val();
+                tooltip = $('#' + elName + '_tooltip').val();
+                
+                if (title) {
+                  popup += '<div class="title">' + title + '</div>';
+                }
+
+                if (description) {
+                  popup += '<div class="content">' + description + '</div>';
+                }
+
+                if (popup.length) {
+                  overlay.popup = popup;
+                } else {
+                  delete overlay.popup;
+                }
+
+                if (tooltip) {
+                  overlay.tooltip = tooltip;
+                } else {
+                  delete overlay.tooltip;
+                }
+
+                $activeConfigureInteractivityButton.popover('toggle');
+                $('#mask').hide();
+                Builder.updateMap();
               },
               clickApplyStyles: function(elName, overlayName) {
                 var overlay;
@@ -629,7 +686,7 @@ function ready() {
                     name = overlay.name.split(' ').join('_'),
                     html;
 
-                  html = generateLayerChangeStyle(name) + '<div style="text-align:center;"><button class="btn btn-primary" onclick="Builder.ui.steps.addAndCustomizeData.handlers.clickApplyStyles(\'' + name + '\',\'' + overlay.name + '\');" type="button">Apply Styles</button><button class="btn btn-default" onclick="Builder.ui.steps.addAndCustomizeData.handlers.cancelApplyStyles();" style="margin-left:5px;">Cancel</button></div>';
+                  html = generateLayerChangeStyle(name) + '<div style="text-align:center;"><button class="btn btn-primary" onclick="Builder.ui.steps.addAndCustomizeData.handlers.clickApplyStyles(\'' + name + '\',\'' + overlay.name + '\');" type="button">Apply</button><button class="btn btn-default" onclick="Builder.ui.steps.addAndCustomizeData.handlers.cancelApplyStyles();" style="margin-left:5px;">Cancel</button></div>';
 
                   $el.popover({
                     animation: false,
@@ -765,6 +822,112 @@ function ready() {
                   $activeChangeStyleButton = $el;
                 }
               },
+              clickLayerConfigureInteractivity: function(el) {
+                var $el = $(el);
+
+                if ($el.data('popover-created')) {
+                  $el.popover('toggle');
+                } else {
+                  var overlay = NPMap.overlays[getLayerIndexFromButton(el)],
+                    name = overlay.name.split(' ').join('_'),
+                    supportsTooltips = (overlay.type === 'cartodb' || overlay.type === 'csv' || overlay.type === 'geojson' || overlay.type === 'kml' || overlay.type === 'mapbox'),
+                    html;
+
+                  html = '' +
+                    // Checkbox here "Display all fields in a table?" should be checked on by default.
+                    //'<p>HTML and <a href="http://handlebarsjs.com" target="_blank">Handlebars</a> templates are supported.</p>' +
+                    '<form class="configure-interactivity" id="' + name + '_layer-configure-interactivity" role="form">' +
+                      '<fieldset>' +
+                        '<div class="form-group">' +
+                          '<span><label for="' + name + '_title">Title</label><img rel="tooltip" src="img/help.png" style="cursor:pointer;float:right;height:18px;" title="The title will display in bold at the top of the popup. HTML and Handlebars templates are allowed." data-placement="bottom"></span>' +
+                          '<textarea class="form-control" id="' + name + '_title" rows="3"></textarea>' +
+                        '</div>' +
+                        '<div class="form-group">' + // style="margin-bottom:7px;"
+                          '<span><label for="' + name + '_description">Description</label><img rel="tooltip" src="img/help.png" style="cursor:pointer;float:right;height:18px;" title="The description will display underneath the title. HTML and Handlebars templates are allowed." data-placement="bottom"></span>' +
+                          '<textarea class="form-control" id="' + name + '_description" rows="6"></textarea>' +
+                          /*'<span class="help-block">Double-click a token below to add it to the "Title" or "Description" fields below.</span>' +*/
+                        '</div>' +
+                        (supportsTooltips ? '' +
+                          '<div class="checkbox">' +
+                            '<label>' +
+                              '<input onchange="Builder.ui.steps.addAndCustomizeData.handlers.changeEnableTooltips(this);return false;" type="checkbox" value="tooltips"> Enable tooltips?' +
+                            '</label>' +
+                          '</div>' +
+                          '<div class="form-group">' +
+                            '<span><label for="' + name + '_tooltip">Tooltip</label><img rel="tooltip" src="img/help.png" style="cursor:pointer;float:right;height:18px;" title="Tooltips display when the cursor moves over a shape. HTML and Handlebars templates are allowed." data-placement="bottom"></span>' +
+                            '<textarea class="form-control" id="' + name + '_tooltip" rows="3" disabled></textarea>' +
+                          '</div>' +
+                        '' : '') +
+                        /*
+                        '<div class="tokens">' +
+                          '<span>Field1</span><span>Field2</span><span>Field3</span><span>Field4</span><span>Field5</span><span>Field6</span><span>Field7</span>' +
+                        '</div>' +
+                        */
+                      '</fieldset>' +
+                    '</form>' +
+                    '<div style="text-align:center;"><button class="btn btn-primary" onclick="Builder.ui.steps.addAndCustomizeData.handlers.clickApplyInteractivity(\'' + name + '\',\'' + overlay.name + '\');" type="button">Apply</button><button class="btn btn-default" onclick="Builder.ui.steps.addAndCustomizeData.handlers.cancelApplyInteractivity();" style="margin-left:5px;">Cancel</button></div>';
+
+                  $el.popover({
+                    animation: false,
+                    container: 'body',
+                    content: html,
+                    html: true,
+                    placement: 'right',
+                    title: null,
+                    trigger: 'manual'
+                  })
+                    .on('hide.bs.popover', function() {
+                      $activeConfigureInteractivityButton = null;
+                      $('#' + name + '_description').val('');
+                      $('#' + name + '_title').val('');
+                      $('#' + name + '_tooltip').val('');
+                      $($('#' + name + '_layer-configure-interactivity .checkbox input')[0]).prop('checked', false).trigger('change');
+                    })
+                    .on('shown.bs.popover', function() {
+                      overlay = NPMap.overlays[getLayerIndexFromButton(el)];
+                      $activeConfigureInteractivityButton = $el;
+                      $('#mask').show();
+
+                      if (overlay.popup) {
+                        var div = document.createElement('div'),
+                          description, title;
+                        
+                        div.innerHTML = overlay.popup;
+
+                        for (var i = 0; i < div.childNodes.length; i++) {
+                          var $childNode = $(div.childNodes[i]);
+
+                          if ($childNode.hasClass('title')) {
+                            title = $childNode.html();
+                          } else if ($childNode.hasClass('content')) {
+                            description = $childNode.html();
+                          }
+                        }
+
+                        if (description) {
+                          $('#' + name + '_description').val(description);
+                        }
+
+                        if (title) {
+                          $('#' + name + '_title').val(title);
+                        }
+                      }
+
+                      if (overlay.tooltip) {
+                        $($('#' + name + '_layer-configure-interactivity .checkbox input')[0]).prop('checked', true).trigger('change');
+                        $('#' + name + '_tooltip').val(overlay.tooltip);
+                      }
+
+                      Builder.buildTooltips();
+                    });
+                  $el.popover('show');
+                  $('.popover.right.in').css({
+                    'z-index': 1031
+                  });
+                  $el.data('popover-created', true);
+                  $activeConfigureInteractivityButton = $el;
+                }
+              },
               clickLayerEdit: function(el) {
                 var index = getLayerIndexFromButton(el);
 
@@ -788,9 +951,6 @@ function ready() {
               },
               clickLayerRemove: function(el) {
                 Builder.showConfirm('Yes, remove the layer', 'Once the layer is removed, you cannot get it back.', 'Are you sure?', function() {
-                  
-
-
                   Builder.ui.steps.addAndCustomizeData.removeLi(el);
                   Builder.removeOverlay(getLayerIndexFromButton(el));
                 });
@@ -853,6 +1013,7 @@ function ready() {
             },
             overlayToLi: function(overlay) {
               var index,
+                interactive = (overlay.type !== 'tiled' && (typeof overlay.clickable === 'undefined' || overlay.clickable === true)),
                 styleable = (overlay.type === 'cartodb' || overlay.type === 'csv' || overlay.type === 'geojson' || overlay.type === 'kml');
 
               if (!$layers.is(':visible')) {
@@ -874,7 +1035,8 @@ function ready() {
                       '<button class="btn btn-default btn-xs" data-container="section" onclick="Builder.ui.steps.addAndCustomizeData.handlers.clickLayerEdit(this);" type="button"><span class="glyphicon glyphicon-edit"> Edit</span></button>' +
                     '</div>' +
                     '<div style="float:right;margin-right:10px;">' +
-                      (styleable ? '<button class="btn btn-default btn-xs" data-container="section" data-placement="bottom" onclick="Builder.ui.steps.addAndCustomizeData.handlers.clickLayerChangeStyle(this);" rel="tooltip" style="margin-right:5px;" title="Change Style" type="button"><span class="glyphicon glyphicon-map-marker"></span></button>' : '') +
+                      '<button class="btn btn-default btn-xs interactivity" data-container="section" data-placement="bottom" onclick="Builder.ui.steps.addAndCustomizeData.handlers.clickLayerConfigureInteractivity(this);" rel="tooltip" style="' + (interactive ? '' : 'display:none;') + 'margin-right:5px;" title="Configure Interactivity" type="button"><span class="glyphicon glyphicon-comment"></span></button>' +
+                      '<button class="btn btn-default btn-xs" data-container="section" data-placement="bottom" onclick="Builder.ui.steps.addAndCustomizeData.handlers.clickLayerChangeStyle(this);" rel="tooltip" style="' + (styleable ? '' : 'display:none;') + 'margin-right:5px;" title="Change Style" type="button"><span class="glyphicon glyphicon-map-marker"></span></button>' +
                       '<button class="btn btn-default btn-xs" data-container="section" data-placement="bottom" onclick="Builder.ui.steps.addAndCustomizeData.handlers.clickLayerRemove(this);" rel="tooltip" title="Delete Overlay" type="button"><span class="glyphicon glyphicon-trash"></span></button>' +
                       '</button>' +
                     '</div>' +
@@ -1087,12 +1249,6 @@ function ready() {
               loadModule('Builder.ui.modal.viewConfig', function() {
                 $modalViewConfig = $('#modal-viewConfig');
               });
-            });
-            $('#button-feedback').on('click', function() {
-              window.open('https://github.com/nationalparkservice/npmap-builder/issues', '_blank');
-            });
-            $('#button-help').on('click', function() {
-              window.open('https://github.com/nationalparkservice/npmap-builder/wiki', '_blank');
             });
             $('#button-save').on('click', saveMap);
             $('#button-settings').on('click', function() {

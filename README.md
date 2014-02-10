@@ -8,6 +8,16 @@ The NPMap Builder is a graphical interface that can be used to build maps with t
 
 That said, output from the builder should provide a good base starting point for all maps - even those that require additional customizations.
 
+# Build
+
+You can create a production build with minified and combined JavaScript and CSS by using Grunt:
+
+1. Install Node and NPM
+2. `npm install`
+3. `grunt`
+
+The build will be created in the `_site` directory.
+
 # Status
 
 The NPMap Builder is a work-in-progress. Consider the code pre-alpha and the feature set incomplete.

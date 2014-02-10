@@ -5,7 +5,9 @@ var Builder, NPMap, mapId;
 function ready() {
   Builder = (function() {
     var $activeChangeStyleButton = null,
+      $activeConfigureInteractivityButton = null,
       $buttonAddAnotherLayer = $('#button-addAnotherLayer'),
+      $buttonCreateDatasetAgain = $('#button-createDatasetAgain'),
       $buttonEditBaseMapsAgain = $('#button-editBaseMapsAgain'),
       $buttonExport = $('#button-export'),
       $buttonSave = $('#button-save'),
@@ -15,6 +17,7 @@ function ready() {
       $layers = $('#layers'),
       $modalAddLayer,
       $modalConfirm = $('#modal-confirm'),
+      $modalCreateDataset,
       $modalEditBaseMaps,
       $modalExport,
       $modalViewConfig,
@@ -25,7 +28,7 @@ function ready() {
       description = null,
       descriptionSet = false,
       descriptionZ = null,
-      firstLoad = true,
+      firstLoad = false,
       optionsColor = '',
       optionsMaki = '',
       optionsNpmaki = '',
@@ -39,6 +42,14 @@ function ready() {
     function disableSave() {
       $buttonSave.prop('disabled', true);
       $buttonExport.text('Export Your Map');
+    }
+    function escapeHtml(unsafe) {
+      return unsafe
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
     }
     function enableSave() {
       $buttonSave.prop('disabled', false);
@@ -68,7 +79,7 @@ function ready() {
         return '' +
           '<form class="change-style" id="' + name + '_layer-change-style" role="form">' +
             '<div class="checkbox">' +
-              '<label><input type="checkbox" checked="checked"> This overlay contain points</label>' +
+              '<label><input type="checkbox" checked="checked" id="cartodb-has-points" onchange="Builder.ui.steps.addAndCustomizeData.handlers.changeCartoDbHasPoints(this);return false;"> This overlay contain points</label>' +
             '</div>' +
             '<fieldset>' +
               '<div class="form-group">' +
@@ -78,6 +89,10 @@ function ready() {
               '<div class="form-group">' +
                 '<label for="' + name + '_marker-size">Point Size</label>' +
                 '<select id="' + name + '_marker-size"><option value="small">Small</option><option value="medium">Medium</option><option value="large">Large</option></select>' +
+              '</div>' +
+              '<div class="form-group">' +
+                '<label for="' + name + '_marker-opacity">Point Opacity</label>' +
+                '<select id="' + name + '_marker-opacity"><option value="0.1">0.1</option><option value="0.2">0.2</option><option value="0.3">0.3</option><option value="0.4">0.4</option><option value="0.5">0.5</option><option value="0.6">0.6</option><option value="0.7">0.7</option><option value="0.8">0.8</option><option value="0.9">0.9</option><option value="1">1</option></select>' +
               '</div>' +
             '</fieldset>' +
             '<fieldset>' +
@@ -281,6 +296,20 @@ function ready() {
         base = '/',
         error = 'You must be connected to the National Park Service network to save a map.';
 
+      if (NPMap.overlays && NPMap.overlays.length) {
+        for (var i = 0; i < NPMap.overlays.length; i++) {
+          var overlay = NPMap.overlays[i];
+
+          if (overlay.popup) {
+            overlay.popup = escapeHtml(overlay.popup);
+          }
+
+          if (overlay.tooltip) {
+            overlay.tooltip = escapeHtml(overlay.tooltip);
+          }
+        }
+      }
+
       Builder.showLoading();
       $this.blur();
       $.ajax({
@@ -309,26 +338,34 @@ function ready() {
               mapId = response.mapId;
               updateSaveStatus(response.modified);
               alertify.success('Your map was saved!');
-              if (callback) {
+              if (typeof callback === 'function') {
                 callback(true);
               }
             } else {
               alertify.error('Sorry, but there was an error saving your map. Please try again.');
 
-              if (callback) {
+              if (typeof callback === 'function') {
                 callback(false);
               }
             }
           } else {
             alertify.error(error);
 
-            if (callback) {
+            if (typeof callback === 'function') {
               callback(false);
             }
           }
         },
         url: base + 'builder/save' + (base === '/' ? '' : '&callback=?')
       });
+    }
+    function unescapeHtml(unsafe) {
+      return unsafe
+        .replace(/&amp;/g, '&')
+        .replace(/&lt;/g, '<')
+        .replace(/&gt;/g, '>')
+        .replace(/&quot;/g, '\"')
+        .replace(/&#039;/g, '\'');
     }
     function updateInitialCenterAndZoom() {
       $lat.html(NPMap.center.lat.toFixed(2));
@@ -413,6 +450,10 @@ function ready() {
         },
         metadata: {
           init: function() {
+            description = NPMap.description;
+            firstLoad = true;
+            title = NPMap.name;
+
             $('#metadata .description a').text(NPMap.description).editable({
               animation: false,
               container: '#metadata div.info',
@@ -476,7 +517,7 @@ function ready() {
               emptytext: 'Untitled Map',
               validate: function(value) {
                 if ($.trim(value) === '') {
-                  return 'Please enter a title for your map.';
+                  return 'Please enter a name for your map.';
                 }
               }
             })
@@ -539,12 +580,93 @@ function ready() {
         steps: {
           addAndCustomizeData: {
             handlers: {
+              cancelApplyInteractivity: function() {
+                $activeConfigureInteractivityButton.popover('toggle');
+                $('#mask').hide();
+              },
+              cancelApplyStyles: function() {
+                $activeChangeStyleButton.popover('toggle');
+                $('#mask').hide();
+              },
+              changeCartoDbHasPoints: function(el) {
+                var $el = $(el),
+                  $next = $($el.parent().parent().next()),
+                  $popover = $next.parents('.popover');
+
+                if ($el.prop('checked')) {
+                  if ($next.is(':hidden')) {
+                    $next.show();
+                    $popover.css({
+                      top: (parseInt($popover.css('top').replace('px', ''), 10) - $next.outerHeight() + 45) + 'px'
+                    });
+                  }
+                } else {
+                  if ($next.is(':visible')) {
+                    $popover.css({
+                      top: (parseInt($popover.css('top').replace('px', ''), 10) + $next.outerHeight() - 45) + 'px'
+                    });
+                    $next.hide();
+                  }
+                }
+              },
+              changeEnableTooltips: function(el) {
+                var $el = $(el),
+                  $tip = $($($el.parent().parent().next().children('textarea')[0])[0]),
+                  checked = $el.prop('checked');
+
+                $tip.prop('disabled', !checked);
+
+                if (!checked) {
+                  $tip.val('');
+                }
+              },
               changeMarkerLibrary: function(el) {
                 var $el = $('#' + el.id.replace('_marker-library', '') + '_marker-symbol'),
                   options = $(el).val() === 'maki' ? optionsMaki : optionsNpmaki;
 
                 $el.html(options);
                 $el.val(null);
+              },
+              clickApplyInteractivity: function(elName, overlayName) {
+                var popup = '',
+                  d, overlay, t, tooltip;
+
+                for (var i = 0; i < NPMap.overlays.length; i++) {
+                  var o = NPMap.overlays[i];
+
+                  if (o.name === overlayName) {
+                    overlay = o;
+                    break;
+                  }
+                }
+
+                d = $('#' + elName + '_description').val();
+                t = $('#' + elName + '_title').val();
+                tooltip = $('#' + elName + '_tooltip').val();
+                
+                if (t) {
+                  popup += '<div class="title">' + t + '</div>';
+                }
+
+                if (d) {
+                  popup += '<div class="content">' + d + '</div>';
+                }
+
+                if (popup.length) {
+                  overlay.popup = escapeHtml(popup);
+                } else {
+                  delete overlay.popup;
+                }
+
+                if (tooltip) {
+                  overlay.tooltip = escapeHtml(tooltip);
+                } else {
+                  delete overlay.tooltip;
+                }
+
+                $activeConfigureInteractivityButton.popover('toggle');
+                $('#mask').hide();
+                Builder.updateMap();
               },
               clickApplyStyles: function(elName, overlayName) {
                 var overlay;
@@ -558,13 +680,33 @@ function ready() {
                   }
                 }
 
-                $.each($('#' + elName + '_layer-change-style .form-group'), function(j, el) {
-                  var $select = $($(el).children('select')[0]),
-                    sansName = $select.attr('id').replace(elName + '_', ''),
-                    type = sansName.split('_')[0];
+                if (overlay.type === 'cartodb') {
+                  var ignorePointStyles = !$('#cartodb-has-points').prop('checked');
 
-                  overlay.styles[type][sansName.replace(type + '_', '')] = $select.val();
-                });
+                  $.each($('#' + elName + '_layer-change-style .form-group'), function(j, el) {
+                    var $select = $($(el).children('select')[0]),
+                      sansName = $select.attr('id').replace(elName + '_', '');
+
+                    if (sansName.indexOf('marker') === -1) {
+                      overlay.styles[sansName] = $select.val();
+                    } else {
+                      if (ignorePointStyles) {
+                        delete overlay.styles['marker-color'];
+                        delete overlay.styles['marker-size'];
+                      } else {
+                        overlay.styles[sansName] = $select.val();
+                      }
+                    }
+                  });
+                } else {
+                  $.each($('#' + elName + '_layer-change-style .form-group'), function(j, el) {
+                    var $select = $($(el).children('select')[0]),
+                      sansName = $select.attr('id').replace(elName + '_', ''),
+                      type = sansName.split('_')[0];
+
+                    overlay.styles[type][sansName.replace(type + '_', '')] = $select.val();
+                  });
+                }
 
                 $activeChangeStyleButton.popover('toggle');
                 $('#mask').hide();
@@ -580,7 +722,7 @@ function ready() {
                     name = overlay.name.split(' ').join('_'),
                     html;
 
-                  html = generateLayerChangeStyle(name) + '<div style="text-align:center;"><button class="btn btn-primary" onclick="Builder.ui.steps.addAndCustomizeData.handlers.clickApplyStyles(\'' + name + '\',\'' + overlay.name + '\');" type="button">Apply Styles</button></div>';
+                  html = generateLayerChangeStyle(name) + '<div style="text-align:center;"><button class="btn btn-primary" onclick="Builder.ui.steps.addAndCustomizeData.handlers.clickApplyStyles(\'' + name + '\',\'' + overlay.name + '\');" type="button">Apply</button><button class="btn btn-default" onclick="Builder.ui.steps.addAndCustomizeData.handlers.cancelApplyStyles();" style="margin-left:5px;">Cancel</button></div>';
 
                   $el.popover({
                     animation: false,
@@ -598,7 +740,8 @@ function ready() {
                       });
                     })
                     .on('shown.bs.popover', function() {
-                      var $select, prop, style, type, value;
+                      var styles = overlay.type === 'cartodb' ? Builder._defaultStylesCollapsed : Builder._defaultStyles,
+                        $select, prop, style, type, value;
 
                       $activeChangeStyleButton = $el;
                       $('#mask').show();
@@ -610,17 +753,13 @@ function ready() {
                       });
 
                       if (!overlay.styles) {
-                        if (!overlay.styles) {
-                          overlay.styles = $.extend({}, Builder._defaultStyles);
-                        }
+                        overlay.styles = styles;
                       }
 
-                      for (type in Builder._defaultStyles) {
-                        style = Builder._defaultStyles[type];
-
-                        for (prop in style) {
-                          $select = $('#' + name + '_' + type + '_' + prop);
-                          value = style[prop];
+                      if (overlay.type === 'cartodb') {
+                        for (prop in Builder._defaultStylesCollapsed) {
+                          $select = $('#' + name + '_' + prop);
+                          value = Builder._defaultStylesCollapsed[prop];
 
                           if (prop === 'fill' || prop === 'marker-color' || prop === 'stroke') {
                             $select.simplecolorpicker('selectColor', value);
@@ -636,14 +775,10 @@ function ready() {
                             $select.val(value);
                           }
                         }
-                      }
 
-                      for (type in overlay.styles) {
-                        style = overlay.styles[type];
-
-                        for (prop in style) {
-                          $select = $('#' + name + '_' + type + '_' + prop);
-                          value = style[prop];
+                        for (prop in overlay.styles) {
+                          $select = $('#' + name + '_' + prop);
+                          value = overlay.styles[prop];
 
                           if (prop === 'fill' || prop === 'marker-color' || prop === 'stroke') {
                             $select.simplecolorpicker('selectColor', value);
@@ -659,6 +794,60 @@ function ready() {
                             $select.val(value);
                           }
                         }
+
+                        if (!overlay.styles['marker-color'] && !overlay.styles['marker-size']) {
+                          $('#cartodb-has-points').prop('checked', false);
+                        } else {
+                          $('#cartodb-has-points').prop('checked', true);
+                        }
+
+                        $('#cartodb-has-points').trigger('change');
+                      } else {
+                        for (type in styles) {
+                          style = styles[type];
+
+                          for (prop in style) {
+                            $select = $('#' + name + '_' + type + '_' + prop);
+                            value = style[prop];
+
+                            if (prop === 'fill' || prop === 'marker-color' || prop === 'stroke') {
+                              $select.simplecolorpicker('selectColor', value);
+                            } else {
+                              if (prop === 'marker-symbol') {
+                                if (Builder._defaultStyles.point['marker-library'] === 'maki') {
+                                  $select.html(optionsMaki);
+                                } else {
+                                  $select.html(optionsNpmaki);
+                                }
+                              }
+
+                              $select.val(value);
+                            }
+                          }
+                        }
+
+                        for (type in overlay.styles) {
+                          style = overlay.styles[type];
+
+                          for (prop in style) {
+                            $select = $('#' + name + '_' + type + '_' + prop);
+                            value = style[prop];
+
+                            if (prop === 'fill' || prop === 'marker-color' || prop === 'stroke') {
+                              $select.simplecolorpicker('selectColor', value);
+                            } else {
+                              if (prop === 'marker-symbol') {
+                                if (overlay.styles.point['marker-library'] === 'maki') {
+                                  $select.html(optionsMaki);
+                                } else {
+                                  $select.html(optionsNpmaki);
+                                }
+                              }
+
+                              $select.val(value);
+                            }
+                          }
+                        }
                       }
                     });
                   $el.popover('show');
@@ -667,6 +856,112 @@ function ready() {
                   });
                   $el.data('popover-created', true);
                   $activeChangeStyleButton = $el;
+                }
+              },
+              clickLayerConfigureInteractivity: function(el) {
+                var $el = $(el);
+
+                if ($el.data('popover-created')) {
+                  $el.popover('toggle');
+                } else {
+                  var overlay = NPMap.overlays[getLayerIndexFromButton(el)],
+                    name = overlay.name.split(' ').join('_'),
+                    supportsTooltips = (overlay.type === 'cartodb' || overlay.type === 'csv' || overlay.type === 'geojson' || overlay.type === 'kml' || overlay.type === 'mapbox'),
+                    html;
+
+                  html = '' +
+                    // Checkbox here "Display all fields in a table?" should be checked on by default.
+                    //'<p>HTML and <a href="http://handlebarsjs.com" target="_blank">Handlebars</a> templates are supported.</p>' +
+                    '<form class="configure-interactivity" id="' + name + '_layer-configure-interactivity" role="form">' +
+                      '<fieldset>' +
+                        '<div class="form-group">' +
+                          '<span><label for="' + name + '_title">Title</label><img rel="tooltip" src="img/help.png" style="cursor:pointer;float:right;height:18px;" title="The title will display in bold at the top of the popup. HTML and Handlebars templates are allowed." data-placement="bottom"></span>' +
+                          '<textarea class="form-control" id="' + name + '_title" rows="3"></textarea>' +
+                        '</div>' +
+                        '<div class="form-group">' + // style="margin-bottom:7px;"
+                          '<span><label for="' + name + '_description">Description</label><img rel="tooltip" src="img/help.png" style="cursor:pointer;float:right;height:18px;" title="The description will display underneath the title. HTML and Handlebars templates are allowed." data-placement="bottom"></span>' +
+                          '<textarea class="form-control" id="' + name + '_description" rows="6"></textarea>' +
+                          /*'<span class="help-block">Double-click a token below to add it to the "Title" or "Description" fields below.</span>' +*/
+                        '</div>' +
+                        (supportsTooltips ? '' +
+                          '<div class="checkbox">' +
+                            '<label>' +
+                              '<input onchange="Builder.ui.steps.addAndCustomizeData.handlers.changeEnableTooltips(this);return false;" type="checkbox" value="tooltips"> Enable tooltips?' +
+                            '</label>' +
+                          '</div>' +
+                          '<div class="form-group">' +
+                            '<span><label for="' + name + '_tooltip">Tooltip</label><img rel="tooltip" src="img/help.png" style="cursor:pointer;float:right;height:18px;" title="Tooltips display when the cursor moves over a shape. HTML and Handlebars templates are allowed." data-placement="bottom"></span>' +
+                            '<textarea class="form-control" id="' + name + '_tooltip" rows="3" disabled></textarea>' +
+                          '</div>' +
+                        '' : '') +
+                        /*
+                        '<div class="tokens">' +
+                          '<span>Field1</span><span>Field2</span><span>Field3</span><span>Field4</span><span>Field5</span><span>Field6</span><span>Field7</span>' +
+                        '</div>' +
+                        */
+                      '</fieldset>' +
+                    '</form>' +
+                    '<div style="text-align:center;"><button class="btn btn-primary" onclick="Builder.ui.steps.addAndCustomizeData.handlers.clickApplyInteractivity(\'' + name + '\',\'' + overlay.name + '\');" type="button">Apply</button><button class="btn btn-default" onclick="Builder.ui.steps.addAndCustomizeData.handlers.cancelApplyInteractivity();" style="margin-left:5px;">Cancel</button></div>';
+
+                  $el.popover({
+                    animation: false,
+                    container: 'body',
+                    content: html,
+                    html: true,
+                    placement: 'right',
+                    title: null,
+                    trigger: 'manual'
+                  })
+                    .on('hide.bs.popover', function() {
+                      $activeConfigureInteractivityButton = null;
+                      $('#' + name + '_description').val('');
+                      $('#' + name + '_title').val('');
+                      $('#' + name + '_tooltip').val('');
+                      $($('#' + name + '_layer-configure-interactivity .checkbox input')[0]).prop('checked', false).trigger('change');
+                    })
+                    .on('shown.bs.popover', function() {
+                      overlay = NPMap.overlays[getLayerIndexFromButton(el)];
+                      $activeConfigureInteractivityButton = $el;
+                      $('#mask').show();
+
+                      if (overlay.popup) {
+                        var div = document.createElement('div'),
+                          d, t;
+
+                        div.innerHTML = unescapeHtml(overlay.popup);
+
+                        for (var i = 0; i < div.childNodes.length; i++) {
+                          var $childNode = $(div.childNodes[i]);
+
+                          if ($childNode.hasClass('title')) {
+                            t = $childNode.html();
+                          } else if ($childNode.hasClass('content')) {
+                            d = $childNode.html();
+                          }
+                        }
+
+                        if (d) {
+                          $('#' + name + '_description').val(d);
+                        }
+
+                        if (t) {
+                          $('#' + name + '_title').val(t);
+                        }
+                      }
+
+                      if (overlay.tooltip) {
+                        $($('#' + name + '_layer-configure-interactivity .checkbox input')[0]).prop('checked', true).trigger('change');
+                        $('#' + name + '_tooltip').val(unescapeHtml(overlay.tooltip));
+                      }
+
+                      Builder.buildTooltips();
+                    });
+                  $el.popover('show');
+                  $('.popover.right.in').css({
+                    'z-index': 1031
+                  });
+                  $el.data('popover-created', true);
+                  $activeConfigureInteractivityButton = $el;
                 }
               },
               clickLayerEdit: function(el) {
@@ -735,6 +1030,19 @@ function ready() {
                   });
                 }
               });
+              $('#button-createDataset, #button-createDatasetAgain').on('click', function() {
+                alertify.log('The create dataset functionality is not quite ready. Please check back soon.', 'info', 15000);
+
+                /*
+                if ($modalCreateDataset) {
+                  $modalCreateDataset.modal('show');
+                } else {
+                  loadModule('Builder.ui.modal.createDataset', function() {
+                    $modalCreateDataset = $('#modal-createDataset');
+                  });
+                }
+                */
+              });
               $('#button-editBaseMaps, #button-editBaseMapsAgain').on('click', function() {
                 if ($modalEditBaseMaps) {
                   $modalEditBaseMaps.modal('show');
@@ -754,6 +1062,7 @@ function ready() {
             },
             overlayToLi: function(overlay) {
               var index,
+                interactive = (overlay.type !== 'tiled' && (typeof overlay.clickable === 'undefined' || overlay.clickable === true)),
                 styleable = (overlay.type === 'cartodb' || overlay.type === 'csv' || overlay.type === 'geojson' || overlay.type === 'kml');
 
               if (!$layers.is(':visible')) {
@@ -765,27 +1074,24 @@ function ready() {
               }
 
               index = $layers.children().length;
-              $layers.append($('<li>', {
-                html: '' +
-                  '<li class="dd-item">' +
-                    '<div class="letter">' + abcs[index] + '</div>' +
-                    '<div class="details">' +
-                      '<span class="name">' + overlay.name + '</span>' +
-                      '<span class="description">' + (overlay.description || '') + '</span>' +
-                      '<span class="actions">' +
-                        '<div style="float:left;">' +
-                          '<button class="btn btn-default btn-xs" data-container="section" onclick="Builder.ui.steps.addAndCustomizeData.handlers.clickLayerEdit(this);" type="button"><span class="glyphicon glyphicon-edit"> Edit</span></button>' +
-                        '</div>' +
-                        '<div style="float:right;">' +
-                          (styleable ? '<button class="btn btn-default btn-xs" data-container="section" data-placement="bottom" onclick="Builder.ui.steps.addAndCustomizeData.handlers.clickLayerChangeStyle(this);" rel="tooltip" style="margin-right:5px;" title="Change Style" type="button"><span class="glyphicon glyphicon-map-marker"></span></button>' : '') +
-                          '<button class="btn btn-default btn-xs" data-container="section" data-placement="bottom" onclick="Builder.ui.steps.addAndCustomizeData.handlers.clickLayerRemove(this);" rel="tooltip" title="Delete Overlay" type="button"><span class="glyphicon glyphicon-trash"></span></button>' +
-                          '</button>' +
-                        '</div>' +
-                      '</span>' +
+              $layers.append($('<li class="dd-item">').html('' +
+                '<div class="letter">' + abcs[index] + '</div>' +
+                '<div class="details">' +
+                  '<span class="name">' + overlay.name + '</span>' +
+                  '<span class="description">' + (overlay.description || '') + '</span>' +
+                  '<span class="actions">' +
+                    '<div style="float:left;">' +
+                      '<button class="btn btn-default btn-xs" data-container="section" onclick="Builder.ui.steps.addAndCustomizeData.handlers.clickLayerEdit(this);" type="button"><span class="glyphicon glyphicon-edit"> Edit</span></button>' +
                     '</div>' +
-                  '</li>' +
-                ''
-              }));
+                    '<div style="float:right;margin-right:10px;">' +
+                      '<button class="btn btn-default btn-xs interactivity" data-container="section" data-placement="bottom" onclick="Builder.ui.steps.addAndCustomizeData.handlers.clickLayerConfigureInteractivity(this);" rel="tooltip" style="' + (interactive ? '' : 'display:none;') + 'margin-right:5px;" title="Configure Interactivity" type="button"><span class="glyphicon glyphicon-comment"></span></button>' +
+                      '<button class="btn btn-default btn-xs" data-container="section" data-placement="bottom" onclick="Builder.ui.steps.addAndCustomizeData.handlers.clickLayerChangeStyle(this);" rel="tooltip" style="' + (styleable ? '' : 'display:none;') + 'margin-right:5px;" title="Change Style" type="button"><span class="glyphicon glyphicon-map-marker"></span></button>' +
+                      '<button class="btn btn-default btn-xs" data-container="section" data-placement="bottom" onclick="Builder.ui.steps.addAndCustomizeData.handlers.clickLayerRemove(this);" rel="tooltip" title="Delete Overlay" type="button"><span class="glyphicon glyphicon-trash"></span></button>' +
+                      '</button>' +
+                    '</div>' +
+                  '</span>' +
+                '</div>' +
+              ''));
               Builder.ui.steps.addAndCustomizeData.refreshUl();
             },
             refreshUl: function() {
@@ -793,17 +1099,18 @@ function ready() {
 
               if ($ul.children().length === 0) {
                 $buttonAddAnotherLayer.hide();
+                $buttonCreateDatasetAgain.hide();
                 $buttonEditBaseMapsAgain.hide();
                 previous.show();
               } else {
                 $buttonAddAnotherLayer.show();
+                $buttonCreateDatasetAgain.show();
                 $buttonEditBaseMapsAgain.show();
                 previous.hide();
               }
             },
             removeLi: function(el) {
               $($(el).parents('li')[0]).remove();
-              
               Builder.ui.steps.addAndCustomizeData.refreshUl();
             }
           },
@@ -994,12 +1301,6 @@ function ready() {
                 $modalViewConfig = $('#modal-viewConfig');
               });
             });
-            $('#button-feedback').on('click', function() {
-              window.open('https://github.com/nationalparkservice/npmap-builder/issues', '_blank');
-            });
-            $('#button-help').on('click', function() {
-              window.open('https://github.com/nationalparkservice/npmap-builder/wiki', '_blank');
-            });
             $('#button-save').on('click', saveMap);
             $('#button-settings').on('click', function() {
               var $this = $(this),
@@ -1046,13 +1347,13 @@ function ready() {
         NPMap.overlays.splice(index, 1);
         this.updateMap();
       },
-      showConfirm: function(button, content, title, callback) {
+      showConfirm: function(button, content, t, callback) {
         $($modalConfirm.find('.btn-primary')[0]).html(button).on('click', function() {
           $modalConfirm.modal('hide');
           callback();
         });
         $($modalConfirm.find('.modal-body')[0]).html(content);
-        $($modalConfirm.find('h4')[0]).html(title);
+        $($modalConfirm.find('h4')[0]).html(t);
         $modalConfirm.modal('show');
       },
       showLoading: function() {
@@ -1111,7 +1412,6 @@ function ready() {
     delete NPMap.modified;
     delete NPMap.name;
     delete NPMap.tags;
-    firstLoad = true;
   }
 
   Builder.buildTooltips();
@@ -1154,7 +1454,9 @@ if (mapId) {
   $('#mask').show();
 
   NPMap = {
-    baseLayers: ['nps-lightStreets'],
+    baseLayers: [
+      'nps-lightStreets'
+    ],
     center: {
       lat: 39,
       lng: -96

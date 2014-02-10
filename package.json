@@ -1,0 +1,32 @@
+{
+  "author": {
+    "email": "nate_irwin@nps.gov",
+    "name": "Nate Irwin",
+    "url": "http://www.nps.gov/npmap/team/nate-irwin.html"
+  },
+  "contributors": [
+    {
+      "email": "james_mcandrew@partner.nps.gov",
+      "name": "Jim McAndrew",
+      "url": "http://www.nps.gov/npmap/team/jim-mcandrew.html"
+    },
+    {
+      "email": "mamata_akella@partner.nps.gov",
+      "name": "Mamata Akella",
+      "url": "http://www.nps.gov/npmap/team/mamata-akella.html"
+    }
+  ],
+  "description": "A Grunt project to concatenate and minify JavaScript and CSS for the NPMap Builder.",
+  "devDependencies": {
+    "grunt": "~0.4.2",
+    "grunt-contrib-clean": "~0.5.0",
+    "grunt-contrib-copy": "~0.5.0",
+    "grunt-contrib-cssmin": "~0.7.0",
+    "grunt-contrib-uglify": "~0.3.2"
+  },
+  "engines": {
+    "node": "*"
+  },
+  "homepage": "http://www.nps.gov/npmap",
+  "version": "0.0.0"
+}

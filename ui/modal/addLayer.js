@@ -20,7 +20,7 @@ Builder.ui.modal.addLayer = (function() {
           $opacity: $('#arcgisserver-opacity'),
           $url: $('#arcgisserver-url').bind('change paste keyup', function() {
             var value = $(this).val(),
-                lower = value.toLowerCase();
+              lower = value.toLowerCase();
 
             if (lower.indexOf('mapserver') === (value.length - 9) || lower.indexOf('mapserver/') === (value.length - 10)) {
               $.ajax({
@@ -197,7 +197,7 @@ Builder.ui.modal.addLayer = (function() {
       Builder.ui.modal.addLayer._editingIndex = -1;
       $('#layerType').removeAttr('disabled');
       $('#modal-addLayer-description').html('You can add an overlay to your map either by typing in information about the overlay or searching the NPMap Catalog for datasets to add <em>(coming soon)</em>. Hover over the help icon above for more information.');
-      $('#modal-addLayer-title').html('Add Overlay&nbsp;<img src="img/help.png" rel="tooltip" title="You can add ArcGIS Server, CartoDB, GeoJSON, KML, and MapBox Hosting overlays to your map. The NPMap Catalog includes results from the National Park Service ArcGIS Server (from both ArcGIS Online and public-facing ArcGIS Server instances), CartoDB, GitHub, and MapBox Hosting accounts." data-placement="bottom">');
+      $('#modal-addLayer-title').html('Add Overlay&nbsp;<img src="img/help.png" style="height:18px;" rel="tooltip" title="You can add ArcGIS Server, CartoDB, GeoJSON, KML, and MapBox Hosting overlays to your map. The NPMap Catalog includes results from the National Park Service ArcGIS Server (from both ArcGIS Online and public-facing ArcGIS Server instances), CartoDB, GitHub, and MapBox Hosting accounts." data-placement="bottom">');
       $('#modal-addLayer .btn-primary').text('Add to Map');
       Builder.buildTooltips();
     })
@@ -515,13 +515,22 @@ Builder.ui.modal.addLayer = (function() {
         if (Builder.ui.modal.addLayer._editingIndex === -1) {
           Builder.addOverlay(config);
         } else {
-          var $li = $($layers.children()[Builder.ui.modal.addLayer._editingIndex]);
+          var $li = $($layers.children()[Builder.ui.modal.addLayer._editingIndex]),
+            $interactivity = $($li.find('.interactivity')[0]);
 
           NPMap.overlays[Builder.ui.modal.addLayer._editingIndex] = config;
           $($li.find('.name')[0]).text(config.name);
 
           if (config.description) {
             $($li.find('.description')[0]).text(config.description);
+          }
+
+          if (typeof config.clickable === 'undefined' || config.clickable === true) {
+            $interactivity.show();
+          } else {
+            $interactivity.hide();
+            delete config.popup;
+            delete config.tooltip;
           }
         }
 

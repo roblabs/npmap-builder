@@ -3,14 +3,24 @@
     <div class="modal-content">
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-        <h4 id="modal-addLayer-title" class="modal-title">Add Overlay&nbsp;<img src="img/help.png" rel="tooltip" title="You can add ArcGIS Server, CartoDB, GeoJSON, KML, and MapBox Hosting overlays to your map. The NPMap Catalog includes results from the National Park Service ArcGIS Server (from both ArcGIS Online and public-facing ArcGIS Server instances), CartoDB, GitHub, and MapBox Hosting accounts." data-placement="bottom"></h4>
+        <h4 id="modal-addLayer-title" class="modal-title">Add an Existing Overlay&nbsp;<img src="img/help.png" style="height:18px;" rel="tooltip" title="You can add ArcGIS Server, CartoDB, GeoJSON, KML, and MapBox Hosting overlays to your map. The NPMap Catalog includes results from the National Park Service ArcGIS Server (from both ArcGIS Online and public-facing ArcGIS Server instances), CartoDB, GitHub, and MapBox Hosting accounts." data-placement="bottom"></h4>
       </div>
       <div class="modal-body">
-        <p id="modal-addLayer-description">You can add an overlay to your map either by typing in information about the overlay or searching the NPMap Catalog for datasets to add <em>(coming soon)</em>. Hover over the help icon above for more information.</p>
+        <p id="modal-addLayer-description">You can add an overlay to your map by typing in information about a hosted dataset or searching the NPMap Catalog for datasets created by National Park Service parks, programs, and partners <em>(coming soon)</em>.</p>
         <ul class="nav nav-tabs">
-          <li class="active"><a href="#manual" data-toggle="tab">Manual</a></li>
+          <li class="active"><a href="#hosted" data-toggle="tab">Hosted</a></li>
           <li class="disabled"><a href="#search" data-toggle="tab">Search</a></li>
         </ul>
+
+<!--
+
+Get rid of "Create/Upload" tab
+Support drag-and-drop of files onto map, pop up window so they can add a title and description, then add to map
+They can then enter "edit" mode for the layer, where they can create new data, edit existing data, delete existing data, and change attributes/symbology (simplestyle)
+In the "Search" tab, allow them to view their data layers and edit these layers (overwrite w/new file, edit metadata, download, etc.)
+
+-->
+
         <div class="tab-content">
           <div id="manual" class="tab-pane active">
             <form role="form">
@@ -179,14 +189,12 @@
               -->
             </form>
           </div>
-          <!--
           <div id="search" class="tab-pane">
             <form role="form">
               <label for="modal-addLayer-search">Start typing below to search for an overlay.</label>
               <input id="modal-addLayer-search" type="text" class="form-control"></input>
             </form>
           </div>
-          -->
         </div>
       </div>
       <div class="modal-footer">

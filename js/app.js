@@ -35,6 +35,11 @@ function ready() {
       settingsSet = false,
       settingsZ = null,
       stepLis = $('#steps li'),
+      tagsToReplace = {
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;'
+      },
       title = null,
       titleSet = false,
       titleZ = null;
@@ -290,6 +295,12 @@ function ready() {
         },
         url: module + '.html'
       });
+    }
+    function replaceTag(tag) {
+      return tagsToReplace[tag] || tag;
+    }
+    function safeTagsReplace(str) {
+      return str.replace(/[&<>]/g, replaceTag);
     }
     function saveMap(callback) {
       var $this = $(this),
@@ -1405,6 +1416,9 @@ function ready() {
     Builder.ui.steps.addAndCustomizeData.load();
     Builder.ui.steps.additionalToolsAndSettings.load();
     Builder.ui.steps.setCenterAndZoom.load();
+    
+
+
     delete NPMap.created;
     delete NPMap.description;
     delete NPMap.isPublic;

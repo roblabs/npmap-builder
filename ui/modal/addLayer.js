@@ -268,6 +268,16 @@ Builder.ui.modal.addLayer = (function() {
 
   return {
     _editingIndex: -1,
+
+
+
+
+
+
+
+
+
+
     _click: function() {
       var attribution = $attribution.val() || null,
         config,

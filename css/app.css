@@ -394,10 +394,7 @@ iframe {
   border-bottom: none;
   margin-bottom: 0;
 }
-#button-createDatasetAgain {
-  margin-top: 0;
-}
-#button-editBaseMapsAgain {
+#button-addAnotherLayer, #button-createDatasetAgain {
   margin-top: 0;
 }
 #button-addLayer, #button-createDataset, #button-editBaseMaps {

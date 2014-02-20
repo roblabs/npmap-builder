@@ -435,10 +435,12 @@ function ready() {
       ui: {
         app: {
           init: function() {
-            $($('section .step .btn-primary')[0]).on('click', function() {
+            var stepButtons = $('section .step .btn-primary');
+
+            $(stepButtons[0]).on('click', function() {
               goToStep(0, 1);
             });
-            $($('section .step .btn-primary')[1]).on('click', function() {
+            $(stepButtons[1]).on('click', function() {
               goToStep(1, 2);
             });
             $.each(stepLis, function(i, li) {
@@ -1416,9 +1418,6 @@ function ready() {
     Builder.ui.steps.addAndCustomizeData.load();
     Builder.ui.steps.additionalToolsAndSettings.load();
     Builder.ui.steps.setCenterAndZoom.load();
-    
-
-
     delete NPMap.created;
     delete NPMap.description;
     delete NPMap.isPublic;

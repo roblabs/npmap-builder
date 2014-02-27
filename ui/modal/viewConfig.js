@@ -21,14 +21,14 @@ Builder.ui.modal.viewConfig = (function() {
       sorted.push(prop);
     }
 
-    sorted.sort(function(a, b) {
-      return a > b;
-    });
+    sorted.sort();
 
     for (var i = 0; i < sorted.length; i++) {
       prop = sorted[i];
       npmapSorted[prop] = NPMap[prop];
     }
+
+    console.log(npmapSorted);
 
     json = JSON.stringify(npmapSorted, null, 2).split('\n');
 

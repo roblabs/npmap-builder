@@ -35,11 +35,6 @@ function ready() {
       settingsSet = false,
       settingsZ = null,
       stepLis = $('#steps li'),
-      tagsToReplace = {
-        '&': '&amp;',
-        '<': '&lt;',
-        '>': '&gt;'
-      },
       title = null,
       titleSet = false,
       titleZ = null;
@@ -296,12 +291,6 @@ function ready() {
         url: module + '.html'
       });
     }
-    function replaceTag(tag) {
-      return tagsToReplace[tag] || tag;
-    }
-    function safeTagsReplace(str) {
-      return str.replace(/[&<>]/g, replaceTag);
-    }
     function saveMap(callback) {
       var $this = $(this),
         base = '/',
@@ -467,7 +456,7 @@ function ready() {
             firstLoad = true;
             title = NPMap.name;
 
-            $('#metadata .description a').text(NPMap.description).editable({
+            $('#metadata .description a').text(description).editable({
               animation: false,
               container: '#metadata div.info',
               emptytext: 'Add a description to give your map context.',
@@ -507,6 +496,7 @@ function ready() {
                 }
 
                 description = newDescription;
+                NPMap.description = description;
               })
               .on('shown', function() {
                 var next = $(this).parent().next();
@@ -525,12 +515,12 @@ function ready() {
                   'resize': 'none'
                 });
               });
-            $('#metadata .title a').text(NPMap.name).editable({
+            $('#metadata .title a').text(title).editable({
               animation: false,
               emptytext: 'Untitled Map',
               validate: function(value) {
                 if ($.trim(value) === '') {
-                  return 'Please enter a name for your map.';
+                  return 'Please enter a title for your map.';
                 }
               }
             })
@@ -558,6 +548,7 @@ function ready() {
                 }
 
                 title = newTitle;
+                NPMap.name = title;
               })
               .on('shown', function() {
                 var next = $(this).next();
@@ -601,6 +592,20 @@ function ready() {
                 $activeChangeStyleButton.popover('toggle');
                 $('#mask').hide();
               },
+              changeAutoWidth: function(el) {
+                var $el = $(el),
+                  $input = $($el.parent().parent().next().children('input')[0]),
+                  checked = $el.prop('checked'),
+                  val = 150;
+
+                $input.prop('disabled', checked);
+
+                if (checked) {
+                  val = null;
+                }
+
+                $input.val(val);
+              },
               changeCartoDbHasPoints: function(el) {
                 var $el = $(el),
                   $next = $($el.parent().parent().next()),
@@ -624,7 +629,7 @@ function ready() {
               },
               changeEnableTooltips: function(el) {
                 var $el = $(el),
-                  $tip = $($($el.parent().parent().next().children('textarea')[0])[0]),
+                  $tip = $($($el.parent().parent().next().children('input')[0])[0]),
                   checked = $el.prop('checked');
 
                 $tip.prop('disabled', !checked);
@@ -641,8 +646,12 @@ function ready() {
                 $el.val(null);
               },
               clickApplyInteractivity: function(elName, overlayName) {
-                var popup = '',
-                  d, overlay, t, tooltip;
+                var d = $('#' + elName + '_description').val(),
+                  popup = {},
+                  t = $('#' + elName + '_title').val(),
+                  tooltip = $('#' + elName + '_tooltip').val(),
+                  width = $('#' + elName + '_fixedWidth').val(),
+                  overlay;
 
                 for (var i = 0; i < NPMap.overlays.length; i++) {
                   var o = NPMap.overlays[i];
@@ -653,22 +662,26 @@ function ready() {
                   }
                 }
 
-                d = $('#' + elName + '_description').val();
-                t = $('#' + elName + '_title').val();
-                tooltip = $('#' + elName + '_tooltip').val();
-                
-                if (t) {
-                  popup += '<div class="title">' + t + '</div>';
-                }
-
                 if (d) {
-                  popup += '<div class="content">' + d + '</div>';
+                  popup.description = escapeHtml(d);
                 }
 
-                if (popup.length) {
-                  overlay.popup = escapeHtml(popup);
-                } else {
+                if (t) {
+                  popup.title = escapeHtml(t);
+                }
+
+                if (width) {
+                  width = parseInt(width, 10);
+
+                  if (typeof width === 'number') {
+                    popup.width = width;
+                  }
+                }
+
+                if (!popup.description && !popup.title && typeof popup.width !== 'number') {
                   delete overlay.popup;
+                } else {
+                  overlay.popup = popup;
                 }
 
                 if (tooltip) {
@@ -889,12 +902,23 @@ function ready() {
                       '<fieldset>' +
                         '<div class="form-group">' +
                           '<span><label for="' + name + '_title">Title</label><img rel="tooltip" src="img/help.png" style="cursor:pointer;float:right;height:18px;" title="The title will display in bold at the top of the popup. HTML and Handlebars templates are allowed." data-placement="bottom"></span>' +
-                          '<textarea class="form-control" id="' + name + '_title" rows="3"></textarea>' +
+                          '<input class="form-control" id="' + name + '_title" rows="3" type="text"></input>' +
                         '</div>' +
                         '<div class="form-group">' + // style="margin-bottom:7px;"
                           '<span><label for="' + name + '_description">Description</label><img rel="tooltip" src="img/help.png" style="cursor:pointer;float:right;height:18px;" title="The description will display underneath the title. HTML and Handlebars templates are allowed." data-placement="bottom"></span>' +
-                          '<textarea class="form-control" id="' + name + '_description" rows="6"></textarea>' +
+                          '<textarea class="form-control" id="' + name + '_description" rows="4"></textarea>' +
                           /*'<span class="help-block">Double-click a token below to add it to the "Title" or "Description" fields below.</span>' +*/
+                        '</div>' +
+                        '<div class="form-inline">' +
+                          '<div class="checkbox">' +
+                            '<label>' +
+                              '<input id="' + name + '_autoWidth" onchange="Builder.ui.steps.addAndCustomizeData.handlers.changeAutoWidth(this);return false;" style="margin-right:5px;" type="checkbox" value="auto" checked> Auto width?' +
+                            '</label>' +
+                          '</div>' +
+                          '<div class="form-group">' +
+                            '<input class="form-control" id="' + name + '_fixedWidth" min="150" style="height:24px;margin-left:10px;padding:0 6px;width:75px;" type="number" disabled></input>' +
+                          '</div>' +
+                          '<img rel="tooltip" src="img/help.png" style="cursor:pointer;float:right;height:18px;margin-top:3px;" title="You can hardcode a width (in pixels) for the popup. This can be used to insert fixed width images or videos." data-placement="bottom">' +
                         '</div>' +
                         (supportsTooltips ? '' +
                           '<div class="checkbox">' +
@@ -904,7 +928,7 @@ function ready() {
                           '</div>' +
                           '<div class="form-group">' +
                             '<span><label for="' + name + '_tooltip">Tooltip</label><img rel="tooltip" src="img/help.png" style="cursor:pointer;float:right;height:18px;" title="Tooltips display when the cursor moves over a shape. HTML and Handlebars templates are allowed." data-placement="bottom"></span>' +
-                            '<textarea class="form-control" id="' + name + '_tooltip" rows="3" disabled></textarea>' +
+                            '<input class="form-control" id="' + name + '_tooltip" type="text" disabled></input>' +
                           '</div>' +
                         '' : '') +
                         /*
@@ -927,44 +951,57 @@ function ready() {
                   })
                     .on('hide.bs.popover', function() {
                       $activeConfigureInteractivityButton = null;
-                      $('#' + name + '_description').val('');
-                      $('#' + name + '_title').val('');
-                      $('#' + name + '_tooltip').val('');
-                      $($('#' + name + '_layer-configure-interactivity .checkbox input')[0]).prop('checked', false).trigger('change');
                     })
                     .on('shown.bs.popover', function() {
+                      var config;
+
                       overlay = NPMap.overlays[getLayerIndexFromButton(el)];
+                      config = overlay.popup;
                       $activeConfigureInteractivityButton = $el;
                       $('#mask').show();
 
-                      if (overlay.popup) {
-                        var div = document.createElement('div'),
-                          d, t;
+                      if (config) {
+                        if (typeof config === 'object') {
+                          if (typeof config.description === 'string') {
+                            $('#' + name + '_description').val(unescapeHtml(config.description));
+                          }
 
-                        div.innerHTML = unescapeHtml(overlay.popup);
+                          if (typeof config.title === 'string') {
+                            $('#' + name + '_title').val(unescapeHtml(config.title));
+                          }
 
-                        for (var i = 0; i < div.childNodes.length; i++) {
-                          var $childNode = $(div.childNodes[i]);
+                          if (typeof config.width === 'number') {
+                            $('#' + name + '_autoWidth').prop('checked', false).trigger('change');
+                            $('#' + name + '_fixedWidth').val(config.width);
+                          }
+                        } else if (typeof config === 'string') {
+                          // TODO: Legacy. Can be taken out when all maps are using objects to configure popups.
+                          var div = document.createElement('div'),
+                            d, t;
 
-                          if ($childNode.hasClass('title')) {
-                            t = $childNode.html();
-                          } else if ($childNode.hasClass('content')) {
-                            d = $childNode.html();
+                          div.innerHTML = unescapeHtml(config);
+
+                          for (var i = 0; i < div.childNodes.length; i++) {
+                            var $childNode = $(div.childNodes[i]);
+
+                            if ($childNode.hasClass('title')) {
+                              t = $childNode.html();
+                            } else if ($childNode.hasClass('content')) {
+                              d = $childNode.html();
+                            }
+                          }
+
+                          if (t) {
+                            $('#' + name + '_title').val(t);
                           }
                         }
 
-                        if (d) {
-                          $('#' + name + '_description').val(d);
-                        }
+                        config = overlay.tooltip;
 
-                        if (t) {
-                          $('#' + name + '_title').val(t);
+                        if (config) {
+                          $($('#' + name + '_layer-configure-interactivity .checkbox input')[1]).prop('checked', true).trigger('change');
+                          $('#' + name + '_tooltip').val(unescapeHtml(config));
                         }
-                      }
-
-                      if (overlay.tooltip) {
-                        $($('#' + name + '_layer-configure-interactivity .checkbox input')[0]).prop('checked', true).trigger('change');
-                        $('#' + name + '_tooltip').val(unescapeHtml(overlay.tooltip));
                       }
 
                       Builder.buildTooltips();
@@ -1419,11 +1456,9 @@ function ready() {
     Builder.ui.steps.additionalToolsAndSettings.load();
     Builder.ui.steps.setCenterAndZoom.load();
     delete NPMap.created;
-    delete NPMap.description;
     delete NPMap.isPublic;
     delete NPMap.isShared;
     delete NPMap.modified;
-    delete NPMap.name;
     delete NPMap.tags;
   }
 

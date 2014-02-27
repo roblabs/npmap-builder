@@ -17,7 +17,7 @@ function ready() {
       $layers = $('#layers'),
       $modalAddLayer,
       $modalConfirm = $('#modal-confirm'),
-      $modalCreateDataset,
+      //$modalCreateDataset,
       $modalEditBaseMaps,
       $modalExport,
       $modalViewConfig,
@@ -293,22 +293,7 @@ function ready() {
     }
     function saveMap(callback) {
       var $this = $(this),
-        base = '/',
-        error = 'You must be connected to the National Park Service network to save a map.';
-
-      if (NPMap.overlays && NPMap.overlays.length) {
-        for (var i = 0; i < NPMap.overlays.length; i++) {
-          var overlay = NPMap.overlays[i];
-
-          if (overlay.popup) {
-            overlay.popup = escapeHtml(overlay.popup);
-          }
-
-          if (overlay.tooltip) {
-            overlay.tooltip = escapeHtml(overlay.tooltip);
-          }
-        }
-      }
+        base = '/';
 
       Builder.showLoading();
       $this.blur();
@@ -324,25 +309,37 @@ function ready() {
         dataType: 'json',
         error: function() {
           Builder.hideLoading();
-          alertify.error(error);
+          alertify.error('You must be connected to the National Park Service network to save a map.');
 
           if (typeof callback === 'function') {
             callback(false);
           }
         },
         success: function(response) {
+          var error = 'Sorry, there was an unhandled error while saving your map. Please try again.';
+
           Builder.hideLoading();
 
           if (response) {
-            if (response.success) {
+            if (response.success === true) {
               mapId = response.mapId;
               updateSaveStatus(response.modified);
               alertify.success('Your map was saved!');
               if (typeof callback === 'function') {
                 callback(true);
               }
+            } else if (response.success === false && response.error) {
+              if (response.type === 'login') {
+                alertify.error('It looks like your session has expired. Please sign in again.');
+              } else {
+                alertify.error(response.error);
+              }
+
+              if (typeof callback === 'function') {
+                callback(false);
+              }
             } else {
-              alertify.error('Sorry, but there was an error saving your map. Please try again.');
+              alertify.error(error);
 
               if (typeof callback === 'function') {
                 callback(false);

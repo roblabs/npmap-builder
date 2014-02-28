@@ -20,6 +20,7 @@ function ready() {
       //$modalCreateDataset,
       $modalEditBaseMaps,
       $modalExport,
+      $modalSignIn = $('#modal-signin'),
       $modalViewConfig,
       $stepSection = $('section .step'),
       $ul = $('#layers'),
@@ -330,7 +331,7 @@ function ready() {
               }
             } else if (response.success === false && response.error) {
               if (response.type === 'login') {
-                alertify.error('It looks like your session has expired. Please sign in again.');
+                $modalSignIn.modal('show');
               } else {
                 alertify.error(response.error);
               }
@@ -1040,6 +1041,26 @@ function ready() {
               }
             },
             init: function() {
+              function signIn() {
+                $.ajax({
+                  dataType: 'jsonp',
+                  error: function() {
+                    alertify.log('The login failed. Please check your user name and password and try again.', 'error', 6000);
+                  },
+                  success: function(response) {
+                    if (response && response.success === true) {
+                      $('#modal-signin').modal('hide');
+                      $($('input[name="password"]')[0]).val(null);
+                      $($('input[name="userName"]')[0]).val(null);
+                      alertify.log('Your session has been reestablished. Please try to save again.', 'success', 6000);
+                    } else {
+                      alertify.log('The login failed. Please check your user name and password and try again.', 'error', 6000);
+                    }
+                  },
+                  url: '/account/logon?domain=nps&password=' + $($('input[name="password"]')[0]).val() + '&rememberMe=true&userName=' + $($('input[name="userName"]')[0]).val()
+                });
+              }
+
               $('.dd').nestable({
                 handleClass: 'letter',
                 listNodeName: 'ul'
@@ -1098,6 +1119,10 @@ function ready() {
                     $modalEditBaseMaps = $('#modal-editBaseMaps');
                   });
                 }
+              });
+              $('#form-signin').submit(function(e) {
+                signIn();
+                e.preventDefault();
               });
             },
             load: function() {

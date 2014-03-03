@@ -1057,7 +1057,7 @@ function ready() {
                       alertify.log('The login failed. Please check your user name and password and try again.', 'error', 6000);
                     }
                   },
-                  url: '/account/logon?domain=nps&password=' + $($('input[name="password"]')[0]).val() + '&rememberMe=true&userName=' + $($('input[name="userName"]')[0]).val()
+                  url: '/account/logonajax?domain=nps&password=' + $($('input[name="password"]')[0]).val() + '&rememberMe=true&userName=' + $($('input[name="userName"]')[0]).val()
                 });
               }
 

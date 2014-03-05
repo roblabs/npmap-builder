@@ -13,12 +13,6 @@ module.exports = function(grunt) {
     copy: {
       site: {
         files: [{
-          dest: '_site/css/iframe.css',
-          src: 'css/iframe.css'
-        },{
-          dest: '_site/iframe.html',
-          src: 'iframe.html'
-        },{
           cwd: 'js/libs/bootstrap-editable/img/',
           dest: '_site/img/',
           expand: true,
@@ -73,6 +67,22 @@ module.exports = function(grunt) {
         }
       }
     },
+    htmlmin: {
+      site: {
+        files: {
+          '_site/iframe.html': 'iframe.min.html',
+          '_site/index.html': 'index.min.html'
+        },
+        options: {
+          collapseBooleanAttributes: true,
+          collapseWhitespace: true,
+          removeAttributeQuotes: true,
+          removeComments: true,
+          removeCommentsFromCDATA: true,
+          removeRedundantAttributes: true
+        }
+      }
+    },
     pkg: require('./package.json'),
     uglify: {
       site: {
@@ -100,6 +110,7 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-clean');
   grunt.loadNpmTasks('grunt-contrib-copy');
   grunt.loadNpmTasks('grunt-contrib-cssmin');
+  grunt.loadNpmTasks('grunt-contrib-htmlmin');
   grunt.loadNpmTasks('grunt-contrib-uglify');
-  grunt.registerTask('default', ['clean', 'copy', 'cssmin', 'uglify']);
+  grunt.registerTask('default', ['clean', 'htmlmin', 'copy', 'cssmin', 'uglify']);
 };

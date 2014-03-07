@@ -313,7 +313,7 @@ iframe {
 #steps li {
   float: left;
   list-style-type: none;
-  margin-left: 20px;
+  margin-left: 10px;
 }
   #steps li:first-child {
     margin-left: 0;

@@ -1187,90 +1187,6 @@ function ready() {
               Builder.ui.steps.addAndCustomizeData.refreshUl();
             }
           },
-          additionalToolsAndSettings: {
-            hookUpFullScreenControl: function(config) {
-              var $map = $('#map'),
-                map = config.L;
-
-              map.on('enterfullscreen', function() {
-                $map.css({
-                  left: 0,
-                  position: 'fixed'
-                });
-              });
-              map.on('exitfullscreen', function() {
-                $map.css({
-                  left: '268px',
-                  position: 'absolute'
-                });
-              });
-            },
-            init: function() {
-              $.each($('#additional-tools-and-settings form'), function(i, form) {
-                $.each($(form).find('input'), function(j, input) {
-                  $(input).on('change', function() {
-                    var checked = $(this).prop('checked'),
-                      value = this.value;
-
-                    if (value === 'overviewControl') {
-                      if (checked) {
-                        NPMap[value] = {
-                          layer: (function() {
-                            for (var i = 0; i < NPMap.baseLayers.length; i++) {
-                              var baseLayer = NPMap.baseLayers[0];
-
-                              if (typeof baseLayer.visible === 'undefined' || baseLayer.visible === true) {
-                                return baseLayer;
-                              }
-                            }
-                          })()
-                        };
-                      } else {
-                        NPMap[value] = false;
-                      }
-                    } else {
-                      NPMap[value] = checked;
-                    }
-
-                    if (value === 'fullscreenControl') {
-                      if (checked) {
-                        Builder._afterUpdateCallbacks.fullscreenControl = Builder.ui.steps.additionalToolsAndSettings.hookUpFullScreenControl;
-                      } else {
-                        delete Builder._afterUpdateCallbacks.fullscreenControl;
-                      }
-                    }
-
-                    Builder.updateMap();
-                  });
-                });
-              });
-            },
-            load: function() {
-              $.each($('#additional-tools-and-settings form'), function(i, form) {
-                $.each($(form).find('input'), function(j, input) {
-                  var $input = $(input),
-                    name = $input.attr('value'),
-                    property = NPMap[name];
-
-                  if (typeof property !== 'undefined') {
-                    $input.attr('checked', property);
-
-                    if (name === 'fullscreenControl' && property) {
-                      var interval = setInterval(function() {
-                        var config = getIframeConfig();
-
-                        if (config && config.L) {
-                          clearInterval(interval);
-                          Builder._afterUpdateCallbacks.fullscreenControl = Builder.ui.steps.additionalToolsAndSettings.hookUpFullScreenControl;
-                          Builder.ui.steps.additionalToolsAndSettings.hookUpFullScreenControl(getIframeConfig());
-                        }
-                      }, 100);
-                    }
-                  }
-                });
-              });
-            }
-          },
           setCenterAndZoom: {
             init: function() {
               $($('#set-center-and-zoom .btn-block')[0]).on('click', function() {
@@ -1328,6 +1244,90 @@ function ready() {
                 $($('#set-center-and-zoom .btn-block')[1]).addClass('active').text('Remove Bounds Restriction');
               }
             }
+          },
+          toolsAndSettings: {
+            hookUpFullScreenControl: function(config) {
+              var $map = $('#map'),
+                map = config.L;
+
+              map.on('enterfullscreen', function() {
+                $map.css({
+                  left: 0,
+                  position: 'fixed'
+                });
+              });
+              map.on('exitfullscreen', function() {
+                $map.css({
+                  left: '268px',
+                  position: 'absolute'
+                });
+              });
+            },
+            init: function() {
+              $.each($('#tools-and-settings form'), function(i, form) {
+                $.each($(form).find('input'), function(j, input) {
+                  $(input).on('change', function() {
+                    var checked = $(this).prop('checked'),
+                      value = this.value;
+
+                    if (value === 'overviewControl') {
+                      if (checked) {
+                        NPMap[value] = {
+                          layer: (function() {
+                            for (var i = 0; i < NPMap.baseLayers.length; i++) {
+                              var baseLayer = NPMap.baseLayers[0];
+
+                              if (typeof baseLayer.visible === 'undefined' || baseLayer.visible === true) {
+                                return baseLayer;
+                              }
+                            }
+                          })()
+                        };
+                      } else {
+                        NPMap[value] = false;
+                      }
+                    } else {
+                      NPMap[value] = checked;
+                    }
+
+                    if (value === 'fullscreenControl') {
+                      if (checked) {
+                        Builder._afterUpdateCallbacks.fullscreenControl = Builder.ui.steps.toolsAndSettings.hookUpFullScreenControl;
+                      } else {
+                        delete Builder._afterUpdateCallbacks.fullscreenControl;
+                      }
+                    }
+
+                    Builder.updateMap();
+                  });
+                });
+              });
+            },
+            load: function() {
+              $.each($('#tools-and-settings form'), function(i, form) {
+                $.each($(form).find('input'), function(j, input) {
+                  var $input = $(input),
+                    name = $input.attr('value'),
+                    property = NPMap[name];
+
+                  if (typeof property !== 'undefined') {
+                    $input.attr('checked', property);
+
+                    if (name === 'fullscreenControl' && property) {
+                      var interval = setInterval(function() {
+                        var config = getIframeConfig();
+
+                        if (config && config.L) {
+                          clearInterval(interval);
+                          Builder._afterUpdateCallbacks.fullscreenControl = Builder.ui.steps.toolsAndSettings.hookUpFullScreenControl;
+                          Builder.ui.steps.toolsAndSettings.hookUpFullScreenControl(getIframeConfig());
+                        }
+                      }, 100);
+                    }
+                  }
+                });
+              });
+            }
           }
         },
         toolbar: {
@@ -1364,7 +1364,7 @@ function ready() {
 
                     openExport();
                   } else {
-                    alertify.log('The map cannot be exported until it is saved. Please try again. If this error persists, please report an issue by clicking on the feedback button above.', 'error', 15000);
+                    alertify.log('The map cannot be exported until it is saved. Please try again. If this error persists, please report an issue by clicking on "Submit Feedback" below.', 'error', 15000);
                   }
                 });
               }
@@ -1469,14 +1469,14 @@ function ready() {
   Builder.ui.app.init();
   Builder.ui.metadata.init();
   Builder.ui.steps.addAndCustomizeData.init();
-  Builder.ui.steps.additionalToolsAndSettings.init();
+  Builder.ui.steps.toolsAndSettings.init();
   Builder.ui.steps.setCenterAndZoom.init();
   Builder.ui.toolbar.init();
 
   if (mapId) {
     Builder.ui.metadata.load();
     Builder.ui.steps.addAndCustomizeData.load();
-    Builder.ui.steps.additionalToolsAndSettings.load();
+    Builder.ui.steps.toolsAndSettings.load();
     Builder.ui.steps.setCenterAndZoom.load();
     delete NPMap.created;
     delete NPMap.isPublic;

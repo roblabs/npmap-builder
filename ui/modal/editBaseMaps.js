@@ -5,7 +5,8 @@ $('head').append($('<link rel="stylesheet">').attr('href', 'ui/modal/editBaseMap
 Builder.ui = Builder.ui || {};
 Builder.ui.modal = Builder.ui.modal || {};
 Builder.ui.modal.editBaseMaps = (function() {
-  var baseMaps = document.getElementById('iframe-map').contentWindow.L.npmap.preset.baselayers,
+  var $checkbox = $('#modal-editBaseMaps input'),
+    baseMaps = document.getElementById('iframe-map').contentWindow.L.npmap.preset.baselayers,
     html = [];
 
   function getProvider(provider) {
@@ -27,18 +28,20 @@ Builder.ui.modal.editBaseMaps = (function() {
   function setBaseMapsAndHide() {
     var baseLayers = [];
 
-    $.each($('#modal-editBaseMaps div.basemap'), function(i, div) {
-      var id = div.id,
-        inputs = $(div).find('input');
+    if (!$checkbox.is(':checked')) {
+      $.each($('#modal-editBaseMaps div.basemap'), function(i, div) {
+        var id = div.id,
+          inputs = $(div).find('input');
 
-      if ($(inputs[0]).prop('checked')) {
-        if ($(inputs[1]).prop('checked')) {
-          baseLayers.unshift(id);
-        } else {
-          baseLayers.push(id);
+        if ($(inputs[0]).prop('checked')) {
+          if ($(inputs[1]).prop('checked')) {
+            baseLayers.unshift(id);
+          } else {
+            baseLayers.push(id);
+          }
         }
-      }
-    });
+      });
+    }
 
     NPMap.baseLayers = baseLayers;
     Builder.updateMap();
@@ -123,6 +126,17 @@ Builder.ui.modal.editBaseMaps = (function() {
   }
 
   $('#modal-editBaseMaps .btn-primary').on('click', setBaseMapsAndHide);
+  $checkbox.change(function() {
+    var $this = $(this);
+
+    $('#modal-editBaseMaps .well').each(function() {
+      if ($this.is(':checked')) {
+        $(this).hide();
+      } else {
+        $(this).show();
+      }
+    });
+  });
   $('#modal-editBaseMaps .modal-body').append(html.join(''));
   $('#modal-editBaseMaps').modal({
     backdrop: 'static'

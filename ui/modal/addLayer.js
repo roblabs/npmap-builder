@@ -197,7 +197,7 @@ Builder.ui.modal.addLayer = (function() {
       Builder.ui.modal.addLayer._editingIndex = -1;
       $('#layerType').removeAttr('disabled');
       $('#modal-addLayer-description').html('You can add an overlay to your map either by typing in information about the overlay or searching the NPMap Catalog for datasets to add <em>(coming soon)</em>. Hover over the help icon above for more information.');
-      $('#modal-addLayer-title').html('Add Overlay&nbsp;<img src="img/help.png" style="height:18px;" rel="tooltip" title="You can add ArcGIS Server, CartoDB, GeoJSON, KML, and MapBox Hosting overlays to your map. The NPMap Catalog includes results from the National Park Service ArcGIS Server (from both ArcGIS Online and public-facing ArcGIS Server instances), CartoDB, GitHub, and MapBox Hosting accounts." data-placement="bottom">');
+      $('#modal-addLayer-title').html('Add Overlay&nbsp;<img src="img/help@2x.png" style="height:18px;" rel="tooltip" title="You can add ArcGIS Server, CartoDB, GeoJSON, KML, and MapBox Hosting overlays to your map. The NPMap Catalog includes results from the National Park Service ArcGIS Server (from both ArcGIS Online and public-facing ArcGIS Server instances), CartoDB, GitHub, and MapBox Hosting accounts." data-placement="bottom">');
       $('#modal-addLayer .btn-primary').text('Add to Map');
       Builder.buildTooltips();
     })

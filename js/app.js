@@ -900,11 +900,11 @@ function ready() {
                     '<form class="configure-interactivity" id="' + name + '_layer-configure-interactivity" role="form">' +
                       '<fieldset>' +
                         '<div class="form-group">' +
-                          '<span><label for="' + name + '_title">Title</label><img rel="tooltip" src="img/help.png" style="cursor:pointer;float:right;height:18px;" title="The title will display in bold at the top of the popup. HTML and Handlebars templates are allowed." data-placement="bottom"></span>' +
+                          '<span><label for="' + name + '_title">Title</label><img rel="tooltip" src="img/help@2x.png" style="cursor:pointer;float:right;height:18px;" title="The title will display in bold at the top of the popup. HTML and Handlebars templates are allowed." data-placement="bottom"></span>' +
                           '<input class="form-control" id="' + name + '_title" rows="3" type="text"></input>' +
                         '</div>' +
                         '<div class="form-group">' + // style="margin-bottom:7px;"
-                          '<span><label for="' + name + '_description">Description</label><img rel="tooltip" src="img/help.png" style="cursor:pointer;float:right;height:18px;" title="The description will display underneath the title. HTML and Handlebars templates are allowed." data-placement="bottom"></span>' +
+                          '<span><label for="' + name + '_description">Description</label><img rel="tooltip" src="img/help@2x.png" style="cursor:pointer;float:right;height:18px;" title="The description will display underneath the title. HTML and Handlebars templates are allowed." data-placement="bottom"></span>' +
                           '<textarea class="form-control" id="' + name + '_description" rows="4"></textarea>' +
                           /*'<span class="help-block">Double-click a token below to add it to the "Title" or "Description" fields below.</span>' +*/
                         '</div>' +
@@ -917,7 +917,7 @@ function ready() {
                           '<div class="form-group">' +
                             '<input class="form-control" id="' + name + '_fixedWidth" min="150" style="height:24px;margin-left:10px;padding:0 6px;width:75px;" type="number" disabled></input>' +
                           '</div>' +
-                          '<img rel="tooltip" src="img/help.png" style="cursor:pointer;float:right;height:18px;margin-top:3px;" title="You can hardcode a width (in pixels) for the popup. This can be used to insert fixed width images or videos." data-placement="bottom">' +
+                          '<img rel="tooltip" src="img/help@2x.png" style="cursor:pointer;float:right;height:18px;margin-top:3px;" title="You can hardcode a width (in pixels) for the popup. This can be used to insert fixed width images or videos." data-placement="bottom">' +
                         '</div>' +
                         (supportsTooltips ? '' +
                           '<div class="checkbox">' +
@@ -926,7 +926,7 @@ function ready() {
                             '</label>' +
                           '</div>' +
                           '<div class="form-group">' +
-                            '<span><label for="' + name + '_tooltip">Tooltip</label><img rel="tooltip" src="img/help.png" style="cursor:pointer;float:right;height:18px;" title="Tooltips display when the cursor moves over a shape. HTML and Handlebars templates are allowed." data-placement="bottom"></span>' +
+                            '<span><label for="' + name + '_tooltip">Tooltip</label><img rel="tooltip" src="img/help@2x.png" style="cursor:pointer;float:right;height:18px;" title="Tooltips display when the cursor moves over a shape. HTML and Handlebars templates are allowed." data-placement="bottom"></span>' +
                             '<input class="form-control" id="' + name + '_tooltip" type="text" disabled></input>' +
                           '</div>' +
                         '' : '') +

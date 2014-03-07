@@ -354,6 +354,7 @@ function ready() {
             }
           }
         },
+        type: 'POST',
         url: base + 'builder/save' + (base === '/' ? '' : '&callback=?')
       });
     }

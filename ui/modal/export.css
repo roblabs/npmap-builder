@@ -49,16 +49,6 @@
 #modal-export .well .row div:nth-child(n+4) {
   margin-top: 20px;
 }
-
-#modal-export-code textarea {
+#modal-export #modal-export-elsewhere textarea {
   resize: none;
 }
-#modal-export-code form {
-  bottom: 20px;
-  position: absolute;
-  top: 160px;
-  width: 600px;
-}
-  #modal-export-code form .form-group, #modal-export-code textarea {
-    height: 100%;
-  }

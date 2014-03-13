@@ -10,10 +10,11 @@
         <ul class="nav nav-tabs">
           <li class="active"><a href="#modal-export-template" data-toggle="tab">Template</a></li>
           <li><a href="#modal-export-cms" data-toggle="tab">NPS.gov</a></li>
+          <li><a href="#modal-export-elsewhere" data-toggle="tab">The Web</a></li>
         </ul>
         <div class="tab-content">
           <div id="modal-export-template" class="tab-pane active">
-            <p>Click on one of the pre-built map templates below to open your map in a separate window. You can then share the URL of that window with others, and your map will be hosted on the nps.gov infrastructure!</p>
+            <p>Click on one of the pre-built map templates below to open your map in a separate window. You can then share the URL of that window with others, and your map will be hosted on the NPS.gov infrastructure!</p>
             <div class="well">
               <div class="row">
                 <div class="col-xs-4 col-sm-4 col-md-4 col-lg-4">
@@ -49,6 +50,15 @@
               </div>
             </form>
           </div>
+          <div id="modal-export-elsewhere" class="tab-pane">
+            <p>You can also embed this map anywhere else on the web. Just copy and paste the following code into your web page, Sharepoint page, Facebook, etc.</p>
+            <form role="form">
+              <div class="form-group">
+                <textarea class="form-control" id="iframe-code" readonly="readonly" rows="3"></textarea>
+              </div>
+            </form>
+          </div>
+        </div>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>

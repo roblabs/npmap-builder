@@ -5,14 +5,11 @@ $('head').append($('<link rel="stylesheet">').attr('href', 'ui/modal/export.css'
 Builder.ui = Builder.ui || {};
 Builder.ui.modal = Builder.ui.modal || {};
 Builder.ui.modal.export = (function() {
-  var $cmsId = $('#cms-id');
+  var $cmsId = $('#cms-id'),
+    $iframeCode = $('#iframe-code');
 
-  function returnFalse() {
-    return false;
-  }
   function update() {
-    var children = $('#modal-export li'),
-      formatted = '',
+    var formatted = '',
       json = JSON.stringify(NPMap, null, 2).split('\n');
 
     $.each(json, function(i, v) {
@@ -28,36 +25,11 @@ Builder.ui.modal.export = (function() {
         }
       }
     });
-
-    if (mapId) {
-      $('#cms-id').val(mapId);
-      $('#modal-export-template img').on('click', function() {
-        window.open('http://www.nps.gov/maps/' + this.id.replace('template-', '') + '.html?mapId=' + mapId, '_blank');
-      });
-      $('#modal-export ul a:first').tab('show');
-      $(children[0]).removeClass('disabled');
-      $(children[1]).removeClass('disabled');
-      $($('#modal-export a')[0]).off('click');
-      $($('#modal-export a')[1]).off('click');
-      $(children[0]).popover('destroy');
-      $(children[1]).popover('destroy');
-    } else {
-      $('#modal-export ul a:last').tab('show');
-      $(children[0]).addClass('disabled');
-      $(children[1]).addClass('disabled');
-      $($('#modal-export a')[0]).click(returnFalse);
-      $($('#modal-export a')[1]).click(returnFalse);
-      $(children[0]).popover({
-        animation: false,
-        content: 'You must save your map before exporting it to a template.',
-        trigger: 'hover'
-      });
-      $(children[1]).popover({
-        animation: false,
-        content: 'You must save your map before exporting it to nps.gov.',
-        trigger: 'hover'
-      });
-    }
+    $cmsId.val(mapId);
+    $iframeCode.val('<iframe height="500px" frameBorder="0" width="100%" src="http://www.nps.gov/maps/embed.html?mapId=' + mapId + '"></iframe>');
+    $('#modal-export-template img').on('click', function() {
+      window.open('http://www.nps.gov/maps/' + this.id.replace('template-', '') + '.html?mapId=' + mapId, '_blank');
+    });
   }
   function setHeight() {
     $('#modal-export .tab-content').css({
@@ -66,6 +38,9 @@ Builder.ui.modal.export = (function() {
   }
 
   $cmsId.on('click', function() {
+    $(this).select();
+  });
+  $iframeCode.on('click', function() {
     $(this).select();
   });
   $('#modal-export').modal().on('show.bs.modal shown.bs.modal', update);

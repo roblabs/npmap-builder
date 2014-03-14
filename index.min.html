@@ -71,15 +71,17 @@
           <h3>Set Center & Zoom</h3>
         </div>
         <div class="content" id="set-center-and-zoom">
-          <h5 style="font-weight:bold;">Min and Max Zoom Levels</h5>
-          <p style="margin-bottom:20px;">Use the slider to restrict the map to a range of zoom levels.</p>
-          <input type="text" id="set-zoom" class="form-control" required>
-          <p class="help-block" style="margin:10px 0 0 0;">Initial Center: <span class="lat">39.00</span>, <span class="lng">-96.00</span><br>Initial Zoom: <span class="zoom">4</span></p>
-          <div class="bottom" style="border-top:dotted 1px #908e7d;margin-top:14px;padding-top:20px;">
+          <div class="top">
             <p>Use map to:</p>
             <button class="btn btn-subtle btn-block">Set Center & Zoom</button>
             <button class="btn btn-subtle btn-block">Restrict Bounds</button>
             <p class="help-block">The map's viewport is constrained to the bounds of the area you defined.</p>
+          </div>
+          <div class="bottom">
+            <h5 style="font-weight:bold;">Min and Max Zoom Levels</h5>
+            <p style="margin-bottom:20px;">Use the slider to restrict the map to a range of zoom levels.</p>
+            <input type="text" id="set-zoom" class="form-control" required>
+            <p class="help-block" style="margin:10px 0 0 0;">Initial Center: <span class="lat">39.00</span>, <span class="lng">-96.00</span><br>Initial Zoom: <span class="zoom">4</span></p>
           </div>
         </div>
         <div class="footer">
@@ -232,7 +234,7 @@
         <div class="modal-content">
           <div class="modal-header">
             <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-            <h4 id="modal-confirm-title" class="modal-title">Expired Session</h4>
+            <h4 id="modal-confirm-title" class="modal-title">Please Log In</h4>
           </div>
           <div class="modal-body">
             <form class="form-signin" id="form-signin">

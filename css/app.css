@@ -337,10 +337,18 @@ iframe {
     cursor: default;
     color: #fff;
   }
-#set-center-and-zoom .slider.slider-horizontal {
-  width: 100%;
+#set-center-and-zoom .bottom {
+  border-top: dotted 1px #908e7d;
+  margin-top: 25px;
+  padding-top: 20px;
 }
-#set-center-and-zoom .bottom .help-block {
+  #set-center-and-zoom .bottom .slider.slider-horizontal {
+    width: 100%;
+  }
+  #set-center-and-zoom .bottom h5 {
+    margin-top: 0;
+  }
+#set-center-and-zoom .top .help-block {
   display: none;
   margin: 10px 0 0 0;
 }

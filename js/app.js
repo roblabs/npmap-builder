@@ -332,6 +332,7 @@ function ready() {
             } else if (response.success === false && response.error) {
               if (response.type === 'login') {
                 $modalSignIn.modal('show');
+                $($('#form-signin input')[0]).focus();
               } else {
                 alertify.error(response.error);
               }
@@ -425,6 +426,12 @@ function ready() {
           init: function() {
             var stepButtons = $('section .step .btn-primary');
 
+            $modalSignIn.modal({
+              show: false
+            })
+              .on('shown.bs.modal', function() {
+                $($('#form-signin input')[0]).focus();
+              });
             $(stepButtons[0]).on('click', function() {
               goToStep(0, 1);
             });
@@ -1050,10 +1057,10 @@ function ready() {
                   },
                   success: function(response) {
                     if (response && response.success === true) {
-                      $('#modal-signin').modal('hide');
+                      $modalSignIn.modal('hide');
                       $($('input[name="password"]')[0]).val(null);
                       $($('input[name="userName"]')[0]).val(null);
-                      alertify.log('Your session has been reestablished. Please try to save again.', 'success', 6000);
+                      alertify.log('You are now logged in. Please try to save again.', 'success', 6000);
                     } else {
                       alertify.log('The login failed. Please check your user name and password and try again.', 'error', 6000);
                     }

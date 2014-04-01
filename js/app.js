@@ -1476,8 +1476,8 @@ function ready() {
   Builder.ui.app.init();
   Builder.ui.metadata.init();
   Builder.ui.steps.addAndCustomizeData.init();
-  Builder.ui.steps.toolsAndSettings.init();
   Builder.ui.steps.setCenterAndZoom.init();
+  Builder.ui.steps.toolsAndSettings.init();
   Builder.ui.toolbar.init();
 
   if (mapId) {

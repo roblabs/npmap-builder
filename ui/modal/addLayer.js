@@ -98,6 +98,18 @@ Builder.ui.modal.addLayer = (function() {
           types.geojson.fields.$url.val('');
         }
       },
+      kml: {
+        fields: {
+          $clickable: $('#kml-clickable'),
+          $cluster: $('#kml-cluster'),
+          $url: $('#kml-url')
+        },
+        reset: function() {
+          types.kml.fields.$clickable.prop('checked', 'checked');
+          types.kml.fields.$cluster.prop(false);
+          types.kml.fields.$url.val('');
+        }
+      },
       mapbox: {
         fields: {
           $clickable: $('#mapbox-clickable'),

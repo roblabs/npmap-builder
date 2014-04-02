@@ -1253,23 +1253,6 @@ function ready() {
             }
           },
           toolsAndSettings: {
-            hookUpFullScreenControl: function(config) {
-              var $map = $('#map'),
-                map = config.L;
-
-              map.on('enterfullscreen', function() {
-                $map.css({
-                  left: 0,
-                  position: 'fixed'
-                });
-              });
-              map.on('exitfullscreen', function() {
-                $map.css({
-                  left: '268px',
-                  position: 'absolute'
-                });
-              });
-            },
             init: function() {
               $.each($('#tools-and-settings form'), function(i, form) {
                 $.each($(form).find('input'), function(j, input) {
@@ -1297,14 +1280,6 @@ function ready() {
                       NPMap[value] = checked;
                     }
 
-                    if (value === 'fullscreenControl') {
-                      if (checked) {
-                        Builder._afterUpdateCallbacks.fullscreenControl = Builder.ui.steps.toolsAndSettings.hookUpFullScreenControl;
-                      } else {
-                        delete Builder._afterUpdateCallbacks.fullscreenControl;
-                      }
-                    }
-
                     Builder.updateMap();
                   });
                 });
@@ -1319,18 +1294,6 @@ function ready() {
 
                   if (typeof property !== 'undefined') {
                     $input.attr('checked', property);
-
-                    if (name === 'fullscreenControl' && property) {
-                      var interval = setInterval(function() {
-                        var config = getIframeConfig();
-
-                        if (config && config.L) {
-                          clearInterval(interval);
-                          Builder._afterUpdateCallbacks.fullscreenControl = Builder.ui.steps.toolsAndSettings.hookUpFullScreenControl;
-                          Builder.ui.steps.toolsAndSettings.hookUpFullScreenControl(getIframeConfig());
-                        }
-                      }, 100);
-                    }
                   }
                 });
               });

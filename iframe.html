@@ -20,7 +20,7 @@
   <body>
     <div id="map"></div>
     <script>
-      var NPMap = JSON.parse(decodeURIComponent(window.location.search.replace('?c=', '')));
+      var NPMap = JSON.parse(JSON.stringify(parent.NPMap));
 
       (function() {
         var s = document.createElement('script');

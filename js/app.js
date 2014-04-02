@@ -1,5 +1,3 @@
-/* globals alertify, moment */
-
 var Builder, NPMap, mapId;
 
 function ready() {
@@ -1407,22 +1405,18 @@ function ready() {
         $('#loading').show();
       },
       updateMap: function(callback) {
-        $iframe.attr('src', 'iframe.html?c=' + encodeURIComponent(JSON.stringify(NPMap)));
+        var interval;
 
-        var interval = setInterval(function() {
+        $iframe.attr('src', 'iframe.html');
+
+        interval = setInterval(function() {
           var npmap = document.getElementById('iframe-map').contentWindow.NPMap;
 
           if (npmap && npmap.config && npmap.config.L) {
-            var config = npmap.config;
-
             clearInterval(interval);
 
             if (callback) {
-              callback(config);
-            }
-
-            for (var prop in Builder._afterUpdateCallbacks) {
-              Builder._afterUpdateCallbacks[prop](config);
+              callback(npmap.config);
             }
 
             if (firstLoad) {
@@ -1431,7 +1425,7 @@ function ready() {
               enableSave();
             }
           }
-        }, 100);
+        }, 0);
       }
     };
   })();

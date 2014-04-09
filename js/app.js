@@ -778,7 +778,7 @@ function ready() {
                       $.each($('#' + name + '_layer-change-style .simplecolorpicker'), function(i, el) {
                         $(el).simplecolorpicker({
                           picker: true,
-                          theme: 'glyphicons'
+                          theme: 'fontawesome'
                         });
                       });
 
@@ -1159,12 +1159,12 @@ function ready() {
                   '<span class="description">' + (overlay.description || '') + '</span>' +
                   '<span class="actions">' +
                     '<div style="float:left;">' +
-                      '<button class="btn btn-default btn-xs" data-container="section" onclick="Builder.ui.steps.addAndCustomizeData.handlers.clickLayerEdit(this);" type="button"><span class="glyphicon glyphicon-edit"> Edit</span></button>' +
+                      '<button class="btn btn-default btn-xs" data-container="section" onclick="Builder.ui.steps.addAndCustomizeData.handlers.clickLayerEdit(this);" type="button"><span class="fa fa-edit"> Edit</span></button>' +
                     '</div>' +
                     '<div style="float:right;margin-right:10px;">' +
-                      '<button class="btn btn-default btn-xs interactivity" data-container="section" data-placement="bottom" onclick="Builder.ui.steps.addAndCustomizeData.handlers.clickLayerConfigureInteractivity(this);" rel="tooltip" style="' + (interactive ? '' : 'display:none;') + 'margin-right:5px;" title="Configure Interactivity" type="button"><span class="glyphicon glyphicon-comment"></span></button>' +
-                      '<button class="btn btn-default btn-xs" data-container="section" data-placement="bottom" onclick="Builder.ui.steps.addAndCustomizeData.handlers.clickLayerChangeStyle(this);" rel="tooltip" style="' + (styleable ? '' : 'display:none;') + 'margin-right:5px;" title="Change Style" type="button"><span class="glyphicon glyphicon-map-marker"></span></button>' +
-                      '<button class="btn btn-default btn-xs" data-container="section" data-placement="bottom" onclick="Builder.ui.steps.addAndCustomizeData.handlers.clickLayerRemove(this);" rel="tooltip" title="Delete Overlay" type="button"><span class="glyphicon glyphicon-trash"></span></button>' +
+                      '<button class="btn btn-default btn-xs interactivity" data-container="section" data-placement="bottom" onclick="Builder.ui.steps.addAndCustomizeData.handlers.clickLayerConfigureInteractivity(this);" rel="tooltip" style="' + (interactive ? '' : 'display:none;') + 'margin-right:5px;" title="Configure Interactivity" type="button"><span class="fa fa-comment"></span></button>' +
+                      '<button class="btn btn-default btn-xs" data-container="section" data-placement="bottom" onclick="Builder.ui.steps.addAndCustomizeData.handlers.clickLayerChangeStyle(this);" rel="tooltip" style="' + (styleable ? '' : 'display:none;') + 'margin-right:5px;" title="Change Style" type="button"><span class="fa fa-map-marker"></span></button>' +
+                      '<button class="btn btn-default btn-xs" data-container="section" data-placement="bottom" onclick="Builder.ui.steps.addAndCustomizeData.handlers.clickLayerRemove(this);" rel="tooltip" title="Delete Overlay" type="button"><span class="fa fa-trash-o"></span></button>' +
                       '</button>' +
                     '</div>' +
                   '</span>' +

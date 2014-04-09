@@ -60,7 +60,7 @@ module.exports = function(grunt) {
             'js/libs/bootstrap-select/css/bootstrap-select.css',
             'js/libs/bootstrap-slider/css/bootstrap-slider.css',
             'js/libs/jquery-simplecolorpicker/css/jquery-simplecolorpicker.css',
-            'js/libs/jquery-simplecolorpicker/css/jquery-simplecolorpicker-glyphicons.css',
+            'js/libs/jquery-simplecolorpicker/css/jquery-simplecolorpicker-fontawesome.css',
             'js/libs/typeahead/typeahead.css',
             'css/app.css'
           ]

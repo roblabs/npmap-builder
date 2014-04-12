@@ -78,10 +78,11 @@ footer ul li a:hover {
 }
 footer .tag-line {
   background: url(../img/experience-your-america.png) no-repeat left;
+  background: -webkit-image-set(url(../img/experience-your-america.png) 1x,url(../img/experience-your-america@2x.png) 2x) no-repeat left;
   float: right;
   height: 7px;
-  margin: 10px 10px 0 0;
-  width: 190px;
+  margin: 12px 10px 0 0;
+  width: 188px;
 }
 a.more:after {
   content: '\A0\BB';

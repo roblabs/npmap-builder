@@ -88,7 +88,7 @@ Builder.ui.modal.editBaseMaps = (function() {
       content += '<div class="well"><h5>' + providerPretty + '</h5><div class="row">';
 
       for (var map in maps) {
-        if (map !== 'grayLabels' && map !== 'oceans') {
+        if (map !== 'grayLabels' && map !== 'oceansLabels') {
           var id = provider + '-' + map;
 
           content += '' +

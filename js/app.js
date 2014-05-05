@@ -1490,7 +1490,7 @@ if (mapId) {
 
   NPMap = {
     baseLayers: [
-      'nps-lightStreets'
+      'nps-parkTiles'
     ],
     center: {
       lat: 39,

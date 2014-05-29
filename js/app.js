@@ -1,4 +1,4 @@
-var Builder, NPMap, mapId;
+var alertify, Builder, mapId, moment, NPMap;
 
 function ready() {
   Builder = (function() {
@@ -15,7 +15,6 @@ function ready() {
       $layers = $('#layers'),
       $modalAddLayer,
       $modalConfirm = $('#modal-confirm'),
-      //$modalCreateDataset,
       $modalEditBaseMaps,
       $modalExport,
       $modalSignIn = $('#modal-signin'),
@@ -258,9 +257,6 @@ function ready() {
             '</div>' +
           '</form>';
       }
-    }
-    function getIframeConfig() {
-      return document.getElementById('iframe-map').contentWindow.NPMap.config;
     }
     function getLayerIndexFromButton(el) {
       return $.inArray($(el).parent().parent().parent().prev().text(), abcs);
@@ -1106,16 +1102,6 @@ function ready() {
               });
               $('#button-createDataset, #button-createDatasetAgain').on('click', function() {
                 alertify.log('The create dataset functionality is not quite ready. Please check back soon.', 'info', 15000);
-
-                /*
-                if ($modalCreateDataset) {
-                  $modalCreateDataset.modal('show');
-                } else {
-                  loadModule('Builder.ui.modal.createDataset', function() {
-                    $modalCreateDataset = $('#modal-createDataset');
-                  });
-                }
-                */
               });
               $('#button-editBaseMaps, #button-editBaseMapsAgain').on('click', function() {
                 if ($modalEditBaseMaps) {
@@ -1246,7 +1232,10 @@ function ready() {
               updateInitialCenterAndZoom();
 
               if (typeof NPMap.maxBounds === 'object') {
-                $($('#set-center-and-zoom .btn-block')[1]).addClass('active').text('Remove Bounds Restriction');
+                var $bounds = $($('#set-center-and-zoom .btn-block')[1]);
+
+                $bounds.addClass('active').text('Remove Bounds Restriction');
+                $bounds.next().show();
               }
             }
           },

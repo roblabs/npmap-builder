@@ -9,6 +9,44 @@ Builder.ui.modal.editBaseMaps = (function() {
     baseMaps = document.getElementById('iframe-map').contentWindow.L.npmap.preset.baselayers,
     html = [];
 
+  function createThumbnail(map, provider, providerPretty) {
+    var id = provider + '-' + map,
+      html;
+
+    html = '' +
+      '<div id="' + id + '" class="basemap col-xs-4 col-sm-4 col-md-4 col-lg-4">' +
+        '<div class="thumbnail">' +
+          '<p>' + maps[map].name.replace(provider.toUpperCase() + ' ', '').replace(providerPretty + ' ', '') + '</p>' +
+          '<img src="img/base-maps/' + id + '.png" alt="..." style="height:152px;width:152px;">' +
+          '<div class="caption">' +
+            '<div class="checkbox-inline">' +
+              '<label style="font-weight:normal;margin-bottom:0;">' +
+                '<input type="checkbox">' +
+                ' Add to map?' +
+              '</label>' +
+            '</div>' +
+            '<div class="radio-inline">' +
+              '<label style="font-weight:normal;margin-bottom:0;">' +
+                '<input type="radio" name="default-basemap" onclick="Builder.ui.modal.editBaseMaps.handleRadio(this);">' +
+                  ' Make default?' +
+              '</label>' +
+            '</div>';
+
+    /*
+    if (map === 'parkTiles') {
+      html += '' +
+        '<div class="checkbox-inline">' +
+          '<label style="font-weight:normal;margin-bottom:0;">' +
+            '<input type="checkbox">' +
+            ' Include Points of Interest?' +
+          '</label>' +
+        '</div>' +
+      '';
+    }
+    */
+
+    return html + '</div></div></div>';
+  }
   function getProvider(provider) {
     switch (provider) {
     case 'bing':
@@ -83,35 +121,34 @@ Builder.ui.modal.editBaseMaps = (function() {
     if (provider !== 'openstreetmap') {
       var content = '',
         maps = baseMaps[provider],
-        providerPretty = getProvider(provider);
+        providerPretty = getProvider(provider),
+        map;
 
       content += '<div class="well"><h5>' + providerPretty + '</h5><div class="row">';
 
-      for (var map in maps) {
-        if (map !== 'grayLabels' && map !== 'oceansLabels') {
-          var id = provider + '-' + map;
+      if (provider === 'nps') {
+        for (map in maps) {
+          if (map === 'parkTiles') {
+            content += createThumbnail(map, provider, providerPretty);
+            break;
+          }
+        }
 
-          content += '' +
-            '<div id="' + id + '" class="basemap col-xs-4 col-sm-4 col-md-4 col-lg-4">' +
-              '<div class="thumbnail">' +
-                '<p>' + maps[map].name.replace(provider.toUpperCase() + ' ', '').replace(providerPretty + ' ', '') + '</p>' +
-                '<img src="img/base-maps/' + id + '.png" alt="..." style="height:152px;width:152px;">' +
-                '<div class="caption">' +
-                  '<div class="checkbox-inline">' +
-                    '<label style="font-weight:normal;margin-bottom:0;">' +
-                      '<input type="checkbox">' +
-                      ' Add to Map?' +
-                    '</label>' +
-                  '</div>' +
-                  '<div class="radio-inline">' +
-                    '<label style="font-weight:normal;margin-bottom:0;">' +
-                      '<input type="radio" name="default-basemap" onclick="Builder.ui.modal.editBaseMaps.handleRadio(this);">' +
-                        ' Make default?' +
-                    '</label>' +
-                  '</div>' +
-                '</div>' +
-              '</div>' +
-            '</div>';
+        for (map in maps) {
+          if (map === 'parkTilesImagery') {
+            content += createThumbnail(map, provider, providerPretty);
+            break;
+          }
+        }
+
+        for (map in maps) {
+          if (map !== 'parkTiles') {
+            content += createThumbnail(map, provider, providerPretty);
+          }
+        }
+      } else {
+        for (map in maps) {
+          content += createThumbnail(map, provider, providerPretty);
         }
       }
 

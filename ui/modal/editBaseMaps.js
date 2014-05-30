@@ -142,7 +142,7 @@ Builder.ui.modal.editBaseMaps = (function() {
         }
 
         for (map in maps) {
-          if (map !== 'parkTiles') {
+          if (map !== 'parkTiles' && map !== 'parkTilesImagery') {
             content += createThumbnail(map, provider, providerPretty);
           }
         }

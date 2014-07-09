@@ -39,7 +39,7 @@ function ready() {
 
     function disableSave() {
       $buttonSave.prop('disabled', true);
-      $buttonExport.text('Export Your Map');
+      $buttonExport.text('Export Map');
     }
     function escapeHtml(unsafe) {
       return unsafe
@@ -51,7 +51,7 @@ function ready() {
     }
     function enableSave() {
       $buttonSave.prop('disabled', false);
-      $buttonExport.text('Save & Export Your Map');
+      $buttonExport.text('Save & Export Map');
     }
     function generateLayerChangeStyle(name) {
       var i, overlay, sortable;
@@ -418,7 +418,8 @@ function ready() {
       ui: {
         app: {
           init: function() {
-            var stepButtons = $('section .step .btn-primary');
+            var backButtons = $('section .step .btn-link'),
+              stepButtons = $('section .step .btn-primary');
 
             $modalSignIn.modal({
               show: false
@@ -426,6 +427,12 @@ function ready() {
               .on('shown.bs.modal', function() {
                 $($('#form-signin input')[0]).focus();
               });
+            $(backButtons[0]).on('click', function() {
+              goToStep(1, 0);
+            })
+            $(backButtons[1]).on('click', function() {
+              goToStep(2, 1);
+            })
             $(stepButtons[0]).on('click', function() {
               goToStep(0, 1);
             });
@@ -766,7 +773,7 @@ function ready() {
                       });
                     })
                     .on('shown.bs.popover', function() {
-                      var styles = overlay.type === 'cartodb' ? Builder._defaultStylesCollapsed : Builder._defaultStyles,
+                      var styles = overlay.styles,
                         $select, prop, style, type, value;
 
                       $activeChangeStyleButton = $el;
@@ -777,10 +784,6 @@ function ready() {
                           theme: 'fontawesome'
                         });
                       });
-
-                      if (!overlay.styles) {
-                        overlay.styles = styles;
-                      }
 
                       if (overlay.type === 'cartodb') {
                         for (prop in Builder._defaultStylesCollapsed) {
@@ -901,11 +904,11 @@ function ready() {
                     '<form class="configure-interactivity" id="' + name + '_layer-configure-interactivity" role="form">' +
                       '<fieldset>' +
                         '<div class="form-group">' +
-                          '<span><label for="' + name + '_title">Title</label><img rel="tooltip" src="img/help@2x.png" style="cursor:pointer;float:right;height:18px;" title="The title will display in bold at the top of the popup. HTML and Handlebars templates are allowed." data-placement="bottom"></span>' +
+                          '<span><label for="' + name + '_title">Title</label><a href="https://github.com/nationalparkservice/npmap-builder/wiki/Popups-and-Tooltips" target="_blank"><img rel="tooltip" src="img/help@2x.png" style="cursor:pointer;float:right;height:18px;" title="The title will display in bold at the top of the popup. HTML and Handlebars templates are allowed. Click for more info." data-placement="bottom"></a></span>' +
                           '<input class="form-control" id="' + name + '_title" rows="3" type="text"></input>' +
                         '</div>' +
                         '<div class="form-group">' + // style="margin-bottom:7px;"
-                          '<span><label for="' + name + '_description">Description</label><img rel="tooltip" src="img/help@2x.png" style="cursor:pointer;float:right;height:18px;" title="The description will display underneath the title. HTML and Handlebars templates are allowed." data-placement="bottom"></span>' +
+                          '<span><label for="' + name + '_description">Description</label><a href="https://github.com/nationalparkservice/npmap-builder/wiki/Popups-and-Tooltips" target="_blank"><img rel="tooltip" src="img/help@2x.png" style="cursor:pointer;float:right;height:18px;" title="The description will display underneath the title. HTML and Handlebars templates are allowed. Click for more info." data-placement="bottom"></a></span>' +
                           '<textarea class="form-control" id="' + name + '_description" rows="4"></textarea>' +
                           /*'<span class="help-block">Double-click a token below to add it to the "Title" or "Description" fields below.</span>' +*/
                         '</div>' +
@@ -927,7 +930,7 @@ function ready() {
                             '</label>' +
                           '</div>' +
                           '<div class="form-group">' +
-                            '<span><label for="' + name + '_tooltip">Tooltip</label><img rel="tooltip" src="img/help@2x.png" style="cursor:pointer;float:right;height:18px;" title="Tooltips display when the cursor moves over a shape. HTML and Handlebars templates are allowed." data-placement="bottom"></span>' +
+                            '<span><label for="' + name + '_tooltip">Tooltip</label><a href="https://github.com/nationalparkservice/npmap-builder/wiki/Popups-and-Tooltips" target="_blank"><img rel="tooltip" src="img/help@2x.png" style="cursor:pointer;float:right;height:18px;" title="Tooltips display when the cursor moves over a shape. HTML and Handlebars templates are allowed. Click for more info." data-placement="bottom"></a></span>' +
                             '<input class="form-control" id="' + name + '_tooltip" type="text" disabled></input>' +
                           '</div>' +
                         '' : '') +
@@ -1180,7 +1183,24 @@ function ready() {
           },
           setCenterAndZoom: {
             init: function() {
-              $($('#set-center-and-zoom .btn-block')[0]).on('click', function() {
+              var buttonBlocks = $('#set-center-and-zoom .btn-block');
+
+              $(buttonBlocks[0]).on('click', function() {
+                var center = getLeafletMap().getCenter();
+
+                NPMap.center = {
+                  lat: center.lat,
+                  lng: center.lng
+                };
+                updateInitialCenterAndZoom();
+                Builder.updateMap();
+              });
+              $(buttonBlocks[1]).on('click', function() {
+                NPMap.zoom = getLeafletMap().getZoom();
+                updateInitialCenterAndZoom();
+                Builder.updateMap();
+              });
+              $(buttonBlocks[2]).on('click', function() {
                 var map = getLeafletMap(),
                   center = map.getCenter();
 
@@ -1193,7 +1213,7 @@ function ready() {
                 updateInitialCenterAndZoom();
                 Builder.updateMap();
               });
-              $($('#set-center-and-zoom .btn-block')[1]).on('click', function() {
+              $(buttonBlocks[3]).on('click', function() {
                 var $this = $(this);
 
                 if ($this.hasClass('active')) {

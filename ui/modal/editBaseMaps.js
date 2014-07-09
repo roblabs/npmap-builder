@@ -10,10 +10,9 @@ Builder.ui.modal.editBaseMaps = (function() {
     html = [];
 
   function createThumbnail(map, provider, providerPretty) {
-    var id = provider + '-' + map,
-      html;
+    var id = provider + '-' + map;
 
-    html = '' +
+    return '' +
       '<div id="' + id + '" class="basemap col-xs-4 col-sm-4 col-md-4 col-lg-4">' +
         '<div class="thumbnail">' +
           '<p>' + maps[map].name.replace(provider.toUpperCase() + ' ', '').replace(providerPretty + ' ', '') + '</p>' +
@@ -30,22 +29,11 @@ Builder.ui.modal.editBaseMaps = (function() {
                 '<input type="radio" name="default-basemap" onclick="Builder.ui.modal.editBaseMaps.handleRadio(this);">' +
                   ' Make default?' +
               '</label>' +
-            '</div>';
-
-    /*
-    if (map === 'parkTiles') {
-      html += '' +
-        '<div class="checkbox-inline">' +
-          '<label style="font-weight:normal;margin-bottom:0;">' +
-            '<input type="checkbox">' +
-            ' Include Points of Interest?' +
-          '</label>' +
+            '</div>' +
+          '</div>' +
         '</div>' +
-      '';
-    }
-    */
-
-    return html + '</div></div></div>';
+      '</div>' +
+    '';
   }
   function getProvider(provider) {
     switch (provider) {
@@ -91,8 +79,6 @@ Builder.ui.modal.editBaseMaps = (function() {
     });
   }
   function update() {
-    var active;
-
     $.each($('#modal-editBaseMaps div.basemap'), function(i, div) {
       var checked = false,
         id = div.id;
@@ -104,17 +90,25 @@ Builder.ui.modal.editBaseMaps = (function() {
       $($(div).find('input')[0]).prop('checked', checked);
     });
 
-    for (var i = 0; i < NPMap.baseLayers.length; i++) {
-      var baseLayer = NPMap.baseLayers[i];
+    if (!NPMap.baseLayers || NPMap.baseLayers.length === 0) {
+      $checkbox
+        .prop('checked', true)
+        .trigger('change');
+    } else {
+      var active;
 
-      if (typeof baseLayer.visible === 'undefined' || baseLayer.visible === true) {
-        active = baseLayer;
-        break;
+      for (var i = 0; i < NPMap.baseLayers.length; i++) {
+        var baseLayer = NPMap.baseLayers[i];
+
+        if (typeof baseLayer.visible === 'undefined' || baseLayer.visible === true) {
+          active = baseLayer;
+          break;
+        }
       }
-    }
 
-    $($('#' + active).find('input')[0]).prop('disabled', true);
-    $($('#' + active).find('input')[1]).prop('checked', true);
+      $($('#' + active).find('input')[0]).prop('disabled', true);
+      $($('#' + active).find('input')[1]).prop('checked', true);
+    }
   }
 
   for (var provider in baseMaps) {
@@ -164,25 +158,33 @@ Builder.ui.modal.editBaseMaps = (function() {
 
   $('#modal-editBaseMaps .btn-primary').on('click', setBaseMapsAndHide);
   $checkbox.change(function() {
-    var $this = $(this);
+    var checked = $(this).is(':checked');
 
     $('#modal-editBaseMaps .well').each(function() {
-      if ($this.is(':checked')) {
-        $(this).hide();
+      var $this = $(this);
+
+      if (checked) {
+        $this.hide();
       } else {
-        $(this).show();
+        $this.show();
       }
     });
+
+    if (!checked) {
+      NPMap.baseLayers = [
+        'nps-parkTiles'
+      ];
+      update();
+    }
   });
   $('#modal-editBaseMaps .modal-body').append(html.join(''));
   $('#modal-editBaseMaps').modal({
     backdrop: 'static'
-  })
-    .on('show.bs.modal', update);
+  });
   Builder.buildTooltips();
   setHeight();
-  update();
   $(window).resize(setHeight);
+  update();
 
   return {
     handleRadio: function(el) {

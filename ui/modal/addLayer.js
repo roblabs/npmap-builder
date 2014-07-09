@@ -169,7 +169,7 @@ Builder.ui.modal.addLayer = (function() {
       }
       */
     },
-    styles;
+    popup, styles, tooltip;
 
   function resetFields() {
     $attribution.val(null);
@@ -209,7 +209,7 @@ Builder.ui.modal.addLayer = (function() {
     backdrop: 'static'
   })
     .on('hide.bs.modal', function() {
-      styles = null;
+      popup = styles = tooltip = null;
       resetFields();
       $type.val('arcgisserver').trigger('change');
       $('#modal-addLayer .tab-content').css({
@@ -224,11 +224,8 @@ Builder.ui.modal.addLayer = (function() {
       });
       Builder.ui.modal.addLayer._editingIndex = -1;
       $('#layerType').removeAttr('disabled');
-      /*
-      $('#modal-addLayer-description').html('You can add an overlay to your map either by typing in information about the overlay or searching the NPMap Catalog for datasets to add <em>(coming soon)</em>. Hover over the help icon above for more information.');
-      $('#modal-addLayer-title').html('Add Overlay&nbsp;<img src="img/help@2x.png" style="height:18px;" rel="tooltip" title="You can add ArcGIS Server, CartoDB, GeoJSON, KML, and MapBox Hosting overlays to your map. The NPMap Catalog includes results from the National Park Service ArcGIS Server (from both ArcGIS Online and public-facing ArcGIS Server instances), CartoDB, GitHub, and MapBox Hosting accounts." data-placement="bottom">');
-      */
-      $('#modal-addLayer .btn-primary').text('Add to Map');
+      $('#modal-addLayer-description').html('Type in information about a hosted dataset to overlay it on your map.');
+      $('#modal-addLayer-title').html('Add an Existing Overlay&nbsp;<img data-container="#modal-addLayer" data-original-title="You can add ArcGIS Online/ArcGIS Server, CartoDB, CSV, GeoJSON, KML, MapBox, SPOT, or Tiled overlays to your map." data-placement="bottom" rel="tooltip" src="img/help@2x.png" style="height:18px;" title="">');
       Builder.buildTooltips();
     })
     .on('shown.bs.modal', function() {
@@ -239,7 +236,9 @@ Builder.ui.modal.addLayer = (function() {
   });
   Builder.buildTooltips();
   //resetFields(); // This introduced an issue with the sliders, forcing them to be initialized with default values.
-  $type.focus();
+  setTimeout(function() {
+    $type.focus();
+  }, 100);
   $(window).resize(setHeight);
   $(types.arcgisserver.fields.$layers).selectpicker({
     size: 5
@@ -541,12 +540,20 @@ Builder.ui.modal.addLayer = (function() {
 
           config.name = name;
 
+          if (popup) {
+            config.popup = popup;
+          }
+
           if (styles) {
             config.styles = styles;
           } else if (type === 'csv' || type === 'geojson' || type === 'kml' || type === 'spot') {
-            config.styles = $.extend({}, Builder._defaultStyles);
+            config.styles = $.extend(true, {}, Builder._defaultStyles);
           } else if (type === 'cartodb') {
-            config.styles = $.extend({}, Builder._defaultStylesCollapsed);
+            config.styles = $.extend(true, {}, Builder._defaultStylesCollapsed);
+          }
+
+          if (tooltip) {
+            config.tooltip = tooltip;
           }
 
           // TODO: Loop through all properties and "sanitize" them.
@@ -600,7 +607,9 @@ Builder.ui.modal.addLayer = (function() {
     _load: function(layer) {
       var type = layer.type;
 
+      popup = layer.popup || null;
       styles = layer.styles || null;
+      tooltip = layer.tooltip || null;
       $type.val(type).trigger('change');
 
       for (var prop in layer) {

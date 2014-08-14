@@ -64,6 +64,7 @@ Builder.ui.modal.addLayer = (function() {
           $clickable: $('#cartodb-clickable'),
           $detectRetina: $('#cartodb-retina'),
           $opacity: $('#cartodb-opacity'),
+          $sql: $('#cartodb-sql'),
           $table: $('#cartodb-table'),
           $user: $('#cartodb-user')
         },
@@ -71,6 +72,7 @@ Builder.ui.modal.addLayer = (function() {
           types.cartodb.fields.$clickable.prop('checked', 'checked');
           types.cartodb.fields.$detectRetina.prop('checked', false);
           types.cartodb.fields.$opacity.slider('setValue', 100);
+          types.cartodb.fields.$sql.val('');
           types.cartodb.fields.$table.val('');
           types.cartodb.fields.$user.val('');
         }
@@ -129,12 +131,14 @@ Builder.ui.modal.addLayer = (function() {
         fields: {
           $clickable: $('#spot-clickable'),
           $cluster: $('#spot-cluster'),
-          $id: $('#spot-id')
+          $id: $('#spot-id'),
+          $zoomToBounds: $('#spot-zoomToBounds')
         },
         reset: function() {
           types.spot.fields.$clickable.prop('checked', 'checked');
           types.spot.fields.$cluster.prop(false);
           types.spot.fields.$id.val('');
+          types.spot.fields.$zoomToBounds.prop(false);
         }
       },
       tiled: {
@@ -321,6 +325,7 @@ Builder.ui.modal.addLayer = (function() {
           (function() {
             var clickable = types.cartodb.fields.$clickable.prop('checked'),
               detectRetina = types.cartodb.fields.$detectRetina.prop('checked'),
+              sql = types.cartodb.fields.$sql.val(),
               table = types.cartodb.fields.$table.val(),
               user = types.cartodb.fields.$user.val();
 
@@ -353,6 +358,10 @@ Builder.ui.modal.addLayer = (function() {
 
             if (detectRetina === true) {
               config.detectRetina = true;
+            }
+
+            if (sql && sql.length) {
+              config.sql = sql;
             }
           })();
         } else if ($('#csv').is(':visible')) {
@@ -468,7 +477,8 @@ Builder.ui.modal.addLayer = (function() {
           (function() {
             var clickable = types.spot.fields.$clickable.prop('checked'),
               cluster = types.spot.fields.$cluster.prop('checked'),
-              id = types.spot.fields.$id.val();
+              id = types.spot.fields.$id.val(),
+              zoomToBounds = types.spot.fields.$zoomToBounds.prop('checked');
 
             $.each(types.spot.fields, function(field) {
               fields.push(field);
@@ -489,6 +499,10 @@ Builder.ui.modal.addLayer = (function() {
 
             if (cluster) {
               config.cluster = true;
+            }
+
+            if (zoomToBounds) {
+              config.zoomToBounds = true;
             }
           })();
         } else if ($('#tiled').is(':visible')) {
@@ -618,7 +632,7 @@ Builder.ui.modal.addLayer = (function() {
         if (prop === 'attribution' || prop === 'description' || prop === 'name') {
           $('#layer' + (prop.charAt(0).toUpperCase() + prop.slice(1))).val(value);
         } else {
-          if (prop === 'clickable' || prop === 'cluster' || prop === 'detectRetina') {
+          if (prop === 'clickable' || prop === 'cluster' || prop === 'detectRetina' || prop === 'zoomToBounds') {
             $('#' + type + '-' + prop).prop('checked', value);
           } else if (prop === 'opacity') {
             $('#' + type + '-opacity').slider('setValue', value * 100);

@@ -188,6 +188,54 @@ Builder.ui.modal.addLayer = (function() {
       height: $(document).height() - 180
     });
   }
+  function validate(config, callback) {
+    var done = false,
+      error = null,
+      interval;
+
+    window.layerValidate = (function() {
+      var contentWindow = document.getElementById('iframe-map').contentWindow;
+
+      if (config.type === 'arcgisserver') {
+        if (config.tiled) {
+          return contentWindow.L.npmap.layer.arcgisserver.tiled(config);
+        } else {
+          return contentWindow.L.npmap.layer.arcgisserver.dynamic(config);
+        }
+      }
+
+      return contentWindow.L.npmap.layer[config.type](config);
+    })();
+
+    if (window.layerValidate.readyFired) {
+      done = true;
+    } else {
+      window.layerValidate.on('ready', function() {
+        done = true;
+      });
+    }
+
+    if (window.layerValidate.errorFired) {
+      error = {
+        message: 'Unspecified error.'
+      };
+      done = true;
+      
+    } else {
+      window.layerValidate.on('error', function(e) {
+        error = e;
+        done = true;
+      });
+    }
+
+    interval = setInterval(function() {
+      if (done === true) {
+        clearInterval(interval);
+        delete window.layerValidate;
+        callback(error);
+      }
+    }, 100);
+  }
 
   setHeight();
 
@@ -231,6 +279,9 @@ Builder.ui.modal.addLayer = (function() {
       $('#modal-addLayer-description').html('Type in information about a hosted dataset to overlay it on your map.');
       $('#modal-addLayer-title').html('Add an Existing Overlay&nbsp;<img data-container="#modal-addLayer" data-original-title="You can add ArcGIS Online/ArcGIS Server, CartoDB, CSV, GeoJSON, KML, MapBox, SPOT, or Tiled overlays to your map." data-placement="bottom" rel="tooltip" src="img/help@2x.png" style="height:18px;" title="">');
       Builder.buildTooltips();
+      $('#addLayer-add, #addLayer-cancel').each(function(i, button) {
+        $(button).prop('disabled', false);
+      });
     })
     .on('shown.bs.modal', function() {
       $type.focus();
@@ -544,6 +595,10 @@ Builder.ui.modal.addLayer = (function() {
           var $layers = $('#layers'),
             type = config.type;
 
+          $('#addLayer-add, #addLayer-cancel').each(function(i, button) {
+            $(button).prop('disabled', true);
+          });
+
           if (attribution) {
             config.attribution = attribution;
           }
@@ -572,38 +627,53 @@ Builder.ui.modal.addLayer = (function() {
 
           // TODO: Loop through all properties and "sanitize" them.
 
-          if (Builder.ui.modal.addLayer._editingIndex === -1) {
-            Builder.addOverlay(config);
-          } else {
-            var $li = $($layers.children()[Builder.ui.modal.addLayer._editingIndex]),
-              $interactivity = $($li.find('.interactivity')[0]);
+/*
 
-            NPMap.overlays[Builder.ui.modal.addLayer._editingIndex] = config;
-            $($li.find('.name')[0]).text(config.name);
 
-            if (config.description) {
-              $($li.find('.description')[0]).text(config.description);
-            }
 
-            if (typeof config.clickable === 'undefined' || config.clickable === true) {
-              $interactivity.show();
+*/
+
+
+          // TODO: Better loading indicator?
+          validate(config, function(error) {
+            if (error) {
+              $('#addLayer-add, #addLayer-cancel').each(function(i, button) {
+                $(button).prop('disabled', false);
+              });
+              window.alert('The overlay could not be added to the map. The full error message is:\n\n' + error.message);
             } else {
-              $interactivity.hide();
-              delete config.popup;
-              delete config.tooltip;
+              if (Builder.ui.modal.addLayer._editingIndex === -1) {
+                Builder.addOverlay(config);
+              } else {
+                var $li = $($layers.children()[Builder.ui.modal.addLayer._editingIndex]),
+                  $interactivity = $($li.find('.interactivity')[0]);
+
+                NPMap.overlays[Builder.ui.modal.addLayer._editingIndex] = config;
+                $($li.find('.name')[0]).text(config.name);
+
+                if (config.description) {
+                  $($li.find('.description')[0]).text(config.description);
+                }
+
+                if (typeof config.clickable === 'undefined' || config.clickable === true) {
+                  $interactivity.show();
+                } else {
+                  $interactivity.hide();
+                  delete config.popup;
+                  delete config.tooltip;
+                }
+              }
+
+              Builder.updateMap();
+              $('#modal-addLayer').modal('hide');
             }
-          }
+          });
+        } else {
+          $.each(errors, function(i, $el) {
+            $el.parent().addClass('has-error');
+          });
         }
       }
-
-      if (errors.length) {
-        $.each(errors, function(i, $el) {
-          $el.parent().addClass('has-error');
-        });
-      }
-
-      Builder.updateMap();
-      $('#modal-addLayer').modal('hide');
     },
     _layerTypeOnChange: function(value) {
       $.each($('#hosted div'), function(i, div) {

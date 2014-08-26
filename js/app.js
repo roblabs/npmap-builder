@@ -1039,7 +1039,7 @@ function ready() {
                 }
               },
               clickLayerRemove: function(el) {
-                Builder.showConfirm('Yes, remove the layer', 'Once the layer is removed, you cannot get it back.', 'Are you sure?', function() {
+                Builder.showConfirm('Yes, remove the overlay', 'Once the overlay is removed, you cannot get it back.', 'Are you sure?', function() {
                   Builder.ui.steps.addAndCustomizeData.removeLi(el);
                   Builder.removeOverlay(getLayerIndexFromButton(el));
                 });
@@ -1252,7 +1252,7 @@ function ready() {
               updateInitialCenterAndZoom();
 
               if (typeof NPMap.maxBounds === 'object') {
-                var $bounds = $($('#set-center-and-zoom .btn-block')[1]);
+                var $bounds = $($('#set-center-and-zoom .btn-block')[3]);
 
                 $bounds.addClass('active').text('Remove Bounds Restriction');
                 $bounds.next().show();

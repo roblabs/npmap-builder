@@ -1040,6 +1040,9 @@ function ready() {
               },
               clickLayerRemove: function(el) {
                 Builder.showConfirm('Yes, remove the overlay', 'Once the overlay is removed, you cannot get it back.', 'Are you sure?', function() {
+                  
+
+
                   Builder.ui.steps.addAndCustomizeData.removeLi(el);
                   Builder.removeOverlay(getLayerIndexFromButton(el));
                 });
@@ -1076,14 +1079,11 @@ function ready() {
 
                   if (children.length > 1) {
                     $.each(children, function(i, li) {
-                      var $letter = $($(li).children('.letter')[0]),
-                        from = $.inArray($letter.text(), abcs);
+                      var from = $.inArray($($(li).children('.letter')[0]).text(), abcs);
 
                       if (from !== i) {
                         overlays.splice(i, 0, NPMap.overlays[from]);
                       }
-
-                      $letter.text(abcs[i]);
                     });
 
                     if (overlays.length) {
@@ -1162,9 +1162,10 @@ function ready() {
               Builder.ui.steps.addAndCustomizeData.refreshUl();
             },
             refreshUl: function() {
-              var previous = $ul.parent().prev();
+              var children = $ul.children(),
+                previous = $ul.parent().prev();
 
-              if ($ul.children().length === 0) {
+              if (children.length === 0) {
                 $buttonAddAnotherLayer.hide();
                 $buttonCreateDatasetAgain.hide();
                 $buttonEditBaseMapsAgain.hide();
@@ -1174,11 +1175,17 @@ function ready() {
                 $buttonCreateDatasetAgain.show();
                 $buttonEditBaseMapsAgain.show();
                 previous.hide();
+                $.each(children, function(i, li) {
+                  $($(li).children('.letter')[0]).text(abcs[i]);
+                });
               }
             },
             removeLi: function(el) {
               $($(el).parents('li')[0]).remove();
               Builder.ui.steps.addAndCustomizeData.refreshUl();
+            },
+            updateOverlayLetters: function() {
+
             }
           },
           setCenterAndZoom: {

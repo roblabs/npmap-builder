@@ -626,16 +626,8 @@ Builder.ui.modal.addLayer = (function() {
           }
 
           // TODO: Loop through all properties and "sanitize" them.
-
-/*
-
-
-
-*/
-
-
           // TODO: Better loading indicator?
-          validate(config, function(error) {
+          validate($.extend({}, config), function(error) {
             if (error) {
               $('#addLayer-add, #addLayer-cancel').each(function(i, button) {
                 $(button).prop('disabled', false);

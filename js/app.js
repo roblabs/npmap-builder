@@ -287,8 +287,7 @@ function ready() {
       });
     }
     function saveMap(callback) {
-      var $this = $(this),
-        base = '/';
+      var $this = $(this);
 
       Builder.showLoading();
       $this.blur();
@@ -311,7 +310,8 @@ function ready() {
           }
         },
         success: function(response) {
-          var error = 'Sorry, there was an unhandled error while saving your map. Please try again.';
+          var error = 'Sorry, there was an unhandled error while saving your map. Please try again.',
+            success = false;
 
           Builder.hideLoading();
 
@@ -320,9 +320,7 @@ function ready() {
               mapId = response.mapId;
               updateSaveStatus(response.modified);
               alertify.success('Your map was saved!');
-              if (typeof callback === 'function') {
-                callback(true);
-              }
+              success = true;
             } else if (response.success === false && response.error) {
               if (response.type === 'login') {
                 $modalSignIn.modal('show');
@@ -330,27 +328,19 @@ function ready() {
               } else {
                 alertify.error(response.error);
               }
-
-              if (typeof callback === 'function') {
-                callback(false);
-              }
             } else {
               alertify.error(error);
-
-              if (typeof callback === 'function') {
-                callback(false);
-              }
             }
           } else {
             alertify.error(error);
+          }
 
-            if (typeof callback === 'function') {
-              callback(false);
-            }
+          if (typeof callback === 'function') {
+            callback(success);
           }
         },
         type: 'POST',
-        url: base + 'builder/save' + (base === '/' ? '' : '&callback=?')
+        url: '/builder/save/'
       });
     }
     function unescapeHtml(unsafe) {
@@ -429,10 +419,10 @@ function ready() {
               });
             $(backButtons[0]).on('click', function() {
               goToStep(1, 0);
-            })
+            });
             $(backButtons[1]).on('click', function() {
               goToStep(2, 1);
-            })
+            });
             $(stepButtons[0]).on('click', function() {
               goToStep(0, 1);
             });
@@ -1358,6 +1348,9 @@ function ready() {
                 $modalViewConfig = $('#modal-viewConfig');
               });
             });
+            $('#button-refresh').on('click', function() {
+              Builder.updateMap(null, true);
+            });
             $('#button-save').on('click', saveMap);
             $('#button-settings').on('click', function() {
               var $this = $(this),
@@ -1420,7 +1413,7 @@ function ready() {
         document.body.appendChild(div);
         $('#loading').show();
       },
-      updateMap: function(callback) {
+      updateMap: function(callback, manualRefresh) {
         var interval;
 
         $iframe.attr('src', 'iframe.html');
@@ -1431,14 +1424,16 @@ function ready() {
           if (npmap && npmap.config && npmap.config.L) {
             clearInterval(interval);
 
-            if (callback) {
+            if (typeof callback === 'function') {
               callback(npmap.config);
             }
 
-            if (firstLoad) {
-              firstLoad = false;
-            } else {
-              enableSave();
+            if (!manualRefresh) {
+              if (firstLoad) {
+                firstLoad = false;
+              } else {
+                enableSave();
+              }
             }
           }
         }, 0);

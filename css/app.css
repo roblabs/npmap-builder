@@ -1,7 +1,7 @@
 /* Start containers */
 header {
   background-color: black;
-  height: 154px;
+  height: 149px;
   left: 0;
   position: absolute;
   top: 0;
@@ -12,7 +12,7 @@ section {
   left: 0;
   min-height: 275px;
   position: absolute;
-  top: 154px;
+  top: 149px;
   width: 100%;
   z-index: 1;
 }
@@ -237,7 +237,7 @@ iframe {
 #logo {
   float: left;
   padding-left: 20px;
-  margin-top: 22px;
+  margin-top: 23px;
 }
 #map {
   height: 100%;
@@ -252,7 +252,7 @@ iframe {
           box-shadow: inset 2px 0 1px rgba(0,0,0,.07);
   background-color: #44433B;
   bottom: 0;
-  height: 80px;
+  height: 75px;
   left: 0;
   position: absolute;
   width: 100%;
@@ -261,11 +261,10 @@ iframe {
     color: #FFF;
   }
   #metadata .buttons {
-    bottom: 14px;
+    bottom: 17px;
     height: 34px;
     position: absolute;
     right: 20px;
-    width: 220px;
   }
     #metadata .buttons .btn-toolbar {
       margin-left: 0;
@@ -279,7 +278,7 @@ iframe {
     }
   #metadata .info {
     display: block;
-    padding: 0 350px 0 20px;
+    padding: 0 450px 0 20px;
   }
     #metadata .info .description {
       margin-top: 6px;
@@ -306,7 +305,7 @@ iframe {
   margin-top: 5px;
   position: absolute;
   right: 20px;
-  top: 17px;
+  top: 15px;
 }
 #steps li {
   float: left;
@@ -477,14 +476,14 @@ body.dragging, body.dragging * {
   z-index: 999999999;
 }
 .info-saved {
-  bottom: 14px;
+  bottom: 17px;
   color: white;
   display: none;
   position: absolute;
-  right: 150px;
+  right: 188px;
 }
   .info-saved p {
-    margin-bottom: -3px;
+    margin-bottom: -5px;
   }
 .configure-interactivity textarea {
   resize: none;

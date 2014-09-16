@@ -116,13 +116,11 @@ Builder.ui.modal.addLayer = (function() {
       mapbox: {
         fields: {
           $clickable: $('#mapbox-clickable'),
-          $detectRetina: $('#mapbox-retina'),
           $id: $('#mapbox-id'),
           $opacity: $('#mapbox-opacity')
         },
         reset: function() {
           types.mapbox.fields.$clickable.prop('checked', 'checked');
-          types.mapbox.fields.$detectRetina.prop('checked', false);
           types.mapbox.fields.$id.val('');
           types.mapbox.fields.$opacity.slider('setValue', 100);
         }
@@ -499,7 +497,6 @@ Builder.ui.modal.addLayer = (function() {
         } else if ($('#mapbox').is(':visible')) {
           (function() {
             var clickable = types.mapbox.fields.$clickable.prop('checked'),
-              detectRetina = types.mapbox.fields.$detectRetina.prop('checked'),
               id = types.mapbox.fields.$id.val();
 
             $.each(types.mapbox.fields, function(field) {
@@ -518,10 +515,6 @@ Builder.ui.modal.addLayer = (function() {
 
             if (clickable === false) {
               config.clickable = false;
-            }
-
-            if (detectRetina === true) {
-              config.detectRetina = true;
             }
           })();
         } else if ($('#spot').is(':visible')) {

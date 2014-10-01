@@ -60,7 +60,7 @@ function ready() {
         $.each(document.getElementById('iframe-map').contentWindow.L.npmap.preset.colors, function(prop, value) {
           var color = value.color;
 
-          optionsColor += '<option value="' + color + '">' + color + '</option>';
+          optionsColor += '<option value="' + color + '">' + prop + '</option>';
         });
       }
 
@@ -186,38 +186,60 @@ function ready() {
           });
         }
 
+        // TODO: Set marker-color, size, and symbol based on layer properties.
+
         return '' +
           '<form class="change-style" id="' + name + '_layer-change-style" role="form">' +
             '<ul class="nav nav-tabs">' +
               '<li class="active"><a href="#point" data-toggle="tab">Point</a></li>' +
-              '<li class=""><a href="#line" data-toggle="tab">Line</a></li>' +
-              '<li class=""><a href="#polygon" data-toggle="tab">Polygon</a></li>' +
+              '<li><a href="#line" data-toggle="tab">Line</a></li>' +
+              '<li><a href="#polygon" data-toggle="tab">Polygon</a></li>' +
             '</ul>' +
             '<div class="tab-content">' +
               '<div class="tab-pane active in" id="point">' +
                 '<fieldset>' +
                   '<div class="form-group">' +
-                    '<label for="' + name + '_point_marker-library">Library</label>' +
-                    '<select id="' + name + '_point_marker-library" onchange="Builder.ui.steps.addAndCustomizeData.handlers.changeMarkerLibrary(this);return false;"><option value="maki">Maki</option><option value="npmaki">NPMaki</option></select>' +
+                    '<label for="' + name + '_point_marker-size">Size</label>' +
+                    '<span style="position:absolute;right:20px;">' +
+                      '<input id="large" name="marker-size" style="display:none;" type="radio"><label for="large" style="margin-bottom:0;"><span style="background-image:url(https://a.tiles.mapbox.com/v4/marker/pin-s-park+7a9052@2x.png?access_token=pk.eyJ1IjoibnBzIiwiYSI6IkdfeS1OY1UifQ.K8Qn5ojTw4RV1GwBlsci-Q);background-size:20px 30px;display:inline-block;height:30px;width:20px;"></span></label>' +
+                      '<input id="medium" name="marker-size" style="display:none;" type="radio"><label for="medium" style="margin-bottom:0;"><span style="background-image:url(https://a.tiles.mapbox.com/v4/marker/pin-m-park+7a9052@2x.png?access_token=pk.eyJ1IjoibnBzIiwiYSI6IkdfeS1OY1UifQ.K8Qn5ojTw4RV1GwBlsci-Q);background-size:30px 60px;display:inline-block;height:35px;width:33px;"></span></label>' +
+                      '<input id="small" name="marker-size" style="display:none;" type="radio"><label for="small" style="margin-bottom:0;"><span style="background-image:url(https://a.tiles.mapbox.com/v4/marker/pin-s-park+7a9052@2x.png?access_token=pk.eyJ1IjoibnBzIiwiYSI6IkdfeS1OY1UifQ.K8Qn5ojTw4RV1GwBlsci-Q);background-size:20px 50px;display:inline-block;height:30px;width:20px;"></span></label>' +
+                    '</span>' +
+                    /*
+                    '<select id="' + name + '_point_marker-size"><option value="small">Small</option><option value="medium">Medium</option><option value="large">Large</option></select>' +
+                    */
                   '</div>' +
                   '<div class="form-group">' +
                     '<label for="' + name + '_point_marker-color">Color</label>' +
                     '<select id="' + name + '_point_marker-color" class="simplecolorpicker">' + optionsColor + '</select>' +
                   '</div>' +
+                  
+                  '<ul class="nav nav-tabs">' +
+                    '<li class="active"><a href="#npmaki" data-toggle="tab">NPMaki</a></li>' +
+                    '<li><a href="#maki" data-toggle="tab">Maki</a></li>' +
+                  '</ul>' +
+                  '<div class="tab-content">' +
+                    '<div class="tab-pane active in" id="npmaki">' +
+                    '</div>' +
+                    '<div class="tab-pane" id="maki">' +
+                    '</div>' +
+                  '</div>' +
+
+                  /*
                   '<div class="form-group">' +
-                    '<label for="' + name + '_point_marker-size">Size</label>' +
-                    '<select id="' + name + '_point_marker-size"><option value="small">Small</option><option value="medium">Medium</option><option value="large">Large</option></select>' +
+                    '<label for="' + name + '_point_marker-library">Library</label>' +
+                    '<select id="' + name + '_point_marker-library" onchange="Builder.ui.steps.addAndCustomizeData.handlers.changeMarkerLibrary(this);return false;"><option value="maki">Maki</option><option value="npmaki">NPMaki</option></select>' +
                   '</div>' +
                   '<div class="form-group">' +
                     '<label for="' + name + '_point_marker-symbol">Icon</label>' +
                     '<select id="' + name + '_point_marker-symbol"></select>' +
                   '</div>' +
+                  */
                 '</fieldset>' +
               '</div>' +
               '<div class="tab-pane" id="line">' +
                 '<fieldset>' +
                   '<div class="form-group">' +
-                    '<label for="' + name + '_line_stroke">Color</label>' +
                     '<select id="' + name + '_line_stroke" class="simplecolorpicker">' + optionsColor + '</select>' +
                   '</div>' +
                   '<div class="form-group">' +
@@ -1055,7 +1077,7 @@ function ready() {
                       alertify.log('The login failed. Please check your user name and password and try again.', 'error', 6000);
                     }
                   },
-                  url: '/account/logonajax?domain=nps&password=' + $($('input[name="password"]')[0]).val() + '&rememberMe=true&userName=' + $($('input[name="userName"]')[0]).val()
+                  url: 'https://insidemaps.nps.gov/account/logonajax?domain=nps&password=' + $($('input[name="password"]')[0]).val() + '&rememberMe=true&userName=' + $($('input[name="userName"]')[0]).val()
                 });
               }
 
@@ -1140,7 +1162,7 @@ function ready() {
                     '<div style="float:left;">' +
                       '<button class="btn btn-default btn-xs" data-container="section" onclick="Builder.ui.steps.addAndCustomizeData.handlers.clickLayerEdit(this);" type="button"><span class="fa fa-edit"> Edit</span></button>' +
                     '</div>' +
-                    '<div style="float:right;margin-right:10px;">' +
+                    '<div style="float:right;">' +
                       '<button class="btn btn-default btn-xs interactivity" data-container="section" data-placement="bottom" onclick="Builder.ui.steps.addAndCustomizeData.handlers.clickLayerConfigureInteractivity(this);" rel="tooltip" style="' + (interactive ? '' : 'display:none;') + 'margin-right:5px;" title="Configure Interactivity" type="button"><span class="fa fa-comment"></span></button>' +
                       '<button class="btn btn-default btn-xs" data-container="section" data-placement="bottom" onclick="Builder.ui.steps.addAndCustomizeData.handlers.clickLayerChangeStyle(this);" rel="tooltip" style="' + (styleable ? '' : 'display:none;') + 'margin-right:5px;" title="Change Style" type="button"><span class="fa fa-map-marker"></span></button>' +
                       '<button class="btn btn-default btn-xs" data-container="section" data-placement="bottom" onclick="Builder.ui.steps.addAndCustomizeData.handlers.clickLayerRemove(this);" rel="tooltip" title="Delete Overlay" type="button"><span class="fa fa-trash-o"></span></button>' +

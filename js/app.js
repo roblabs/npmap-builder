@@ -1504,8 +1504,8 @@ if (mapId) {
       'nps-parkTiles'
     ],
     center: {
-      lat: 39,
-      lng: -96
+      lat: 39.06,
+      lng: -96.02
     },
     div: 'map',
     homeControl: true,

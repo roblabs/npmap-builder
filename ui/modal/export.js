@@ -10,7 +10,7 @@ Builder.ui.modal.export = (function() {
 
   function setHeight() {
     $('#modal-export .tab-content').css({
-      height: $(document).height() - 289
+      height: $(document).height() - 310
     });
   }
 

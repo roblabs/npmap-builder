@@ -148,10 +148,10 @@ iframe {
     }
 .change-style {
   margin-bottom: 15px;
-  width: 225px;
+  width: 250px;
 }
   .change-style .tab-content {
-    height: 240px;
+    /*height: 240px;*/
     overflow: auto;
     padding: 18px 5px;
   }
@@ -164,6 +164,7 @@ iframe {
   }
 #mask {
   display: none;
+  z-index: 9;
 }
 /* Layers */
 #layers {
@@ -451,6 +452,9 @@ body.dragging, body.dragging * {
   overflow: hidden;
   overflow-y: hidden;
 }
+  .modal.in {
+    overflow: hidden;
+  }
 
 .popover-content fieldset select {
   position: absolute;

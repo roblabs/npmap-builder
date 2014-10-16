@@ -56,7 +56,7 @@ Builder.ui.modal.viewConfig = (function() {
     }).select();
   }
   function setHeight() {
-    var height = $(document).height() - 200;
+    var height = $(document).height() - 195;
 
     $('#modal-viewConfig .modal-body').css({
       height: height

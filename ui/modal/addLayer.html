@@ -66,11 +66,11 @@
                 <select id="arcgisserver-layers" class="form-control dropup selectpicker" disabled="disabled" data-selected-text-format="count" multiple required></select>
                 <span class="help-block">All of the service's layers will appear here after you fill in the "URL" field above. You must choose at least one.</span>
               </div>
-              <label style="display:block;">
-                <div class="checkbox">
+              <div class="checkbox">
+                <label>
                   <input id="arcgisserver-clickable" type="checkbox" checked="checked"></input>Is this overlay clickable?
-                </div>
-              </label>
+                </label>
+              </div>
             </div>
             <div id="cartodb">
               <div class="form-group">
@@ -82,7 +82,7 @@
                 <input id="cartodb-table" type="text" class="form-control" required></input>
               </div>
               <div class="form-group">
-                <label for="cartodb-sql">SQL</label>
+                <label for="cartodb-sql">SQL (optional)</label>
                 <input id="cartodb-sql" type="text" class="form-control"></input>
                 <span class="help-block">Must be a full SELECT statement, e.g. SELECT * FROM parks WHERE unit_code = 'GRSM'</span>
               </div>
@@ -90,64 +90,64 @@
                 <label for="cartodb-opacity" style="display:block;margin-bottom:-10px;">Opacity</label>
                 <input type="text" id="cartodb-opacity" required>
               </div>
-              <label style="display:block;">
-                <div class="checkbox">
-                  <input id="cartodb-retina" type="checkbox"></input>Detect retina?
-                </div>
-              </label>
-              <label style="display:block;">
-                <div class="checkbox">
-                  <input id="cartodb-clickable" type="checkbox" checked="checked"></input>Is this overlay clickable?
-                </div>
-              </label>
+              <div class="checkbox">
+                <label>
+                  <input id="cartodb-retina" type="checkbox"></input> Detect retina?
+                </label>
+              </div>
+              <div class="checkbox">
+                <label>
+                  <input id="cartodb-clickable" type="checkbox" checked="checked"></input> Is this overlay clickable?
+                </label>
+              </div>
             </div>
             <div id="csv">
               <div class="form-group">
                 <label for="csv-url">URL</label>
                 <input id="csv-url" type="text" placeholder="Must end with '.csv'..." class="form-control" required></input>
               </div>
-              <label style="display:block;">
-                <div class="checkbox">
-                  <input id="csv-clickable" type="checkbox" checked="checked"></input>Is this overlay clickable?
-                </div>
-              </label>
-              <label style="display:block;">
-                <div class="checkbox">
-                  <input id="csv-cluster" type="checkbox"></input>Should points in this overlay be clustered?
-                </div>
-              </label>
+              <div class="checkbox">
+                <label>
+                  <input id="csv-clickable" type="checkbox" checked="checked"></input> Is this overlay clickable?
+                </label>
+              </div>
+              <div class="checkbox">
+                <label>
+                  <input id="csv-cluster" type="checkbox"></input> Should points in this overlay be clustered?
+                </label>
+              </div>
             </div>
             <div id="geojson">
               <div class="form-group">
                 <label for="geojson-url">URL</label>
                 <input id="geojson-url" type="text" placeholder="Must end with '.geojson', '.json', or '.topojson'..." class="form-control" required></input>
               </div>
-              <label style="display:block;">
-                <div class="checkbox">
-                  <input id="geojson-clickable" type="checkbox" checked="checked"></input>Is this overlay clickable?
-                </div>
-              </label>
-              <label style="display:block;">
-                <div class="checkbox">
-                  <input id="geojson-cluster" type="checkbox"></input>Should points in this overlay be clustered?
-                </div>
-              </label>
+              <div class="checkbox">
+                <label>
+                  <input id="geojson-clickable" type="checkbox" checked="checked"></input> Is this overlay clickable?
+                </label>
+              </div>
+              <div class="checkbox">
+                <label>
+                  <input id="geojson-cluster" type="checkbox"></input> Should points in this overlay be clustered?
+                </label>
+              </div>
             </div>
             <div id="kml">
               <div class="form-group">
                 <label for="kml-url">URL</label>
                 <input id="kml-url" type="text" placeholder="Must end with '.kml'..." class="form-control" required></input>
               </div>
-              <label style="display:block;">
-                <div class="checkbox">
-                  <input id="kml-clickable" type="checkbox" checked="checked"></input>Is this overlay clickable?
-                </div>
-              </label>
-              <label style="display:block;">
-                <div class="checkbox">
-                  <input id="kml-cluster" type="checkbox"></input>Should points in this overlay be clustered?
-                </div>
-              </label>
+              <div class="checkbox">
+                <label>
+                  <input id="kml-clickable" type="checkbox" checked="checked"></input> Is this overlay clickable?
+                </label>
+              </div>
+              <div class="checkbox">
+                <label>
+                  <input id="kml-cluster" type="checkbox"></input> Should points in this overlay be clustered?
+                </label>
+              </div>
             </div>
             <div id="mapbox">
               <div class="form-group">
@@ -158,32 +158,32 @@
                 <label for="mapbox-opacity" style="display:block;margin-bottom:-10px;">Opacity</label>
                 <input type="text" id="mapbox-opacity" required>
               </div>
-              <label style="display:block;">
-                <div class="checkbox">
-                  <input id="mapbox-clickable" type="checkbox" checked="checked"></input>Is this overlay clickable?
-                </div>
-              </label>
+              <div class="checkbox">
+                <label>
+                  <input id="mapbox-clickable" type="checkbox" checked="checked"></input> Is this overlay clickable?
+                </label>
+              </div>
             </div>
             <div id="spot">
               <div class="form-group">
                 <label for="spot-id">ID</label>
                 <input id="spot-id" type="text" placeholder="The ID of your SPOT device..." class="form-control" required></input>
               </div>
-              <label style="display:block;">
-                <div class="checkbox">
-                  <input id="spot-zoomToBounds" type="checkbox"></input>Automatically zoom to the bounds of the returned points?
-                </div>
-              </label>
-              <label style="display:block;">
-                <div class="checkbox">
-                  <input id="spot-clickable" type="checkbox" checked="checked"></input>Is this overlay clickable?
-                </div>
-              </label>
-              <label style="display:block;">
-                <div class="checkbox">
-                  <input id="spot-cluster" type="checkbox"></input>Should points in this overlay be clustered?
-                </div>
-              </label>
+              <div class="checkbox">
+                <label>
+                  <input id="spot-zoomToBounds" type="checkbox"></input> Automatically zoom to the bounds of the returned points?
+                </label>
+              </div>
+              <div class="checkbox">
+                <label>
+                  <input id="spot-clickable" type="checkbox" checked="checked"></input> Is this overlay clickable?
+                </label>
+              </div>
+              <div class="checkbox">
+                <label>
+                  <input id="spot-cluster" type="checkbox"></input> Should points in this overlay be clustered?
+                </label>
+              </div>
             </div>
             <div id="tiled">
               <div class="form-group">

@@ -75,7 +75,7 @@ Builder.ui.modal.editBaseMaps = (function() {
   }
   function setHeight() {
     $('#modal-editBaseMaps .modal-body').css({
-      height: $(document).height() - 200
+      height: $(document).height() - 180
     });
   }
   function update() {

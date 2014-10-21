@@ -589,20 +589,6 @@ function ready() {
                 $activeChangeStyleButton.popover('toggle');
                 $('#mask').hide();
               },
-              changeAutoWidth: function(el) {
-                var $el = $(el),
-                  $input = $($el.parent().parent().next().children('input')[0]),
-                  checked = $el.prop('checked'),
-                  val = 150;
-
-                $input.prop('disabled', checked);
-
-                if (checked) {
-                  val = null;
-                }
-
-                $input.val(val);
-              },
               changeCartoDbHasPoints: function(el) {
                 var $el = $(el),
                   $next = $($el.parent().parent().next()),
@@ -647,7 +633,6 @@ function ready() {
                   popup = {},
                   t = $('#' + elName + '_title').val(),
                   tooltip = $('#' + elName + '_tooltip').val(),
-                  width = $('#' + elName + '_fixedWidth').val(),
                   overlay;
 
                 for (var i = 0; i < NPMap.overlays.length; i++) {
@@ -667,15 +652,7 @@ function ready() {
                   popup.title = escapeHtml(t);
                 }
 
-                if (width) {
-                  width = parseInt(width, 10);
-
-                  if (typeof width === 'number') {
-                    popup.width = width;
-                  }
-                }
-
-                if (!popup.description && !popup.title && typeof popup.width !== 'number') {
+                if (!popup.description && !popup.title && typeof popup.max !== 'number' && typeof popup.min !== 'number') {
                   delete overlay.popup;
                 } else {
                   overlay.popup = popup;
@@ -890,28 +867,15 @@ function ready() {
 
                   html = '' +
                     // Checkbox here "Display all fields in a table?" should be checked on by default.
-                    //'<p>HTML and <a href="http://handlebarsjs.com" target="_blank">Handlebars</a> templates are supported.</p>' +
                     '<form class="configure-interactivity" id="' + name + '_layer-configure-interactivity" role="form">' +
                       '<fieldset>' +
                         '<div class="form-group">' +
-                          '<span><label for="' + name + '_title">Title</label><a href="https://github.com/nationalparkservice/npmap-builder/wiki/Popups-and-Tooltips" target="_blank"><img rel="tooltip" src="img/help@2x.png" style="cursor:pointer;float:right;height:18px;" title="The title will display in bold at the top of the popup. HTML and Handlebars templates are allowed. Click for more info." data-placement="bottom"></a></span>' +
+                          '<span><label for="' + name + '_title">Title</label><a href="https://github.com/nationalparkservice/npmap-builder/wiki/Popups-and-Tooltips" target="_blank"><img data-container="body" data-placement="bottom" rel="tooltip" src="img/help@2x.png" style="cursor:pointer;float:right;height:18px;" title="The title will display in bold at the top of the popup. HTML and Handlebars templates are allowed. Click for more info."></a></span>' +
                           '<input class="form-control" id="' + name + '_title" rows="3" type="text"></input>' +
                         '</div>' +
-                        '<div class="form-group">' + // style="margin-bottom:7px;"
-                          '<span><label for="' + name + '_description">Description</label><a href="https://github.com/nationalparkservice/npmap-builder/wiki/Popups-and-Tooltips" target="_blank"><img rel="tooltip" src="img/help@2x.png" style="cursor:pointer;float:right;height:18px;" title="The description will display underneath the title. HTML and Handlebars templates are allowed. Click for more info." data-placement="bottom"></a></span>' +
+                        '<div class="form-group">' +
+                          '<span><label for="' + name + '_description">Description</label><a href="https://github.com/nationalparkservice/npmap-builder/wiki/Popups-and-Tooltips" target="_blank"><img data-container="body" data-placement="bottom" rel="tooltip" src="img/help@2x.png" style="cursor:pointer;float:right;height:18px;" title="The description will display underneath the title. HTML and Handlebars templates are allowed. Click for more info."></a></span>' +
                           '<textarea class="form-control" id="' + name + '_description" rows="4"></textarea>' +
-                          /*'<span class="help-block">Double-click a token below to add it to the "Title" or "Description" fields below.</span>' +*/
-                        '</div>' +
-                        '<div class="form-inline">' +
-                          '<div class="checkbox">' +
-                            '<label>' +
-                              '<input id="' + name + '_autoWidth" onchange="Builder.ui.steps.addAndCustomizeData.handlers.changeAutoWidth(this);return false;" style="margin-right:5px;" type="checkbox" value="auto" checked> Auto width?' +
-                            '</label>' +
-                          '</div>' +
-                          '<div class="form-group">' +
-                            '<input class="form-control" id="' + name + '_fixedWidth" min="150" style="height:24px;margin-left:10px;padding:0 6px;width:75px;" type="number" disabled></input>' +
-                          '</div>' +
-                          '<img rel="tooltip" src="img/help@2x.png" style="cursor:pointer;float:right;height:18px;margin-top:3px;" title="You can hardcode a width (in pixels) for the popup. This can be used to insert fixed width images or videos." data-placement="bottom">' +
                         '</div>' +
                         (supportsTooltips ? '' +
                           '<div class="checkbox">' +
@@ -920,15 +884,10 @@ function ready() {
                             '</label>' +
                           '</div>' +
                           '<div class="form-group">' +
-                            '<span><label for="' + name + '_tooltip">Tooltip</label><a href="https://github.com/nationalparkservice/npmap-builder/wiki/Popups-and-Tooltips" target="_blank"><img rel="tooltip" src="img/help@2x.png" style="cursor:pointer;float:right;height:18px;" title="Tooltips display when the cursor moves over a shape. HTML and Handlebars templates are allowed. Click for more info." data-placement="bottom"></a></span>' +
+                            '<span><label for="' + name + '_tooltip">Tooltip</label><a href="https://github.com/nationalparkservice/npmap-builder/wiki/Popups-and-Tooltips" target="_blank"><img data-container="body" data-placement="bottom" rel="tooltip" src="img/help@2x.png" style="cursor:pointer;float:right;height:18px;" title="Tooltips display when the cursor moves over a shape. HTML and Handlebars templates are allowed. Click for more info."></a></span>' +
                             '<input class="form-control" id="' + name + '_tooltip" type="text" disabled></input>' +
                           '</div>' +
                         '' : '') +
-                        /*
-                        '<div class="tokens">' +
-                          '<span>Field1</span><span>Field2</span><span>Field3</span><span>Field4</span><span>Field5</span><span>Field6</span><span>Field7</span>' +
-                        '</div>' +
-                        */
                       '</fieldset>' +
                     '</form>' +
                     '<div style="text-align:center;"><button class="btn btn-primary" onclick="Builder.ui.steps.addAndCustomizeData.handlers.clickApplyInteractivity(\'' + name + '\',\'' + overlay.name + '\');" type="button">Apply</button><button class="btn btn-default" onclick="Builder.ui.steps.addAndCustomizeData.handlers.cancelApplyInteractivity();" style="margin-left:5px;">Cancel</button></div>';
@@ -992,7 +951,7 @@ function ready() {
                         config = overlay.tooltip;
 
                         if (config) {
-                          $($('#' + name + '_layer-configure-interactivity .checkbox input')[1]).prop('checked', true).trigger('change');
+                          $($('#' + name + '_layer-configure-interactivity .checkbox input')[0]).prop('checked', true).trigger('change');
                           $('#' + name + '_tooltip').val(unescapeHtml(config));
                         }
                       }
@@ -1030,9 +989,6 @@ function ready() {
               },
               clickLayerRemove: function(el) {
                 Builder.showConfirm('Yes, remove the overlay', 'Once the overlay is removed, you cannot get it back.', 'Are you sure?', function() {
-                  
-
-
                   Builder.ui.steps.addAndCustomizeData.removeLi(el);
                   Builder.removeOverlay(getLayerIndexFromButton(el));
                 });

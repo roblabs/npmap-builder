@@ -41,6 +41,10 @@ function ready() {
       $buttonSave.prop('disabled', true);
       $buttonExport.text('Export Map');
     }
+    function enableSave() {
+      $buttonSave.prop('disabled', false);
+      $buttonExport.text('Save & Export Map');
+    }
     function escapeHtml(unsafe) {
       return unsafe
         .replace(/&/g, '&amp;')
@@ -48,10 +52,6 @@ function ready() {
         .replace(/>/g, '&gt;')
         .replace(/"/g, '&quot;')
         .replace(/'/g, '&#039;');
-    }
-    function enableSave() {
-      $buttonSave.prop('disabled', false);
-      $buttonExport.text('Save & Export Map');
     }
     function generateLayerChangeStyle(name) {
       var i, overlay, sortable;
@@ -411,6 +411,16 @@ function ready() {
             var backButtons = $('section .step .btn-link'),
               stepButtons = $('section .step .btn-primary');
 
+            Dropzone.options.dropzone = {
+              accept: function(file, done) {
+                console.log(file);
+                done();
+              },
+              clickable: false,
+              createImageThumbnails: false,
+              maxFilesize: 5,
+              uploadMultiple: false
+            };
             $modalSignIn.modal({
               show: false
             })
@@ -1074,9 +1084,9 @@ function ready() {
               }
             },
             overlayToLi: function(overlay) {
-              var index,
-                interactive = (overlay.type !== 'tiled' && (typeof overlay.clickable === 'undefined' || overlay.clickable === true)),
-                styleable = (overlay.type === 'cartodb' || overlay.type === 'csv' || overlay.type === 'geojson' || overlay.type === 'kml');
+              var interactive = (overlay.type !== 'tiled' && (typeof overlay.clickable === 'undefined' || overlay.clickable === true)),
+                styleable = (overlay.type === 'cartodb' || overlay.type === 'csv' || overlay.type === 'geojson' || overlay.type === 'kml'),
+                index;
 
               if (!$layers.is(':visible')) {
                 $layers.prev().hide();

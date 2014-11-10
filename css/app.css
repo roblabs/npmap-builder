@@ -516,3 +516,28 @@ body.dragging, body.dragging * {
     margin-left: 0;
   }
   */
+
+/* dropzone */
+#dropzone {
+  -webkit-border-radius: 3px;
+     -moz-border-radius: 3px;
+          border-radius: 3px;
+  -webkit-box-shadow: 0 0 50px rgba(0,0,0,0.13);
+          box-shadow: 0 0 50px rgba(0,0,0,0.13);
+  margin: 5px 0;
+  padding: 4px;
+}
+#dropzone .dropzone {
+  -webkit-border-radius: 3px;
+          border-radius: 3px;
+  -webkit-box-shadow: none;
+          box-shadow: none;
+  background-color: #efece3;
+  border: 1px dashed #ccc;
+  cursor: pointer;
+  padding: 10px;
+  text-align: center;
+}
+  #dropzone .dropzone .dz-message {
+    margin-bottom: 0;
+  }

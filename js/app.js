@@ -324,7 +324,6 @@ function ready() {
             } else if (response.success === false && response.error) {
               if (response.type === 'login') {
                 $modalSignIn.modal('show');
-                $($('#form-signin input')[0]).focus();
               } else {
                 alertify.error(response.error);
               }
@@ -409,8 +408,19 @@ function ready() {
         app: {
           init: function() {
             var backButtons = $('section .step .btn-link'),
+              eventMethod = window.addEventListener ? 'addEventListener' : 'attachEvent',
+              eventer = window[eventMethod],
+              messageEvent = eventMethod === 'attachEvent' ? 'onmessage' : 'message',
               stepButtons = $('section .step .btn-primary');
 
+            eventer(messageEvent, function(e) {
+              if (e.data === 'logged_in') {
+                $modalSignIn.modal('hide');
+                alertify.log('You are now logged in. Please try to save again.', 'success', 6000);
+              }
+            },false);
+
+            /*
             Dropzone.options.dropzone = {
               accept: function(file, done) {
                 console.log(file);
@@ -421,11 +431,15 @@ function ready() {
               maxFilesize: 5,
               uploadMultiple: false
             };
+            */
             $modalSignIn.modal({
               show: false
             })
+              .on('hidden.bs.modal', function() {
+                $($('#modal-signin .modal-body')[0]).html(null);
+              })
               .on('shown.bs.modal', function() {
-                $($('#form-signin input')[0]).focus();
+                $($('#modal-signin .modal-body')[0]).html('<iframe id="iframe" src="https://insidemaps.nps.gov/account/logoniframe/?jsCallback=handleLogin" style="height:202px;"></iframe>');
               });
             $(backButtons[0]).on('click', function() {
               goToStep(1, 0);
@@ -1005,26 +1019,6 @@ function ready() {
               }
             },
             init: function() {
-              function signIn() {
-                $.ajax({
-                  dataType: 'jsonp',
-                  error: function() {
-                    alertify.log('The login failed. Please check your user name and password and try again.', 'error', 6000);
-                  },
-                  success: function(response) {
-                    if (response && response.success === true) {
-                      $modalSignIn.modal('hide');
-                      $($('input[name="password"]')[0]).val(null);
-                      $($('input[name="userName"]')[0]).val(null);
-                      alertify.log('You are now logged in. Please try to save again.', 'success', 6000);
-                    } else {
-                      alertify.log('The login failed. Please check your user name and password and try again.', 'error', 6000);
-                    }
-                  },
-                  url: 'https://insidemaps.nps.gov/account/logonajax?domain=nps&password=' + $($('input[name="password"]')[0]).val() + '&rememberMe=true&userName=' + $($('input[name="userName"]')[0]).val()
-                });
-              }
-
               $('.dd').nestable({
                 handleClass: 'letter',
                 listNodeName: 'ul'
@@ -1070,10 +1064,6 @@ function ready() {
                     $modalEditBaseMaps = $('#modal-editBaseMaps');
                   });
                 }
-              });
-              $('#form-signin').submit(function(e) {
-                signIn();
-                e.preventDefault();
               });
             },
             load: function() {

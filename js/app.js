@@ -218,16 +218,16 @@ function ready() {
                     '<select id="' + name + '_point_marker-library" onchange="Builder.ui.steps.addAndCustomizeData.handlers.changeMarkerLibrary(this);return false;"><option value="maki">Maki</option><option value="npmaki">NPMaki</option></select>' +
                   '</div>' +
                   '<div class="form-group">' +
+                    '<label for="' + name + '_point_marker-symbol">Icon</label>' +
+                    '<select id="' + name + '_point_marker-symbol"></select>' +
+                  '</div>' +
+                  '<div class="form-group">' +
                     '<label for="' + name + '_point_marker-color">Color</label>' +
                     '<select id="' + name + '_point_marker-color" class="simplecolorpicker">' + optionsColor + '</select>' +
                   '</div>' +
                   '<div class="form-group">' +
                     '<label for="' + name + '_point_marker-size">Size</label>' +
                     '<select id="' + name + '_point_marker-size"><option value="small">Small</option><option value="medium">Medium</option><option value="large">Large</option></select>' +
-                  '</div>' +
-                  '<div class="form-group">' +
-                    '<label for="' + name + '_point_marker-symbol">Icon</label>' +
-                    '<select id="' + name + '_point_marker-symbol"></select>' +
                   '</div>' +
                 '</fieldset>' +
               '</div>' +

@@ -621,6 +621,10 @@ Builder.ui.modal.addLayer = (function() {
           // TODO: Better loading indicator?
           validate($.extend({}, config), function(validated, error) {
             if (error) {
+              if (!error.message) {
+                error.message = 'An unhandled error occured.';
+              }
+
               $('#addLayer-add, #addLayer-cancel').each(function(i, button) {
                 $(button).prop('disabled', false);
               });

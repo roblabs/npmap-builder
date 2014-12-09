@@ -218,7 +218,6 @@ Builder.ui.modal.addLayer = (function() {
         message: 'Unspecified error.'
       };
       done = true;
-      
     } else {
       window.layerValidate.on('error', function(e) {
         error = e;
@@ -229,8 +228,8 @@ Builder.ui.modal.addLayer = (function() {
     interval = setInterval(function() {
       if (done === true) {
         clearInterval(interval);
+        callback(window.layerValidate, error);
         delete window.layerValidate;
-        callback(error);
       }
     }, 100);
   }
@@ -620,7 +619,7 @@ Builder.ui.modal.addLayer = (function() {
 
           // TODO: Loop through all properties and "sanitize" them.
           // TODO: Better loading indicator?
-          validate($.extend({}, config), function(error) {
+          validate($.extend({}, config), function(validated, error) {
             if (error) {
               $('#addLayer-add, #addLayer-cancel').each(function(i, button) {
                 $(button).prop('disabled', false);
@@ -628,6 +627,28 @@ Builder.ui.modal.addLayer = (function() {
               window.alert('The overlay could not be added to the map. The full error message is:\n\n' + error.message);
             } else {
               if (Builder.ui.modal.addLayer._editingIndex === -1) {
+                if (config.type === 'cartodb') {
+                  switch (validated._geometryType) {
+                  case 'line':
+                    delete config.styles.fill;
+                    delete config.styles['fill-opacity'];
+                    delete config.styles['marker-color'];
+                    delete config.styles['marker-size'];
+                    break;
+                  case 'point':
+                    delete config.styles.fill;
+                    delete config.styles['fill-opacity'];
+                    delete config.styles.stroke;
+                    delete config.styles['stroke-opacity'];
+                    delete config.styles['stroke-width'];
+                    break;
+                  case 'polygon':
+                    delete config.styles['marker-color'];
+                    delete config.styles['marker-size'];
+                    break;
+                  }
+                }
+
                 Builder.addOverlay(config);
               } else {
                 var $li = $($layers.children()[Builder.ui.modal.addLayer._editingIndex]),

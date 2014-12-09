@@ -53,8 +53,8 @@ function ready() {
         .replace(/"/g, '&quot;')
         .replace(/'/g, '&#039;');
     }
-    function generateLayerChangeStyle(name) {
-      var i, overlay, sortable;
+    function generateLayerChangeStyle(name, overlay) {
+      var i, sortable;
 
       if (!optionsColor.length) {
         $.each(document.getElementById('iframe-map').contentWindow.L.npmap.preset.colors, function(prop, value) {
@@ -64,57 +64,74 @@ function ready() {
         });
       }
 
-      for (i = 0; i < NPMap.overlays.length; i++) {
-        var o = NPMap.overlays[i];
-
-        if (o.name.split(' ').join('_') === name) {
-          overlay = o;
-          break;
-        }
-      }
-
       if (overlay.type === 'cartodb') {
+        var geometryType = overlay.L._geometryType;
+
         return '' +
           '<form class="change-style" id="' + name + '_layer-change-style" role="form">' +
-            '<div class="checkbox">' +
-              '<label><input type="checkbox" checked="checked" id="cartodb-has-points" onchange="Builder.ui.steps.addAndCustomizeData.handlers.changeCartoDbHasPoints(this);return false;"> This overlay contain points</label>' +
-            '</div>' +
-            '<fieldset>' +
-              '<div class="form-group">' +
-                '<label for="' + name + '_marker-color">Point Color</label>' +
-                '<select id="' + name + '_marker-color" class="simplecolorpicker">' + optionsColor + '</select>' +
-              '</div>' +
-              '<div class="form-group">' +
-                '<label for="' + name + '_marker-size">Point Size</label>' +
-                '<select id="' + name + '_marker-size"><option value="small">Small</option><option value="medium">Medium</option><option value="large">Large</option></select>' +
-              '</div>' +
-              '<div class="form-group">' +
-                '<label for="' + name + '_marker-opacity">Point Opacity</label>' +
-                '<select id="' + name + '_marker-opacity"><option value="0.1">0.1</option><option value="0.2">0.2</option><option value="0.3">0.3</option><option value="0.4">0.4</option><option value="0.5">0.5</option><option value="0.6">0.6</option><option value="0.7">0.7</option><option value="0.8">0.8</option><option value="0.9">0.9</option><option value="1">1</option></select>' +
-              '</div>' +
-            '</fieldset>' +
-            '<fieldset>' +
-              '<div class="form-group">' +
-                '<label for="' + name + '_stroke">Line Color</label>' +
-                '<select id="' + name + '_stroke" class="simplecolorpicker">' + optionsColor + '</select>' +
-              '</div>' +
-              '<div class="form-group">' +
-                '<label for="' + name + '_stroke-width">Line Width</label>' +
-                '<select id="' + name + '_stroke-width"><option value="1">1 pt</option><option value="2">2 pt</option><option value="3">3 pt</option><option value="4">4 pt</option><option value="5">5 pt</option></select>' +
-              '</div>' +
-              '<div class="form-group">' +
-                '<label for="' + name + '_stroke-opacity">Line Opacity</label>' +
-                '<select id="' + name + '_stroke-opacity"><option value="0.1">0.1</option><option value="0.2">0.2</option><option value="0.3">0.3</option><option value="0.4">0.4</option><option value="0.5">0.5</option><option value="0.6">0.6</option><option value="0.7">0.7</option><option value="0.8">0.8</option><option value="0.9">0.9</option><option value="1">1</option></select>' +
-              '</div>' +
-              '<div class="form-group">' +
-                '<label for="' + name + '_fill">Fill Color</label>' +
-                '<select id="' + name + '_fill" class="simplecolorpicker">' + optionsColor + '</select>' +
-              '</div>' +
-              '<div class="form-group">' +
-                '<label for="' + name + '_fill-opacity">Fill Opacity</label>' +
-                '<select id="' + name + '_fill-opacity"><option value="0.1">0.1</option><option value="0.2">0.2</option><option value="0.3">0.3</option><option value="0.4">0.4</option><option value="0.5">0.5</option><option value="0.6">0.6</option><option value="0.7">0.7</option><option value="0.8">0.8</option><option value="0.9">0.9</option><option value="1">1</option></select>' +
-              '</div>' +
-            '</fieldset>' +
+            (function() {
+              switch (geometryType) {
+              case 'point':
+                return '' +
+                  '<fieldset>' +
+                    '<div class="form-group">' +
+                      '<label for="' + name + '_marker-color">Point Color</label>' +
+                      '<select id="' + name + '_marker-color" class="simplecolorpicker">' + optionsColor + '</select>' +
+                    '</div>' +
+                    '<div class="form-group">' +
+                      '<label for="' + name + '_marker-size">Point Size</label>' +
+                      '<select id="' + name + '_marker-size"><option value="small">Small</option><option value="medium">Medium</option><option value="large">Large</option></select>' +
+                    '</div>' +
+                    '<div class="form-group">' +
+                      '<label for="' + name + '_marker-opacity">Point Opacity</label>' +
+                      '<select id="' + name + '_marker-opacity"><option value="0.1">0.1</option><option value="0.2">0.2</option><option value="0.3">0.3</option><option value="0.4">0.4</option><option value="0.5">0.5</option><option value="0.6">0.6</option><option value="0.7">0.7</option><option value="0.8">0.8</option><option value="0.9">0.9</option><option value="1">1</option></select>' +
+                    '</div>' +
+                  '</fieldset>' +
+                '';
+              case 'line':
+                return '' +
+                  '<fieldset>' +
+                    '<div class="form-group">' +
+                      '<label for="' + name + '_stroke">Line Color</label>' +
+                      '<select id="' + name + '_stroke" class="simplecolorpicker">' + optionsColor + '</select>' +
+                    '</div>' +
+                    '<div class="form-group">' +
+                      '<label for="' + name + '_stroke-width">Line Width</label>' +
+                      '<select id="' + name + '_stroke-width"><option value="1">1 pt</option><option value="2">2 pt</option><option value="3">3 pt</option><option value="4">4 pt</option><option value="5">5 pt</option></select>' +
+                    '</div>' +
+                    '<div class="form-group">' +
+                      '<label for="' + name + '_stroke-opacity">Line Opacity</label>' +
+                      '<select id="' + name + '_stroke-opacity"><option value="0.1">0.1</option><option value="0.2">0.2</option><option value="0.3">0.3</option><option value="0.4">0.4</option><option value="0.5">0.5</option><option value="0.6">0.6</option><option value="0.7">0.7</option><option value="0.8">0.8</option><option value="0.9">0.9</option><option value="1">1</option></select>' +
+                    '</div>' +
+                  '</fieldset>' +
+                '';
+              case 'polygon':
+                return '' +
+                  '<fieldset>' +
+                    '<div class="form-group">' +
+                      '<label for="' + name + '_stroke">Line Color</label>' +
+                      '<select id="' + name + '_stroke" class="simplecolorpicker">' + optionsColor + '</select>' +
+                    '</div>' +
+                    '<div class="form-group">' +
+                      '<label for="' + name + '_stroke-width">Line Width</label>' +
+                      '<select id="' + name + '_stroke-width"><option value="1">1 pt</option><option value="2">2 pt</option><option value="3">3 pt</option><option value="4">4 pt</option><option value="5">5 pt</option></select>' +
+                    '</div>' +
+                    '<div class="form-group">' +
+                      '<label for="' + name + '_stroke-opacity">Line Opacity</label>' +
+                      '<select id="' + name + '_stroke-opacity"><option value="0.1">0.1</option><option value="0.2">0.2</option><option value="0.3">0.3</option><option value="0.4">0.4</option><option value="0.5">0.5</option><option value="0.6">0.6</option><option value="0.7">0.7</option><option value="0.8">0.8</option><option value="0.9">0.9</option><option value="1">1</option></select>' +
+                    '</div>' +
+                    '<div class="form-group">' +
+                      '<label for="' + name + '_fill">Fill Color</label>' +
+                      '<select id="' + name + '_fill" class="simplecolorpicker">' + optionsColor + '</select>' +
+                    '</div>' +
+                    '<div class="form-group">' +
+                      '<label for="' + name + '_fill-opacity">Fill Opacity</label>' +
+                      '<select id="' + name + '_fill-opacity"><option value="0.1">0.1</option><option value="0.2">0.2</option><option value="0.3">0.3</option><option value="0.4">0.4</option><option value="0.5">0.5</option><option value="0.6">0.6</option><option value="0.7">0.7</option><option value="0.8">0.8</option><option value="0.9">0.9</option><option value="1">1</option></select>' +
+                    '</div>' +
+                  '</fieldset>' +
+                '';
+              }
+            })() +
           '</form>';
       } else {
         if (!optionsMaki.length) {
@@ -375,15 +392,6 @@ function ready() {
 
     return {
       _afterUpdateCallbacks: {},
-      _defaultStylesCollapsed: {
-        'fill': '#d39800',
-        'fill-opacity': 0.2,
-        'marker-color': '#000000',
-        'marker-size': 'small',
-        'stroke': '#d39800',
-        'stroke-opacity': 0.8,
-        'stroke-width': 3
-      },
       _defaultStyles: {
         line: {
           'stroke': '#d39800',
@@ -404,6 +412,15 @@ function ready() {
           'stroke-width': 3
         }
       },
+      _defaultStylesCollapsed: {
+        'fill': '#d39800',
+        'fill-opacity': 0.2,
+        'marker-color': '#000000',
+        'marker-size': 'small',
+        'stroke': '#d39800',
+        'stroke-opacity': 0.8,
+        'stroke-width': 3
+      },
       ui: {
         app: {
           init: function() {
@@ -418,7 +435,7 @@ function ready() {
                 $modalSignIn.modal('hide');
                 alertify.log('You are now logged in. Please try to save again.', 'success', 6000);
               }
-            },false);
+            }, false);
 
             /*
             Dropzone.options.dropzone = {
@@ -705,23 +722,15 @@ function ready() {
                 }
 
                 if (overlay.type === 'cartodb') {
-                  var ignorePointStyles = !$('#cartodb-has-points').prop('checked');
+                  var updated = {};
 
                   $.each($('#' + elName + '_layer-change-style .form-group'), function(j, el) {
-                    var $select = $($(el).children('select')[0]),
-                      sansName = $select.attr('id').replace(elName + '_', '');
+                    var $select = $($(el).children('select')[0]);
 
-                    if (sansName.indexOf('marker') === -1) {
-                      overlay.styles[sansName] = $select.val();
-                    } else {
-                      if (ignorePointStyles) {
-                        delete overlay.styles['marker-color'];
-                        delete overlay.styles['marker-size'];
-                      } else {
-                        overlay.styles[sansName] = $select.val();
-                      }
-                    }
+                    updated[$select.attr('id').replace(elName + '_', '')] = $select.val();
                   });
+
+                  overlay.styles = updated;
                 } else {
                   $.each($('#' + elName + '_layer-change-style .form-group'), function(j, el) {
                     var $select = $($(el).children('select')[0]),
@@ -742,11 +751,12 @@ function ready() {
                 if ($el.data('popover-created')) {
                   $el.popover('toggle');
                 } else {
-                  var overlay = NPMap.overlays[getLayerIndexFromButton(el)],
+                  var layer = document.getElementById('iframe-map').contentWindow.NPMap.config.overlays[getLayerIndexFromButton(el)],
+                    overlay = NPMap.overlays[getLayerIndexFromButton(el)],
                     name = overlay.name.split(' ').join('_'),
                     html;
 
-                  html = generateLayerChangeStyle(name) + '<div style="text-align:center;"><button class="btn btn-primary" onclick="Builder.ui.steps.addAndCustomizeData.handlers.clickApplyStyles(\'' + name + '\',\'' + overlay.name + '\');" type="button">Apply</button><button class="btn btn-default" onclick="Builder.ui.steps.addAndCustomizeData.handlers.cancelApplyStyles();" style="margin-left:5px;">Cancel</button></div>';
+                  html = generateLayerChangeStyle(name, layer) + '<div style="text-align:center;"><button class="btn btn-primary" onclick="Builder.ui.steps.addAndCustomizeData.handlers.clickApplyStyles(\'' + name + '\',\'' + overlay.name + '\');" type="button">Apply</button><button class="btn btn-default" onclick="Builder.ui.steps.addAndCustomizeData.handlers.cancelApplyStyles();" style="margin-left:5px;">Cancel</button></div>';
 
                   $el.popover({
                     animation: false,
@@ -777,51 +787,27 @@ function ready() {
                       });
 
                       if (overlay.type === 'cartodb') {
-                        for (prop in Builder._defaultStylesCollapsed) {
-                          $select = $('#' + name + '_' + prop);
-                          value = Builder._defaultStylesCollapsed[prop];
-
-                          if (prop === 'fill' || prop === 'marker-color' || prop === 'stroke') {
-                            $select.simplecolorpicker('selectColor', value);
-                          } else {
-                            if (prop === 'marker-symbol') {
-                              if (Builder._defaultStyles.point['marker-library'] === 'maki') {
-                                $select.html(optionsMaki);
-                              } else {
-                                $select.html(optionsNpmaki);
-                              }
-                            }
-
-                            $select.val(value);
-                          }
-                        }
-
                         for (prop in overlay.styles) {
                           $select = $('#' + name + '_' + prop);
-                          value = overlay.styles[prop];
 
-                          if (prop === 'fill' || prop === 'marker-color' || prop === 'stroke') {
-                            $select.simplecolorpicker('selectColor', value);
-                          } else {
-                            if (prop === 'marker-symbol') {
-                              if (overlay.styles.point['marker-library'] === 'maki') {
-                                $select.html(optionsMaki);
-                              } else {
-                                $select.html(optionsNpmaki);
+                          if ($select) {
+                            value = overlay.styles[prop];
+
+                            if (prop === 'fill' || prop === 'marker-color' || prop === 'stroke') {
+                              $select.simplecolorpicker('selectColor', value);
+                            } else {
+                              if (prop === 'marker-symbol') {
+                                if (overlay.styles.point['marker-library'] === 'maki') {
+                                  $select.html(optionsMaki);
+                                } else {
+                                  $select.html(optionsNpmaki);
+                                }
                               }
-                            }
 
-                            $select.val(value);
+                              $select.val(value);
+                            }
                           }
                         }
-
-                        if (!overlay.styles['marker-color'] && !overlay.styles['marker-size']) {
-                          $('#cartodb-has-points').prop('checked', false);
-                        } else {
-                          $('#cartodb-has-points').prop('checked', true);
-                        }
-
-                        $('#cartodb-has-points').trigger('change');
                       } else {
                         for (type in styles) {
                           style = styles[type];

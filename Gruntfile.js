@@ -58,9 +58,8 @@ module.exports = function(grunt) {
             'js/libs/alertify/css/alertify-bootstrap.css',
             'js/libs/bootstrap-editable/css/bootstrap-editable.css',
             'js/libs/bootstrap-select/css/bootstrap-select.css',
+            'js/libs/bootstrap-colorpickersliders/bootstrap.colorpickersliders.css',
             'js/libs/bootstrap-slider/css/bootstrap-slider.css',
-            'js/libs/jquery-simplecolorpicker/css/jquery-simplecolorpicker.css',
-            'js/libs/jquery-simplecolorpicker/css/jquery-simplecolorpicker-fontawesome.css',
             'js/libs/typeahead/typeahead.css',
             'css/app.css'
           ]
@@ -92,14 +91,14 @@ module.exports = function(grunt) {
         files: {
           '_site/js/app.min.js': [
             'js/libs/alertify/js/alertify.js',
+            'js/libs/bootstrap-colorpickersliders/bootstrap.colorpickersliders.js',
             'js/libs/bootstrap-editable/js/bootstrap-editable.js',
             'js/libs/bootstrap-editable/js/bootstrap-filestyle.js',
             'js/libs/bootstrap-select/js/bootstrap-select.js',
             'js/libs/bootstrap-slider/js/bootstrap-slider.js',
-            'js/libs/jquery-simplecolorpicker/js/jquery-simplecolorpicker.js',
-            'js/libs/typeahead/typeahead.js',
             'js/libs/jquery-nestable/js/jquery-nestable.js',
             'js/libs/moment.js',
+            'js/libs/typeahead/typeahead.js',
             'js/app.js'
           ]
         }

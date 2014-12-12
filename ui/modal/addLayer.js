@@ -631,25 +631,43 @@ Builder.ui.modal.addLayer = (function() {
               window.alert('The overlay could not be added to the map. The full error message is:\n\n' + error.message);
             } else {
               if (Builder.ui.modal.addLayer._editingIndex === -1) {
-                if (config.type === 'cartodb') {
-                  switch (validated._geometryType) {
-                  case 'line':
-                    delete config.styles.fill;
-                    delete config.styles['fill-opacity'];
-                    delete config.styles['marker-color'];
-                    delete config.styles['marker-size'];
-                    break;
-                  case 'point':
-                    delete config.styles.fill;
-                    delete config.styles['fill-opacity'];
-                    delete config.styles.stroke;
-                    delete config.styles['stroke-opacity'];
-                    delete config.styles['stroke-width'];
-                    break;
-                  case 'polygon':
-                    delete config.styles['marker-color'];
-                    delete config.styles['marker-size'];
-                    break;
+                if (config.styles) {
+                  var geometryTypes = validated._geometryTypes;
+
+                  if (config.type === 'cartodb') {
+                    var geometryType = geometryTypes[0];
+
+                    switch (geometryType) {
+                    case 'line':
+                      delete config.styles.fill;
+                      delete config.styles['fill-opacity'];
+                      delete config.styles['marker-color'];
+                      delete config.styles['marker-size'];
+                      break;
+                    case 'point':
+                      delete config.styles.fill;
+                      delete config.styles['fill-opacity'];
+                      delete config.styles.stroke;
+                      delete config.styles['stroke-opacity'];
+                      delete config.styles['stroke-width'];
+                      break;
+                    case 'polygon':
+                      delete config.styles['marker-color'];
+                      delete config.styles['marker-size'];
+                      break;
+                    }
+                  } else {
+                    if (geometryTypes.indexOf('line') === -1) {
+                      delete config.styles.line;
+                    }
+
+                    if (geometryTypes.indexOf('point') === -1) {
+                      delete config.styles.point;
+                    }
+
+                    if (geometryTypes.indexOf('polygon') === -1) {
+                      delete config.styles.polygon;
+                    }
                   }
                 }
 

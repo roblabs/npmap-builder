@@ -565,7 +565,7 @@ function ready() {
                 $($('#modal-signin .modal-body')[0]).html(null);
               })
               .on('shown.bs.modal', function() {
-                $($('#modal-signin .modal-body')[0]).html('<iframe id="iframe" src="https://insidemaps.nps.gov/account/logoniframe/?jsCallback=handleLogin" style="height:202px;"></iframe>');
+                $($('#modal-signin .modal-body')[0]).html('<iframe id="iframe" src="https://insidemaps.nps.gov/account/logon/?iframe=true" style="height:202px;"></iframe>');
               });
             $(backButtons[0]).on('click', function() {
               goToStep(1, 0);

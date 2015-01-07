@@ -1119,6 +1119,8 @@ function ready() {
 
                       if (from !== i) {
                         overlays.splice(i, 0, NPMap.overlays[from]);
+                      } else {
+                        overlays.push(NPMap.overlays[from]);
                       }
                     });
 

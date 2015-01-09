@@ -527,3 +527,6 @@ body.dragging, body.dragging * {
   #dropzone .dropzone .dz-message {
     margin-bottom: 0;
   }
+  .has-feedback label ~ .form-control-feedback {
+    top: 35px;
+  }

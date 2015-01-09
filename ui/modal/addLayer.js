@@ -9,6 +9,7 @@ Builder.ui.modal.addLayer = (function() {
     $description = $('#layerDescription'),
     $name = $('#layerName'),
     $type = $('#layerType'),
+    hasNameError = false,
     types = {
       arcgisserver: {
         _tiled: false,
@@ -254,10 +255,35 @@ Builder.ui.modal.addLayer = (function() {
     });
   }
 
+  $name.bind('change click input keyup paste propertychange', function() {
+    var $this = $(this),
+      $parent = $this.parent(),
+      value = $this.val();
+
+    hasNameError = false;
+
+    for (var i = 0; i < NPMap.overlays.length; i++) {
+      if (i !== Builder.ui.modal.addLayer._editingIndex) {
+        var overlay = NPMap.overlays[i];
+
+        if (value === overlay.name) {
+          hasNameError = true;
+          break;
+        }
+      }
+    }
+
+    if (hasNameError) {
+      $parent.addClass('has-error');
+    } else {
+      $parent.removeClass('has-error');
+    }
+  });
   $('#modal-addLayer').modal({
     backdrop: 'static'
   })
     .on('hide.bs.modal', function() {
+      hasNameError = false;
       popup = styles = tooltip = null;
       resetFields();
       $type.val('arcgisserver').trigger('change');
@@ -333,7 +359,7 @@ Builder.ui.modal.addLayer = (function() {
           fields = [$attribution, $description, $name],
           name = $name.val() || null;
 
-        if (!name) {
+        if (!name || hasNameError) {
           errors.push($name);
         }
 

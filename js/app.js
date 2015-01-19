@@ -443,6 +443,15 @@ function ready() {
 
           if (response) {
             if (response.success === true) {
+              if (!mapId && window.history.replaceState) {
+                var location = window.location,
+                  url = location.protocol + '//' + location.host + location.pathname + '?mapId=' + response.mapId;
+
+                window.history.replaceState({
+                  path: url
+                }, '', url);
+              }
+
               mapId = response.mapId;
               updateSaveStatus(response.modified);
               alertify.success('Your map was saved!');

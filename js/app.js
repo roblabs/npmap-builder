@@ -50,8 +50,8 @@ function ready() {
         .replace(/&/g, '&amp;')
         .replace(/</g, '&lt;')
         .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;')
-        .replace(/'/g, '&#039;');
+        .replace(/"/g, '&quot;');
+        //.replace(/'/g, '&#039;');
     }
     function generateLayerChangeStyle(name, overlay) {
       var activePanelSet = false,
@@ -482,8 +482,8 @@ function ready() {
         .replace(/&amp;/g, '&')
         .replace(/&lt;/g, '<')
         .replace(/&gt;/g, '>')
-        .replace(/&quot;/g, '\"')
-        .replace(/&#039;/g, '\'');
+        .replace(/&quot;/g, '\"');
+        //.replace(/&#039;/g, '\'');
     }
     function updateInitialCenterAndZoom() {
       $lat.html(NPMap.center.lat.toFixed(2));

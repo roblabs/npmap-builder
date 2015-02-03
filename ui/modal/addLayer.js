@@ -265,13 +265,15 @@ Builder.ui.modal.addLayer = (function() {
     if (value.indexOf(':') !== -1) {
       hasNameError = true;
     } else {
-      for (var i = 0; i < NPMap.overlays.length; i++) {
-        if (i !== Builder.ui.modal.addLayer._editingIndex) {
-          var overlay = NPMap.overlays[i];
+      if (NPMap.overlays && NPMap.overlays.length) {
+        for (var i = 0; i < NPMap.overlays.length; i++) {
+          if (i !== Builder.ui.modal.addLayer._editingIndex) {
+            var overlay = NPMap.overlays[i];
 
-          if (value === overlay.name) {
-            hasNameError = true;
-            break;
+            if (value === overlay.name) {
+              hasNameError = true;
+              break;
+            }
           }
         }
       }

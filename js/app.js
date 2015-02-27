@@ -106,6 +106,11 @@ function ready() {
                       '<option value="3">3 pt</option>' +
                       '<option value="4">4 pt</option>' +
                       '<option value="5">5 pt</option>' +
+                      '<option value="6">6 pt</option>' +
+                      '<option value="7">7 pt</option>' +
+                      '<option value="8">8 pt</option>' +
+                      '<option value="9">9 pt</option>' +
+                      '<option value="10">10 pt</option>' +
                     '</select>' +
                   '</div>' +
                 '</div>' +
@@ -230,6 +235,11 @@ function ready() {
                       '<option value="3">3 pt</option>' +
                       '<option value="4">4 pt</option>' +
                       '<option value="5">5 pt</option>' +
+                      '<option value="6">6 pt</option>' +
+                      '<option value="7">7 pt</option>' +
+                      '<option value="8">8 pt</option>' +
+                      '<option value="9">9 pt</option>' +
+                      '<option value="10">10 pt</option>' +
                     '</select>' +
                   '</div>' +
                 '</div>' +

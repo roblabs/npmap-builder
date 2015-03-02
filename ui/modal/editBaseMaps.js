@@ -44,7 +44,7 @@ Builder.ui.modal.editBaseMaps = (function() {
     case 'esri':
       return 'Esri';
     case 'mapbox':
-      return 'MapBox';
+      return 'Mapbox';
     case 'nps':
       return 'National Park Service';
     case 'stamen':

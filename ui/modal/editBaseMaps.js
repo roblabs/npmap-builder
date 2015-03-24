@@ -138,6 +138,13 @@ Builder.ui.modal.editBaseMaps = (function() {
         }
 
         for (map in maps) {
+          if (map === 'parkTilesSlate') {
+            content += createThumbnail(map, provider, providerPretty);
+            break;
+          }
+        }
+
+        for (map in maps) {
           if (map !== 'parkTiles' && map !== 'parkTilesImagery') {
             content += createThumbnail(map, provider, providerPretty);
           }

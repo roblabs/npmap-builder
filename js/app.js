@@ -173,7 +173,7 @@ function ready() {
                     '</div>' +
                   '</div>' +
                   '<div class="form-group">' +
-                    '<label class="col-sm-6 control-label" for="' + getName('marker-symbol', 'point') + '">Icon</label>' +
+                    '<label class="col-sm-6 control-label" for="' + getName('marker-symbol', 'point') + '">Symbol</label>' +
                     '<div class="col-sm-6">' +
                       '<select class="form-control marker-symbol" id="' + getName('marker-symbol', 'point') + '"></select>' +
                     '</div>' +

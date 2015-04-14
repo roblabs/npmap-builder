@@ -13,14 +13,14 @@ module.exports = function(grunt) {
     copy: {
       site: {
         files: [{
-          cwd: 'js/libs/bootstrap-editable/img/',
+          cwd: 'assets/libs/bootstrap-editable/img/',
           dest: '_site/img/',
           expand: true,
           src: [
             '**/*'
           ]
         },{
-          cwd: 'js/libs/bootstrap-slider/img/',
+          cwd: 'assets/libs/bootstrap-slider/img/',
           dest: '_site/img/',
           expand: true,
           src: [
@@ -54,13 +54,13 @@ module.exports = function(grunt) {
       site: {
         files: {
           '_site/css/app.min.css': [
-            'js/libs/alertify/css/alertify-core.css',
-            'js/libs/alertify/css/alertify-bootstrap.css',
-            'js/libs/bootstrap-editable/css/bootstrap-editable.css',
-            'js/libs/bootstrap-select/css/bootstrap-select.css',
-            'js/libs/bootstrap-colorpickersliders/bootstrap.colorpickersliders.css',
-            'js/libs/bootstrap-slider/css/bootstrap-slider.css',
-            'js/libs/typeahead/typeahead.css',
+            'assets/libs/alertify/css/alertify-core.css',
+            'assets/libs/alertify/css/alertify-bootstrap.css',
+            'assets/libs/bootstrap-editable/css/bootstrap-editable.css',
+            'assets/libs/bootstrap-select/css/bootstrap-select.css',
+            'assets/libs/bootstrap-colorpickersliders/bootstrap.colorpickersliders.css',
+            'assets/libs/bootstrap-slider/css/bootstrap-slider.css',
+            'assets/libs/typeahead/typeahead.css',
             'css/app.css'
           ]
         }
@@ -90,15 +90,15 @@ module.exports = function(grunt) {
         },
         files: {
           '_site/js/app.min.js': [
-            'js/libs/alertify/js/alertify.js',
-            'js/libs/bootstrap-colorpickersliders/bootstrap.colorpickersliders.js',
-            'js/libs/bootstrap-editable/js/bootstrap-editable.js',
-            'js/libs/bootstrap-editable/js/bootstrap-filestyle.js',
-            'js/libs/bootstrap-select/js/bootstrap-select.js',
-            'js/libs/bootstrap-slider/js/bootstrap-slider.js',
-            'js/libs/jquery-nestable/js/jquery-nestable.js',
-            'js/libs/moment.js',
-            'js/libs/typeahead/typeahead.js',
+            'assets/libs/alertify/js/alertify.js',
+            'assets/libs/bootstrap-colorpickersliders/bootstrap.colorpickersliders.js',
+            'assets/libs/bootstrap-editable/js/bootstrap-editable.js',
+            'assets/libs/bootstrap-editable/js/bootstrap-filestyle.js',
+            'assets/libs/bootstrap-select/js/bootstrap-select.js',
+            'assets/libs/bootstrap-slider/js/bootstrap-slider.js',
+            'assets/libs/jquery-nestable/js/jquery-nestable.js',
+            'assets/libs/moment.js',
+            'assets/libs/typeahead/typeahead.js',
             'js/app.js'
           ]
         }

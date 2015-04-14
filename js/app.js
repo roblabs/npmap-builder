@@ -1,3 +1,5 @@
+/* globals tinycolor */
+
 var alertify, Builder, mapId, moment, NPMap;
 
 function ready() {
@@ -13,12 +15,8 @@ function ready() {
       $lat = $('#set-center-and-zoom .lat'),
       $lng = $('#set-center-and-zoom .lng'),
       $layers = $('#layers'),
-      $modalAddLayer,
       $modalConfirm = $('#modal-confirm'),
-      $modalEditBaseMaps,
-      $modalExport,
       $modalSignIn = $('#modal-signin'),
-      $modalViewConfig,
       $stepSection = $('section .step'),
       $ul = $('#layers'),
       $zoom = $('#set-center-and-zoom .zoom'),
@@ -28,14 +26,20 @@ function ready() {
       descriptionSet = false,
       descriptionZ = null,
       firstLoad = false,
-      optionsMaki = '',
-      optionsNpmaki = '',
+      optionsLettersAll = [],
+      optionsLettersFiltered = [],
+      optionsMaki = [],
+      optionsNpmakiAll = [],
+      optionsNpmakiFiltered = [],
+      optionsNumbersAll = [],
+      optionsNumbersFiltered = [],
       settingsSet = false,
       settingsZ = null,
       stepLis = $('#steps li'),
       title = null,
       titleSet = false,
-      titleZ = null;
+      titleZ = null,
+      $modalAddLayer, $modalEditBaseMaps, $modalExport, $modalViewConfig;
 
     function disableSave() {
       $buttonSave.prop('disabled', true);
@@ -57,7 +61,7 @@ function ready() {
       var activePanelSet = false,
         activeTabSet = false,
         geometryTypes = overlay.L._geometryTypes,
-        i, sortable;
+        sortable;
 
       function getName(fieldName, geometryType) {
         if (overlay.type === 'cartodb') {
@@ -94,7 +98,7 @@ function ready() {
                 '<div class="form-group">' +
                   '<label class="col-sm-6 control-label" for="' + getName('stroke', 'line') + '">Color</label>' +
                   '<div class="col-sm-6">' +
-                    '<input class="form-control simplecolorpicker" id="' + getName('stroke', 'line') + '"></input>' +
+                    '<input class="form-control colorpicker" id="' + getName('stroke', 'line') + '"></input>' +
                   '</div>' +
                 '</div>' +
                 '<div class="form-group">' +
@@ -143,7 +147,7 @@ function ready() {
                   '<div class="form-group">' +
                     '<label class="col-sm-6 control-label" for="' + getName('marker-color', 'point') + '">Color</label>' +
                     '<div class="col-sm-6">' +
-                      '<input class="form-control simplecolorpicker" id="' + getName('marker-color', 'point') + '"></input>' +
+                      '<input class="form-control colorpicker" id="' + getName('marker-color', 'point') + '"></input>' +
                     '</div>' +
                   '</div>' +
                   '<div class="form-group">' +
@@ -160,22 +164,24 @@ function ready() {
                   '<div class="form-group">' +
                     '<label class="col-sm-6 control-label" for="' + getName('marker-library', 'point') + '">Library</label>' +
                     '<div class="col-sm-6">' +
-                      '<select class="form-control" id="' + getName('marker-library', 'point') + '" onchange="Builder.ui.steps.addAndCustomizeData.handlers.changeMarkerLibrary(this);return false;">' +
+                      '<select class="form-control marker-library" id="' + getName('marker-library', 'point') + '" onchange="Builder.ui.steps.addAndCustomizeData.handlers.changeMarkerLibrary(this);return false;">' +
+                        '<option value="letters">Letters</option>' +
                         '<option value="maki">Maki</option>' +
                         '<option value="npmaki">NPMaki</option>' +
+                        '<option value="numbers">Numbers</option>' +
                       '</select>' +
                     '</div>' +
                   '</div>' +
                   '<div class="form-group">' +
-                    '<label class="col-sm-6 control-label" for="' + getName('marker-symbol', 'point') + '">Icon</label>' +
+                    '<label class="col-sm-6 control-label" for="' + getName('marker-symbol', 'point') + '">Symbol</label>' +
                     '<div class="col-sm-6">' +
-                      '<select class="form-control" id="' + getName('marker-symbol', 'point') + '"></select>' +
+                      '<select class="form-control marker-symbol" id="' + getName('marker-symbol', 'point') + '"></select>' +
                     '</div>' +
                   '</div>' +
                   '<div class="form-group">' +
                     '<label class="col-sm-6 control-label" for="' + getName('marker-color', 'point') + '">Color</label>' +
                     '<div class="col-sm-6">' +
-                      '<input class="form-control simplecolorpicker" id="' + getName('marker-color', 'point') + '"></input>' +
+                      '<input class="form-control colorpicker" id="' + getName('marker-color', 'point') + '"></input>' +
                     '</div>' +
                   '</div>' +
                   '<div class="form-group">' +
@@ -199,7 +205,7 @@ function ready() {
                 '<div class="form-group">' +
                   '<label class="col-sm-6 control-label" for="' + getName('fill', 'polygon') + '">Color</label>' +
                   '<div class="col-sm-6">' +
-                    '<input class="form-control simplecolorpicker" id="' + getName('fill', 'polygon') + '" ></input>' +
+                    '<input class="form-control colorpicker" id="' + getName('fill', 'polygon') + '" ></input>' +
                   '</div>' +
                 '</div>' +
                 '<div class="form-group">' +
@@ -223,7 +229,7 @@ function ready() {
                 '<div class="form-group">' +
                   '<label class="col-sm-6 control-label" for="' + getName('stroke', 'polygon') + '">Outline Color</label>' +
                   '<div class="col-sm-6">' +
-                    '<input class="form-control simplecolorpicker" id="' + getName('stroke', 'polygon') + '"></input>' +
+                    '<input class="form-control colorpicker" id="' + getName('stroke', 'polygon') + '"></input>' +
                   '</div>' +
                 '</div>' +
                 '<div class="form-group">' +
@@ -301,6 +307,17 @@ function ready() {
 
         return tab;
       }
+      function sort(a, b) {
+        if (a.name < b.name) {
+          return -1;
+        }
+
+        if (a.name > b.name) {
+          return 1;
+        }
+
+        return 0;
+      }
 
       if (!colors.length) {
         $.each(document.getElementById('iframe-map').contentWindow.L.npmap.preset.colors, function(prop, value) {
@@ -310,71 +327,50 @@ function ready() {
       }
 
       if (!optionsMaki.length) {
-        var numbers = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
-
         sortable = [];
-
-        for (i = 0; i < abcs.length; i++) {
-          var letter = abcs[i];
-
-          sortable.push({
-            icon: letter.toLowerCase(),
-            name: 'Letter "' + letter + '"'
-          });
-        }
-
-        for (i = 0; i < numbers.length; i++) {
-          var number = numbers[i];
-
-          sortable.push({
-            icon: number,
-            name: 'Number "' + number + '"'
-          });
-        }
-
         $.each(document.getElementById('iframe-map').contentWindow.L.npmap.preset.maki, function(prop, value) {
           sortable.push({
             icon: value.icon,
             name: value.name
           });
         });
-        sortable.sort(function(a, b) {
-          if (a.name < b.name) {
-            return -1;
-          }
-
-          if (a.name > b.name) {
-            return 1;
-          }
-
-          return 0;
-        });
+        sortable.sort(sort);
         $.each(sortable, function(i, icon) {
-          optionsMaki += '<option value="' + icon.icon + '">' + icon.name + '</option>';
+          optionsMaki.push('<option value="' + icon.icon + '">' + icon.name + '</option>');
         });
       }
 
-      if (!optionsNpmaki.length) {
+      if (!optionsNpmakiAll.length) {
+        var letters = [],
+          numbers = [];
+
         sortable = [];
         $.each(document.getElementById('iframe-map').contentWindow.L.npmap.preset.npmaki, function(prop, value) {
-          sortable.push({
-            icon: value.icon,
-            name: value.name
-          });
-        });
-        sortable.sort(function(a, b) {
-          if (a.name < b.name) {
-            return -1;
-          }
+          var lower = value.name.toLowerCase(),
+            obj = {
+              icon: value.icon,
+              name: value.name
+            };
 
-          if (a.name > b.name) {
-            return 1;
+          if (lower.indexOf('letter') > -1) {
+            letters.push(obj);
+          } else if (lower.indexOf('number') > -1) {
+            numbers.push(obj);
+          } else {
+            sortable.push(obj);
           }
-
-          return 0;
         });
+        letters.sort(sort);
+        $.each(letters, function(i, icon) {
+          optionsLettersAll.push('<option value="' + icon.icon + '">' + icon.name + '</option>');
+        });
+        numbers.sort(sort);
+        $.each(numbers, function(i, icon) {
+          optionsNumbersAll.push('<option value="' + icon.icon + '">' + icon.name + '</option>');
+        });
+        sortable.sort(sort);
         $.each(sortable, function(i, icon) {
-          optionsNpmaki += '<option value="' + icon.icon + '">' + icon.name + '</option>';
+          optionsNpmakiAll.push('<option value="' + icon.icon + '">' + icon.name + '</option>');
         });
       }
 
@@ -792,9 +788,23 @@ function ready() {
               },
               changeMarkerLibrary: function(el) {
                 var $el = $('#' + el.id.replace('_marker-library', '') + '_marker-symbol'),
-                  options = $(el).val() === 'maki' ? optionsMaki : optionsNpmaki;
+                  value = $(el).val();
 
-                $el.html(options);
+                switch (value) {
+                case 'letters':
+                  $el.html(optionsLettersFiltered.join(''));
+                  break;
+                case 'maki':
+                  $el.html(optionsMaki.join(''));
+                  break;
+                case 'npmaki':
+                  $el.html(optionsNpmakiFiltered.join(''));
+                  break;
+                case 'numbers':
+                  $el.html(optionsNumbersFiltered.join(''));
+                  break;
+                }
+
                 $el.val(null);
               },
               clickApplyInteractivity: function(elName, overlayName) {
@@ -861,6 +871,10 @@ function ready() {
                   } else {
                     var type = split[split.length - 2];
 
+                    if (property === 'marker-library' && (value === 'letters' || value === 'numbers')) {
+                      value = 'npmaki';
+                    }
+
                     if (!updated[type]) {
                       updated[type] = {};
                     }
@@ -868,7 +882,6 @@ function ready() {
                     updated[type][property] = value;
                   }
                 });
-
                 overlay.styles = updated;
                 $activeChangeStyleButton.popover('toggle');
                 $('#mask').hide();
@@ -901,9 +914,6 @@ function ready() {
                   })
                     .on('hide.bs.popover', function() {
                       $activeChangeStyleButton = null;
-                      $.each($('#' + name + '_layer-change-style .simplecolorpicker'), function(i, el) {
-                        //$(el).simplecolorpicker('destroy');
-                      });
                     })
                     .on('shown.bs.popover', function() {
                       var styles = overlay.styles,
@@ -911,15 +921,24 @@ function ready() {
 
                       $activeChangeStyleButton = $el;
                       $('#mask').show();
-                      $.each($('#' + name + '_layer-change-style .simplecolorpicker'), function(i, el) {
-                        $(el).ColorPickerSliders({
-                          customswatches: false,
-                          hsvpanel: true,
-                          previewformat: 'hex',
-                          size: 'sm',
-                          sliders: false,
-                          swatches: colors
-                        });
+                      $.each($('#' + name + '_layer-change-style .colorpicker'), function(i, el) {
+                        var $el = $(el),
+                          obj = {
+                            customswatches: false,
+                            hsvpanel: true,
+                            previewformat: 'hex',
+                            size: 'sm',
+                            sliders: false,
+                            swatches: colors
+                          };
+
+                        if ($el.attr('id').toLowerCase().indexOf('marker-color') > -1) {
+                          obj.onchange = function(container, color) {
+                            Builder.ui.steps.addAndCustomizeData.filterColors(color);
+                          };
+                        }
+
+                        $(el).ColorPickerSliders(obj);
                       });
 
                       if (overlay.type === 'cartodb') {
@@ -932,14 +951,6 @@ function ready() {
                             if (prop === 'fill' || prop === 'marker-color' || prop === 'stroke') {
                               $field.trigger('colorpickersliders.updateColor', value);
                             } else {
-                              if (prop === 'marker-symbol') {
-                                if (overlay.styles.point['marker-library'] === 'maki') {
-                                  $field.html(optionsMaki);
-                                } else {
-                                  $field.html(optionsNpmaki);
-                                }
-                              }
-
                               $field.val(value);
                             }
                           }
@@ -950,22 +961,50 @@ function ready() {
 
                           for (prop in style) {
                             $field = $('#' + name + '_' + type + '_' + prop);
-                            
+
                             if ($field) {
                               value = style[prop];
 
                               if (prop === 'fill' || prop === 'marker-color' || prop === 'stroke') {
                                 $field.trigger('colorpickersliders.updateColor', value);
+                              } else if (prop === 'marker-library') {
+                                var symbol = style['marker-symbol'];
+
+                                if (typeof symbol === 'string') {
+                                  if (symbol.indexOf('letter') > -1) {
+                                    $field.val('letters');
+                                  } else if (symbol.indexOf('number') > -1) {
+                                    $field.val('numbers');
+                                  } else {
+                                    $field.val(value);
+                                  }
+                                } else {
+                                  $field.val(value);
+                                }
                               } else {
                                 if (prop === 'marker-symbol') {
                                   if (style['marker-library'] === 'maki') {
                                     $field.html(optionsMaki);
                                   } else {
-                                    $field.html(optionsNpmaki);
-                                  }
-                                }
+                                    Builder.ui.steps.addAndCustomizeData.filterColors(style['marker-color']);
 
-                                $field.val(value);
+                                    if (typeof value === 'string') {
+                                      if (value.indexOf('letter') > -1) {
+                                        $field.html(optionsLettersFiltered.join(''));
+                                      } else if (value.indexOf('number') > -1) {
+                                        $field.html(optionsNumbersFiltered.join(''));
+                                      } else {
+                                        $field.html(optionsNpmakiFiltered.join(''));
+                                      }
+                                    } else {
+                                      $field.html(optionsNpmakiFiltered.join(''));
+                                    }
+                                  }
+
+                                  $field.val(value);
+                                } else {
+                                  $field.val(value);
+                                }
                               }
                             }
                           }
@@ -1123,6 +1162,48 @@ function ready() {
                 });
               }
             },
+            filterColors: function(color) {
+              var $icon = $('.marker-symbol'),
+                keep = (tinycolor(color).isDark() ? 'White' : 'Black'),
+                remove = keep === 'White' ? 'black' : 'white',
+                value = $icon.val();
+
+              optionsLettersFiltered = [];
+              optionsNpmakiFiltered = [];
+              optionsNumbersFiltered = [];
+
+              $.each(optionsLettersAll, function(i, option) {
+                if (option.indexOf(keep) > -1) {
+                  optionsLettersFiltered.push(option.replace('Letter \'', '').replace('\' (' + keep + ')', ''));
+                }
+              });
+              $.each(optionsNpmakiAll, function(i, option) {
+                if (option.indexOf(keep) > -1) {
+                  optionsNpmakiFiltered.push(option.replace(' (' + keep + ')', ''));
+                }
+              });
+              $.each(optionsNumbersAll, function(i, option) {
+                if (option.indexOf(keep) > -1) {
+                  optionsNumbersFiltered.push(option.replace('Number \'', '').replace('\' (' + keep + ')', ''));
+                }
+              });
+
+              switch ($('.marker-library').val().toLowerCase()) {
+              case 'letters':
+                $icon.html(optionsLettersFiltered.join(''));
+                break;
+              case 'npmaki':
+                $icon.html(optionsNpmakiFiltered.join(''));
+                break;
+              case 'numbers':
+                $icon.html(optionsNumbersFiltered.join(''));
+                break;
+              }
+
+              if (value) {
+                $icon.val(value.replace(remove, keep.toLowerCase()));
+              }
+            },
             init: function() {
               $('.dd').nestable({
                 handleClass: 'letter',
@@ -1201,12 +1282,19 @@ function ready() {
                   '<span class="description">' + (overlay.description || '') + '</span>' +
                   '<span class="actions">' +
                     '<div style="float:left;">' +
-                      '<button class="btn btn-default btn-xs" data-container="section" onclick="Builder.ui.steps.addAndCustomizeData.handlers.clickLayerEdit(this);" type="button"><span class="fa fa-edit"> Edit</span></button>' +
+                      '<button class="btn btn-default btn-xs" data-container="section" onclick="Builder.ui.steps.addAndCustomizeData.handlers.clickLayerEdit(this);" type="button">' +
+                        '<span class="fa fa-edit"> Edit</span>' +
+                      '</button>' +
                     '</div>' +
                     '<div style="float:right;">' +
-                      '<button class="btn btn-default btn-xs interactivity" data-container="section" data-placement="bottom" onclick="Builder.ui.steps.addAndCustomizeData.handlers.clickLayerConfigureInteractivity(this);" rel="tooltip" style="' + (interactive ? '' : 'display:none;') + 'margin-right:5px;" title="Configure Interactivity" type="button"><span class="fa fa-comment"></span></button>' +
-                      '<button class="btn btn-default btn-xs" data-container="section" data-placement="bottom" onclick="Builder.ui.steps.addAndCustomizeData.handlers.clickLayerChangeStyle(this);" rel="tooltip" style="' + (styleable ? '' : 'display:none;') + 'margin-right:5px;" title="Change Style" type="button"><span class="fa fa-map-marker"></span></button>' +
-                      '<button class="btn btn-default btn-xs" data-container="section" data-placement="bottom" onclick="Builder.ui.steps.addAndCustomizeData.handlers.clickLayerRemove(this);" rel="tooltip" title="Delete Overlay" type="button"><span class="fa fa-trash-o"></span></button>' +
+                      '<button class="btn btn-default btn-xs interactivity" data-container="section" data-placement="bottom" onclick="Builder.ui.steps.addAndCustomizeData.handlers.clickLayerConfigureInteractivity(this);" rel="tooltip" style="' + (interactive ? '' : 'display:none;') + 'margin-right:5px;" title="Configure Interactivity" type="button">' +
+                        '<span class="fa fa-comment"></span>' +
+                      '</button>' +
+                      '<button class="btn btn-default btn-xs" data-container="section" data-placement="bottom" onclick="Builder.ui.steps.addAndCustomizeData.handlers.clickLayerChangeStyle(this);" rel="tooltip" style="' + (styleable ? '' : 'display:none;') + 'margin-right:5px;" title="Change Style" type="button">' +
+                        '<span class="fa fa-map-marker"></span>' +
+                      '</button>' +
+                      '<button class="btn btn-default btn-xs" data-container="section" data-placement="bottom" onclick="Builder.ui.steps.addAndCustomizeData.handlers.clickLayerRemove(this);" rel="tooltip" title="Delete Overlay" type="button">' +
+                        '<span class="fa fa-trash-o"></span>' +
                       '</button>' +
                     '</div>' +
                   '</span>' +
@@ -1237,9 +1325,7 @@ function ready() {
               $($(el).parents('li')[0]).remove();
               Builder.ui.steps.addAndCustomizeData.refreshUl();
             },
-            updateOverlayLetters: function() {
-
-            }
+            updateOverlayLetters: function() {}
           },
           setCenterAndZoom: {
             init: function() {

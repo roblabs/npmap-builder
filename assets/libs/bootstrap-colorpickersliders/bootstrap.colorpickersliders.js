@@ -661,6 +661,8 @@
                 $element.val(color.tiny.toRgbString());
                 break;
             }
+
+            settings.onchange(container, $element.val());
           });
         }
       }

@@ -60,7 +60,7 @@ function ready() {
     function generateLayerChangeStyle(name, overlay) {
       var activePanelSet = false,
         activeTabSet = false,
-        geometryTypes = overlay.L._geometryTypes,
+        geometryTypes = overlay.L._geometryTypes || overlay.L.L._geometryTypes,
         sortable;
 
       function getName(fieldName, geometryType) {
@@ -1263,7 +1263,7 @@ function ready() {
             },
             overlayToLi: function(overlay) {
               var interactive = (overlay.type !== 'tiled' && (typeof overlay.clickable === 'undefined' || overlay.clickable === true)),
-                styleable = (overlay.type === 'cartodb' || overlay.type === 'csv' || overlay.type === 'geojson' || overlay.type === 'kml'),
+                styleable = (overlay.type === 'cartodb' || overlay.type === 'csv' || overlay.type === 'geojson' || overlay.type === 'kml' || overlay.type === 'spot'),
                 index;
 
               if (!$layers.is(':visible')) {

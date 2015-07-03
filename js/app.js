@@ -932,7 +932,7 @@ function ready() {
                             swatches: colors
                           };
 
-                        if ($el.attr('id').toLowerCase().indexOf('marker-color') > -1) {
+                        if (overlay.type !== 'cartodb' && $el.attr('id').toLowerCase().indexOf('marker-color') > -1) {
                           obj.onchange = function(container, color) {
                             Builder.ui.steps.addAndCustomizeData.filterColors(color);
                           };
@@ -1280,7 +1280,7 @@ function ready() {
                 '<div class="details">' +
                   '<span class="name">' + overlay.name + '</span>' +
                   '<span class="description">' + (overlay.description || '') + '</span>' +
-                  '<span class="actions">' +
+                  '<div class="actions">' +
                     '<div style="float:left;">' +
                       '<button class="btn btn-default btn-xs" data-container="section" onclick="Builder.ui.steps.addAndCustomizeData.handlers.clickLayerEdit(this);" type="button">' +
                         '<span class="fa fa-edit"> Edit</span>' +
@@ -1297,7 +1297,7 @@ function ready() {
                         '<span class="fa fa-trash-o"></span>' +
                       '</button>' +
                     '</div>' +
-                  '</span>' +
+                  '</div>' +
                 '</div>' +
               ''));
               Builder.ui.steps.addAndCustomizeData.refreshUl();
@@ -1636,13 +1636,23 @@ mapId = (function() {
 })();
 
 if (mapId) {
+  var msg = 'The specified map could not be loaded. Please refresh the page.';
+
   $.ajax({
     dataType: 'jsonp',
+    error: function() {
+      window.alert(msg);
+    },
     jsonpCallback: 'callback',
     success: function(response) {
-      NPMap = response;
-      ready();
+      if (response) {
+        NPMap = response;
+        ready();
+      } else {
+        window.alert(msg);
+      }
     },
+    timeout: 3000,
     url: 'http://www.nps.gov/maps/builder/configs/' + mapId + '.jsonp'
   });
 } else {

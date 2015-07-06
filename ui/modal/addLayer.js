@@ -723,6 +723,7 @@ Builder.ui.modal.addLayer = (function() {
     .popover({
       container: 'body',
       content: '' +
+        '<p>Add an overlay linked to a Places query. As the data improves in Places, your map will automatically pull in the changes.</p>' +
         '<form id="places-form" role="form">' +
           '<div class="form-group">' +
             '<label for="places-dataset">Dataset</label>' +

@@ -128,6 +128,7 @@ Builder.ui.modal.editBaseMaps = (function() {
         }
       }
 
+      /*
       if (!checked) {
         // Now iterate through three Park Tiles basemaps, using the mapbox id, and check NPMap.baseLayers to see if they are objects
         $.each(NPMap.baseLayers, function(i, baseLayer) {
@@ -136,6 +137,7 @@ Builder.ui.modal.editBaseMaps = (function() {
           }
         });
       }
+      */
 
       $($(div).find('input')[0]).prop('checked', checked);
 
@@ -302,7 +304,8 @@ Builder.ui.modal.editBaseMaps = (function() {
   });
   $modal
     .modal({
-      backdrop: 'static'
+      backdrop: 'static',
+      keyboard: false
     })
     .on('hide.bs.modal', function() {
       $('#modal-editBaseMaps .modal-body').scrollTop(0);

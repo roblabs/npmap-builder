@@ -687,7 +687,8 @@ Builder.ui.modal.addLayer = (function() {
   $type.bind('change', onChangeType);
   $modal
     .modal({
-      backdrop: 'static'
+      backdrop: 'static',
+      keyboard: false
     })
     .on('hide.bs.modal', function() {
       hasNameError = false;
@@ -752,6 +753,8 @@ Builder.ui.modal.addLayer = (function() {
     })
     .on('hide.bs.popover', function() {
       $modal.css('z-index', 1050);
+      $('#modal-addLayer .modal-body').scrollTop(0);
+      activeButton = null;
     })
     .on('show.bs.popover', function() {
       $modal.css('z-index', 1);
@@ -782,10 +785,12 @@ Builder.ui.modal.addLayer = (function() {
         return false;
       });
       $('#places-form .btn-primary').click(function() {
-        var dataset = $('#places-dataset').val();
+        var dataset = $('#places-dataset').val(),
+          unitCode = $('#places-park').val();
 
         hasNameError = false;
         resetFields();
+        $name.val(unitCode.toUpperCase() + ' ' + $('#places-dataset option:selected').text());
         $type
           .val('cartodb')
           .trigger('change');
@@ -796,7 +801,7 @@ Builder.ui.modal.addLayer = (function() {
             $formGroup.removeClass('has-error');
           }
         });
-        $('#cartodb-sql').val('SELECT * FROM ' + dataset + ' WHERE unit_code=\'' + $('#places-park').val() + '\'');
+        $('#cartodb-sql').val('SELECT * FROM ' + dataset + ' WHERE unit_code=\'' + unitCode + '\'');
         $('#cartodb-table').val(dataset);
         $('#cartodb-user').val('nps');
       });

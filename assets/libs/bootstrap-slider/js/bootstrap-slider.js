@@ -111,7 +111,9 @@
       this.handleCenter.addClass('hide');
       this.handleMin.addClass('hide');
       this.handleMax.addClass('hide');
-      this.value = [Math.max(this.min, Math.min(this.max, this.value))];
+      this.value = [
+        Math.max(this.min, Math.min(this.max, this.value))
+      ];
       this.tooltip.css({
         'margin-top': 0
       });
@@ -144,6 +146,10 @@
     }
 
     if (showTooltip === 'show') {
+      // TODO: mouseenter should not trigger on tooltip.
+
+
+
       this.picker.on({
         mouseenter: $.proxy(this.showTooltip, this),
         mouseleave: $.proxy(this.hideTooltip, this)

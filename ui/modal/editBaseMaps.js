@@ -1,22 +1,46 @@
 /* globals $, Builder, NPMap */
 
+// TODO: Need to hook up "load" for baseLayer objects saved to server.
+// TODO: Hitting radio button doesn't trigger change function for checkbox.
+// TODO: "Canceling" out of modal doesn't revert changes made but not saved.
+
 $('head').append($('<link rel="stylesheet">').attr('href', 'ui/modal/editBaseMaps.css'));
 
 Builder.ui = Builder.ui || {};
 Builder.ui.modal = Builder.ui.modal || {};
 Builder.ui.modal.editBaseMaps = (function() {
   var $checkbox = $('#modal-editBaseMaps input'),
-    baseMaps = document.getElementById('iframe-map').contentWindow.L.npmap.preset.baselayers,
-    html = [];
+    $modal = $('#modal-editBaseMaps'),
+    presets = document.getElementById('iframe-map').contentWindow.L.npmap.preset,
+    baseLayers = presets.baselayers,
+    html = [],
+    overlays = presets.overlays,
+    providers = {
+      bing: 'Bing',
+      cartodb: 'CartoDB',
+      esri: 'Esri',
+      mapbox: 'Mapbox',
+      nps: 'National Park Service',
+      stamen: 'Stamen'
+    },
+    activeLink;
 
-  function createThumbnail(map, provider, providerPretty) {
-    var id = provider + '-' + map;
+  function createThumbnail(map, provider, providerPretty, parkTiles) {
+    var id = provider + '-' + map,
+      pretty = maps[map].name.replace(provider.toUpperCase() + ' ', '').replace(providerPretty + ' ', '');
 
     return '' +
       '<div id="' + id + '" class="basemap col-xs-4 col-sm-4 col-md-4 col-lg-4">' +
         '<div class="thumbnail">' +
-          '<p>' + maps[map].name.replace(provider.toUpperCase() + ' ', '').replace(providerPretty + ' ', '') + '</p>' +
-          '<img src="img/base-maps/' + id + '.png" alt="..." style="height:152px;width:152px;">' +
+          '<p>' + pretty + '</p>' +
+          /*
+          (parkTiles ? '' +
+            '<div class="text-center" style="background-color:#fff;position:absolute;top:133px;width:139px;">' +
+              '<a class="parktiles-overlays-link" href="#" id="parktiles-overlays-link-' + overlays.nps[map].pointsOfInterest.id + '">No overlays selected</a>' +
+            '</div>' +
+          '' : '') +
+          */
+          '<img alt="Screenshot of ' + pretty + ' basemap." src="img/base-maps/' + id + '.png" style="height:152px;width:152px;">' +
           '<div class="caption">' +
             '<div class="checkbox-inline">' +
               '<label style="font-weight:normal;margin-bottom:0;">' +
@@ -35,26 +59,13 @@ Builder.ui.modal.editBaseMaps = (function() {
       '</div>' +
     '';
   }
-  function getProvider(provider) {
-    switch (provider) {
-    case 'bing':
-      return 'Bing';
-    case 'cartodb':
-      return 'CartoDB';
-    case 'esri':
-      return 'Esri';
-    case 'mapbox':
-      return 'Mapbox';
-    case 'nps':
-      return 'National Park Service';
-    case 'stamen':
-      return 'Stamen';
-    default:
-      return provider;
-    }
+  function setHeight() {
+    $('#modal-editBaseMaps .modal-body').css({
+      height: $(document).height() - 180
+    });
   }
-  function setBaseMapsAndHide() {
-    var baseLayers = [];
+  function submit() {
+    var layers = [];
 
     if (!$checkbox.is(':checked')) {
       $.each($('#modal-editBaseMaps div.basemap'), function(i, div) {
@@ -62,34 +73,81 @@ Builder.ui.modal.editBaseMaps = (function() {
           inputs = $(div).find('input');
 
         if ($(inputs[0]).prop('checked')) {
-          if ($(inputs[1]).prop('checked')) {
-            baseLayers.unshift(id);
+          var link = $(div).find('a');
+
+          if (link.length) {
+            var $link = $(link[0]);
+
+            if ($link.html().indexOf('No') === -1) {
+              var clone = $.extend({}, baseLayers.nps[id.replace('nps-', '')]);
+
+              clone.id += ',' + $link.attr('id').replace('parktiles-overlays-link-', '');
+              clone.popup = {
+                title: '{{name}}'
+              };
+
+              if ($(inputs[1]).prop('checked')) {
+                layers.unshift(clone);
+              } else {
+                layers.push(clone);
+              }
+            } else {
+              if ($(inputs[1]).prop('checked')) {
+                layers.unshift(id);
+              } else {
+                layers.push(id);
+              }
+            }
           } else {
-            baseLayers.push(id);
+            if ($(inputs[1]).prop('checked')) {
+              layers.unshift(id);
+            } else {
+              layers.push(id);
+            }
           }
         }
       });
     }
 
-    NPMap.baseLayers = baseLayers;
+    NPMap.baseLayers = layers;
     Builder.updateMap();
-    $('#modal-editBaseMaps').modal('hide');
-  }
-  function setHeight() {
-    $('#modal-editBaseMaps .modal-body').css({
-      height: $(document).height() - 180
-    });
+    $modal.modal('hide');
   }
   function update() {
     $.each($('#modal-editBaseMaps div.basemap'), function(i, div) {
       var checked = false,
-        id = div.id;
+        id = div.id,
+        link = $(div).find('.parktiles-overlays-link');
 
-      if ($.inArray(id, NPMap.baseLayers) !== -1) {
-        checked = true;
+      // TODO: Maybe you should store the overlays in the baselayers preset in NPMap.js?
+
+      // Rather than iterating through divs, should you iterate through NPMap.baseLayers?
+      if (typeof id === 'string') {
+        if ($.inArray(id, NPMap.baseLayers) !== -1) {
+          checked = true;
+        }
+      }
+
+      if (!checked) {
+        // Now iterate through three Park Tiles basemaps, using the mapbox id, and check NPMap.baseLayers to see if they are objects
+        $.each(NPMap.baseLayers, function(i, baseLayer) {
+          if (typeof baseLayer === 'object') {
+            console.log(baseLayer);
+          }
+        });
       }
 
       $($(div).find('input')[0]).prop('checked', checked);
+
+      if (link.length) {
+        var $link = $(link[0]);
+
+        if (checked) {
+          $link.css('display', 'block');
+        } else {
+          $link.css('display', 'none');
+        }
+      }
     });
 
     if (!NPMap.baseLayers || NPMap.baseLayers.length === 0) {
@@ -113,11 +171,11 @@ Builder.ui.modal.editBaseMaps = (function() {
     }
   }
 
-  for (var provider in baseMaps) {
+  for (var provider in baseLayers) {
     if (provider !== 'openstreetmap') {
       var content = '',
-        maps = baseMaps[provider],
-        providerPretty = getProvider(provider),
+        maps = baseLayers[provider],
+        providerPretty = providers[provider] || provider,
         map;
 
       content += '<div class="well"><h5>' + providerPretty + '</h5><div class="row">';
@@ -125,27 +183,27 @@ Builder.ui.modal.editBaseMaps = (function() {
       if (provider === 'nps') {
         for (map in maps) {
           if (map === 'parkTiles') {
-            content += createThumbnail(map, provider, providerPretty);
+            content += createThumbnail(map, provider, providerPretty, true);
             break;
           }
         }
 
         for (map in maps) {
           if (map === 'parkTilesImagery') {
-            content += createThumbnail(map, provider, providerPretty);
+            content += createThumbnail(map, provider, providerPretty, true);
             break;
           }
         }
 
         for (map in maps) {
           if (map === 'parkTilesSlate') {
-            content += createThumbnail(map, provider, providerPretty);
+            content += createThumbnail(map, provider, providerPretty, true);
             break;
           }
         }
 
         for (map in maps) {
-          if (map !== 'darkStreets' && map !== 'parkTiles' && map !== 'parkTilesImagery' && map !== 'parkTilesSlate') {
+          if (map !== 'darkStreets' && map.indexOf('parkTiles') === -1) {
             content += createThumbnail(map, provider, providerPretty);
           }
         }
@@ -165,7 +223,63 @@ Builder.ui.modal.editBaseMaps = (function() {
     }
   }
 
-  $('#modal-editBaseMaps .btn-primary').on('click', setBaseMapsAndHide);
+  $('#modal-editBaseMaps .btn-primary').on('click', submit);
+  $('#modal-editBaseMaps .modal-body').append(html.join(''));
+  $('#modal-editBaseMaps .parktiles-overlays-link')
+    .click(function() {
+      activeLink = $(this);
+      $(this).popover('show');
+    })
+    .popover({
+      container: 'body',
+      content: '' +
+        '<form id="parktiles-overlays-form" role="form" style="width:150px;">' +
+          '<div class="checkbox">' +
+            '<label><input type="checkbox">Points of Interest</label>' +
+          '</div>' +
+          '<div class="text-center">' +
+            '<button class="btn btn-default" style="margin-right:5px;">Cancel</button>' +
+            '<button class="btn btn-primary">Save</button>' +
+          '</div>' +
+        '</form>' +
+      '',
+      html: true,
+      trigger: 'manual'
+    })
+    .on('hide.bs.popover', function() {
+      $('#modal-editBaseMaps').css('z-index', 1050);
+    })
+    .on('show.bs.popover', function() {
+      $('#modal-editBaseMaps').css('z-index', 1);
+    })
+    .on('shown.bs.popover', function() {
+      if (activeLink.html().indexOf('No') === -1) {
+        $('#parktiles-overlays-form input').prop('checked', true);
+      }
+
+      $('#parktiles-overlays-form .btn').click(function() {
+        activeLink.popover('hide');
+        return false;
+      });
+      $('#parktiles-overlays-form .btn-primary').click(function() {
+        if ($('#parktiles-overlays-form input').prop('checked')) {
+          activeLink.html('1 overlay selected');
+        } else {
+          activeLink.html('No overlays selected');
+        }
+      });
+    });
+  $('#modal-editBaseMaps .checkbox-inline input').change(function() {
+    var link = $(this).parent().parent().parent().parent().find('.parktiles-overlays-link');
+
+    if (link) {
+      if ($(this).is(':checked')) {
+        $(link[0]).show();
+      } else {
+        $(link[0]).hide();
+      }
+    }
+  });
   $checkbox.change(function() {
     var checked = $(this).is(':checked');
 
@@ -186,14 +300,17 @@ Builder.ui.modal.editBaseMaps = (function() {
       update();
     }
   });
-  $('#modal-editBaseMaps .modal-body').append(html.join(''));
-  $('#modal-editBaseMaps').modal({
-    backdrop: 'static'
-  });
+  $modal
+    .modal({
+      backdrop: 'static'
+    })
+    .on('hide.bs.modal', function() {
+      $('#modal-editBaseMaps .modal-body').scrollTop(0);
+    });
   Builder.buildTooltips();
   setHeight();
-  $(window).resize(setHeight);
   update();
+  $(window).resize(setHeight);
 
   return {
     handleRadio: function(el) {

@@ -65,7 +65,10 @@ Builder.ui.modal.viewConfig = (function() {
   }
 
   $htmlInput.on('change', setConfig);
-  $('#modal-viewConfig').modal().on('show.bs.modal shown.bs.modal', setConfig);
+  $('#modal-viewConfig').modal({
+    backdrop: 'static',
+    keyboard: false
+  }).on('show.bs.modal shown.bs.modal', setConfig);
   Builder.buildTooltips();
   setConfig();
   setHeight();

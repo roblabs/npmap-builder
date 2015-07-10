@@ -26,7 +26,10 @@ Builder.ui.modal.export = (function() {
   });
   setHeight();
   $(window).resize(setHeight);
-  $('#modal-export').modal();
+  $('#modal-export').modal({
+    backdrop: 'static',
+    keyboard: false
+  });
 
   return {};
 })();

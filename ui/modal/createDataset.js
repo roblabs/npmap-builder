@@ -16,7 +16,8 @@ Builder.ui.modal.createDataset = (function() {
   }
 
   $('#modal-createDataset').modal({
-    backdrop: 'static'
+    backdrop: 'static',
+    keyboard: false
   })
     .on('shown.bs.modal', function() {
       $name.focus();

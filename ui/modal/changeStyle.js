@@ -10,7 +10,8 @@ Builder.ui.modal.changeStyle = (function() {
   }
 
   $('#modal-changeStyle').modal({
-    backdrop: 'static'
+    backdrop: 'static',
+    keyboard: false
   });
   Builder.buildTooltips();
   setHeight();

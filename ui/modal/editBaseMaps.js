@@ -4,8 +4,6 @@
 // TODO: Hitting radio button doesn't trigger change function for checkbox.
 // TODO: "Canceling" out of modal doesn't revert changes made but not saved.
 
-$('head').append($('<link rel="stylesheet">').attr('href', 'ui/modal/editBaseMaps.css'));
-
 Builder.ui = Builder.ui || {};
 Builder.ui.modal = Builder.ui.modal || {};
 Builder.ui.modal.editBaseMaps = (function() {

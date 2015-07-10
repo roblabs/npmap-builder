@@ -1,7 +1,5 @@
 /* globals $, Builder, NPMap, mapId */
 
-$('head').append($('<link rel="stylesheet">').attr('href', 'ui/modal/export.css'));
-
 Builder.ui = Builder.ui || {};
 Builder.ui.modal = Builder.ui.modal || {};
 Builder.ui.modal.export = (function() {

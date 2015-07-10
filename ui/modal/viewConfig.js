@@ -1,7 +1,5 @@
 /* globals $, Builder, NPMap */
 
-$('head').append($('<link rel="stylesheet" type="text/css">').attr('href', 'ui/modal/viewConfig.css'));
-
 Builder.ui = Builder.ui || {};
 Builder.ui.modal = Builder.ui.modal || {};
 Builder.ui.modal.viewConfig = (function() {

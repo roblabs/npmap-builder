@@ -1,7 +1,5 @@
 /* globals $, Builder, NPMap */
 
-$('head').append($('<link rel="stylesheet">').attr('href', 'ui/modal/createDataset.css'));
-
 Builder.ui = Builder.ui || {};
 Builder.ui.modal = Builder.ui.modal || {};
 Builder.ui.modal.createDataset = (function() {

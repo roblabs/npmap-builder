@@ -1,7 +1,10 @@
 module.exports = function(grunt) {
   'use strict';
 
+  var buildId = new Date().getTime();
+
   grunt.initConfig({
+    buildId: buildId,
     clean: [
       '_site/css',
       '_site/data',
@@ -27,13 +30,6 @@ module.exports = function(grunt) {
             '**/*'
           ]
         },{
-          cwd: 'data/',
-          dest: '_site/data/',
-          expand: true,
-          src: [
-            '**/*'
-          ]
-        },{
           cwd: 'img/',
           dest: '_site/img/',
           expand: true,
@@ -44,6 +40,12 @@ module.exports = function(grunt) {
           cwd: 'ui/',
           dest: '_site/ui/',
           expand: true,
+          rename: function(dest, src) {
+            src = src.replace('.css', '-' + buildId + '.css');
+            src = src.replace('.html', '-' + buildId + '.html');
+            src = src.replace('.js', '-' + buildId + '.js');
+            return dest + src;
+          },
           src: [
             '**/*'
           ]
@@ -53,7 +55,7 @@ module.exports = function(grunt) {
     cssmin: {
       site: {
         files: {
-          '_site/css/app.min.css': [
+          '_site/css/app-<%= buildId %>.min.css': [
             'assets/libs/alertify/css/alertify-core.css',
             'assets/libs/alertify/css/alertify-bootstrap.css',
             'assets/libs/bootstrap-editable/css/bootstrap-editable.css',
@@ -64,6 +66,14 @@ module.exports = function(grunt) {
             'css/app.css'
           ]
         }
+      },
+      ui: {
+        cwd: '_site/ui/',
+        dest: '_site/ui/',
+        expand: true,
+        src: [
+          '**/*.css'
+        ]
       }
     },
     htmlmin: {
@@ -80,16 +90,62 @@ module.exports = function(grunt) {
           removeCommentsFromCDATA: true,
           removeRedundantAttributes: true
         }
+      },
+      ui: {
+        cwd: '_site/ui/',
+        dest: '_site/ui/',
+        expand: true,
+        options: {
+          collapseBooleanAttributes: true,
+          collapseWhitespace: true,
+          removeAttributeQuotes: true,
+          removeComments: true,
+          removeCommentsFromCDATA: true,
+          removeRedundantAttributes: true
+        },
+        src: [
+          '**/*.html'
+        ]
       }
     },
     pkg: require('./package.json'),
+    'string-replace': {
+      app: {
+        files: {
+          '_site/js/app-<%= buildId %>.min.js': '_site/js/app-<%= buildId %>.min.js'
+        },
+        options: {
+          replacements: [{
+            pattern: /".css"/g,
+            replacement: '"-' + buildId + '.css"'
+          },{
+            pattern: /".html"/g,
+            replacement: '"-' + buildId + '.html"'
+          },{
+            pattern: /".js"/g,
+            replacement: '"-' + buildId + '.js"'
+          }]
+        }
+      },
+      index: {
+        files: {
+          '_site/index.html': '_site/index.html'
+        },
+        options: {
+          replacements: [{
+            pattern: /js\/app.min.js/g,
+            replacement: 'js/app-' + buildId + '.min.js'
+          },{
+            pattern: /css\/app.min.css/g,
+            replacement: 'css/app-' + buildId + '.min.css'
+          }]
+        }
+      }
+    },
     uglify: {
       site: {
-        options: {
-          beautify: false
-        },
         files: {
-          '_site/js/app.min.js': [
+          '_site/js/app-<%= buildId %>.min.js': [
             'assets/libs/alertify/js/alertify.js',
             'assets/libs/bootstrap-colorpickersliders/bootstrap.colorpickersliders.js',
             'assets/libs/bootstrap-editable/js/bootstrap-editable.js',
@@ -101,7 +157,21 @@ module.exports = function(grunt) {
             'assets/libs/typeahead/typeahead.js',
             'js/app.js'
           ]
+        },
+        options: {
+          beautify: false
         }
+      },
+      ui: {
+        cwd: '_site/ui/',
+        dest: '_site/ui/',
+        expand: true,
+        options: {
+          beautify: false
+        },
+        src: [
+          '**/*.js'
+        ]
       }
     }
   });
@@ -111,5 +181,6 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-cssmin');
   grunt.loadNpmTasks('grunt-contrib-htmlmin');
   grunt.loadNpmTasks('grunt-contrib-uglify');
-  grunt.registerTask('default', ['clean', 'htmlmin', 'copy', 'cssmin', 'uglify']);
+  grunt.loadNpmTasks('grunt-string-replace');
+  grunt.registerTask('default', ['clean', 'htmlmin:site', 'copy', 'cssmin:site', 'uglify', 'string-replace:app', 'string-replace:index', 'cssmin:ui', 'htmlmin:ui']);
 };

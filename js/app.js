@@ -141,7 +141,6 @@ function ready() {
             break;
           case 'point':
             if (overlay.type === 'cartodb') {
-              // TODO: Also stroke properties (surface to NPMap.js): stroke opacity, color, and weight.
               panel += '' +
                 '<fieldset>' +
                   '<div class="form-group">' +
@@ -409,6 +408,7 @@ function ready() {
         dataType: 'html',
         success: function (html) {
           $('body').append(html);
+          $('head').append($('<link rel="stylesheet">').attr('href', module + '.css'));
           $.getScript(module + '.js', function() {
             if (callback) {
               callback();

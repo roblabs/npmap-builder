@@ -1,8 +1,6 @@
 /* globals $, Builder, NPMap */
 /* jshint camelcase: false */
 
-$('head').append($('<link rel="stylesheet">').attr('href', 'ui/modal/addLayer.css'));
-
 Builder.ui = Builder.ui || {};
 Builder.ui.modal = Builder.ui.modal || {};
 Builder.ui.modal.addLayer = (function() {

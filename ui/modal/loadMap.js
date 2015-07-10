@@ -1,8 +1,6 @@
 /* globals $, Builder */
 /* global NPMap:true */
 
-$('head').append($('<link rel="stylesheet" type="text/css">').attr('href', 'ui/modal/loadMap.css'));
-
 var colors = {
   'valid': '#CCFFCC',
   'error': '#FFCCCC'

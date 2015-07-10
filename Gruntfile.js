@@ -1,3 +1,5 @@
+// TODO: Do away with iframe.min.html and index.min.html by replacing paths with minified paths in this script.
+
 module.exports = function(grunt) {
   'use strict';
 
@@ -5,15 +7,33 @@ module.exports = function(grunt) {
 
   grunt.initConfig({
     buildId: buildId,
-    clean: [
-      '_site/css',
-      '_site/data',
-      '_site/img',
-      '_site/js',
-      '_site/ui',
-      '_site/iframe.html'
-    ],
+    clean: {
+      dist: [
+        '_site/css',
+        '_site/iframe.html',
+        '_site/index.html',
+        '_site/img',
+        '_site/js',
+        '_site/ui'
+      ],
+      prod: {
+        options: {
+          force: true
+        },
+        src: [
+          '/Volumes/wwwroot/builder/map/**/*'
+        ]
+      }
+    },
     copy: {
+      prod: {
+        cwd: '_site/',
+        dest: '/Volumes/wwwroot/builder/map/',
+        expand: true,
+        src: [
+          '**/*'
+        ]
+      },
       site: {
         files: [{
           cwd: 'assets/libs/bootstrap-editable/img/',
@@ -133,6 +153,9 @@ module.exports = function(grunt) {
         },
         options: {
           replacements: [{
+            pattern: '{{buildId}}',
+            replacement: 'Build: ' + buildId
+          },{
             pattern: /js\/app.min.js/g,
             replacement: 'js/app-' + buildId + '.min.js'
           },{
@@ -182,5 +205,6 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-htmlmin');
   grunt.loadNpmTasks('grunt-contrib-uglify');
   grunt.loadNpmTasks('grunt-string-replace');
-  grunt.registerTask('default', ['clean', 'htmlmin:site', 'copy', 'cssmin:site', 'uglify', 'string-replace:app', 'string-replace:index', 'cssmin:ui', 'htmlmin:ui']);
+  grunt.registerTask('build', ['clean:dist', 'htmlmin:site', 'copy', 'cssmin:site', 'uglify', 'string-replace:app', 'string-replace:index', 'cssmin:ui', 'htmlmin:ui']);
+  grunt.registerTask('deploy', ['clean:prod', 'copy:prod']);
 };

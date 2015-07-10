@@ -76,24 +76,16 @@ footer ul li a:hover {
   background: url(../img/nps-arrowhead-small.jpg) no-repeat left;
   padding-left: 14px;
 }
-footer .tag-line {
-  background: url(../img/experience-your-america.png) no-repeat left;
-  background: -webkit-image-set(url(../img/experience-your-america.png) 1x,url(../img/experience-your-america@2x.png) 2x) no-repeat left;
+footer .build-id {
+  color: #fff;
+  display: block;
   float: right;
-  height: 7px;
-  margin: 10px 10px 0 0;
-  width: 188px;
+  height: 26px;
+  line-height: 26px;
+  margin-right: 10px;
 }
 a.more:after {
   content: '\A0\BB';
-}
-.ir {
-  display: block;
-  text-indent: -999em;
-  overflow: hidden;
-  background-repeat: no-repeat;
-  text-align: left;
-  direction: ltr;
 }
 iframe {
   border: none;

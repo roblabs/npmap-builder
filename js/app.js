@@ -807,21 +807,13 @@ function ready() {
 
                 $el.val(null);
               },
-              clickApplyInteractivity: function(elName, overlayName) {
+              clickApplyInteractivity: function(elName) {
                 var d = $('#' + elName + '_description').val(),
+                  index = parseInt(elName.replace('overlay-index-', ''), 10),
+                  overlay = NPMap.overlays[index],
                   popup = {},
                   t = $('#' + elName + '_title').val(),
-                  tooltip = $('#' + elName + '_tooltip').val(),
-                  overlay;
-
-                for (var i = 0; i < NPMap.overlays.length; i++) {
-                  var o = NPMap.overlays[i];
-
-                  if (o.name === overlayName) {
-                    overlay = o;
-                    break;
-                  }
-                }
+                  tooltip = $('#' + elName + '_tooltip').val();
 
                 if (d) {
                   popup.description = escapeHtml(d);
@@ -847,18 +839,9 @@ function ready() {
                 $('#mask').hide();
                 Builder.updateMap();
               },
-              clickApplyStyles: function(elName, overlayName) {
-                var updated = {},
-                  i, overlay;
-
-                for (i = 0; i < NPMap.overlays.length; i++) {
-                  var o = NPMap.overlays[i];
-
-                  if (o.name === overlayName) {
-                    overlay = o;
-                    break;
-                  }
-                }
+              clickApplyStyles: function(elName) {
+                var overlay = NPMap.overlays[parseInt(elName.replace('overlay-index-', ''), 10)],
+                  updated = {};
 
                 $.each($('#' + elName + '_layer-change-style input, #' + elName + '_layer-change-style select'), function(i, el) {
                   var $field = $(el),
@@ -893,9 +876,10 @@ function ready() {
                 if ($el.data('popover-created')) {
                   $el.popover('toggle');
                 } else {
-                  var layer = document.getElementById('iframe-map').contentWindow.NPMap.config.overlays[getLayerIndexFromButton(el)],
-                    overlay = NPMap.overlays[getLayerIndexFromButton(el)],
-                    name = overlay.name.split(' ').join('_');
+                  var index = getLayerIndexFromButton(el),
+                    layer = document.getElementById('iframe-map').contentWindow.NPMap.config.overlays[index],
+                    name = 'overlay-index-' + index,
+                    overlay = NPMap.overlays[index];
 
                   $el.popover({
                     animation: false,
@@ -903,7 +887,7 @@ function ready() {
                     content: '' +
                       generateLayerChangeStyle(name, layer) +
                       '<div style="text-align:center;">' +
-                        '<button class="btn btn-primary" onclick="Builder.ui.steps.addAndCustomizeData.handlers.clickApplyStyles(\'' + name + '\',\'' + overlay.name + '\');" type="button">Apply</button>' +
+                        '<button class="btn btn-primary" onclick="Builder.ui.steps.addAndCustomizeData.handlers.clickApplyStyles(\'' + name + '\');" type="button">Apply</button>' +
                         '<button class="btn btn-default" onclick="Builder.ui.steps.addAndCustomizeData.handlers.cancelApplyStyles();" style="margin-left:5px;">Cancel</button>' +
                       '</div>' +
                     '',
@@ -1025,8 +1009,9 @@ function ready() {
                 if ($el.data('popover-created')) {
                   $el.popover('toggle');
                 } else {
-                  var overlay = NPMap.overlays[getLayerIndexFromButton(el)],
-                    name = overlay.name.split(' ').join('_'),
+                  var index = getLayerIndexFromButton(el),
+                    overlay = NPMap.overlays[index],
+                    name = 'overlay-index-' + index,
                     supportsTooltips = (overlay.type === 'cartodb' || overlay.type === 'csv' || overlay.type === 'geojson' || overlay.type === 'kml' || overlay.type === 'mapbox'),
                     html;
 
@@ -1056,7 +1041,7 @@ function ready() {
                       '</fieldset>' +
                     '</form>' +
                     '<div style="text-align:center;">' +
-                      '<button class="btn btn-primary" onclick="Builder.ui.steps.addAndCustomizeData.handlers.clickApplyInteractivity(\'' + name + '\',\'' + overlay.name + '\');" type="button">Apply</button><button class="btn btn-default" onclick="Builder.ui.steps.addAndCustomizeData.handlers.cancelApplyInteractivity();" style="margin-left:5px;">Cancel</button>' +
+                      '<button class="btn btn-primary" onclick="Builder.ui.steps.addAndCustomizeData.handlers.clickApplyInteractivity(\'' + name + '\');" type="button">Apply</button><button class="btn btn-default" onclick="Builder.ui.steps.addAndCustomizeData.handlers.cancelApplyInteractivity();" style="margin-left:5px;">Cancel</button>' +
                     '</div>' +
                   '';
 

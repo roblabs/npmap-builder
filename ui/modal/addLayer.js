@@ -172,7 +172,7 @@ Builder.ui.modal.addLayer = (function () {
     }
     */
   };
-  var activeButton, parks, popup, styles, tooltip;
+  var activeButton, parks, poiTypes, popup, styles, tooltip;
 
   function onChangeName () {
     var $this = $(this);
@@ -734,10 +734,23 @@ Builder.ui.modal.addLayer = (function () {
               '<option value="trails">Trails</option>' +
             '</select>' +
           '</div>' +
+          // TODO: display should be specified in the CSS, but it isn't taking.
+          '<div class="form-group poi-type" style="display:none;">' +
+            '<label for="places-poi-type">Type</label>' +
+            '<select id="places-poi-type" class="form-control" required>' +
+              '<option>All</option>' +
+            '</select>' +
+          '</div>' +
           '<div class="form-group">' +
             '<label for="places-park">Park</label>' +
             '<select id="places-park" class="form-control" required style="width:244px;">' +
             '</select>' +
+          '</div>' +
+          '<div class="checkbox poi-vector" style="display:none;">' +
+            '<label>' +
+              '<input id="places-poi-vector" type="checkbox">' +
+              'Bring in as a vector overlay?' +
+            '</label>' +
           '</div>' +
           '<div style="text-align:center;">' +
             '<button class="btn btn-default" style="margin-right:5px;">Cancel</button>' +
@@ -758,23 +771,53 @@ Builder.ui.modal.addLayer = (function () {
       $modal.css('z-index', 1);
     })
     .on('shown.bs.popover', function () {
-      var $select = $('#places-park');
+      var $divType = $('.poi-type');
+      var $divVector = $('.poi-vector');
+      var $selectPark = $('#places-park');
+      var $selectPoiType = $('#places-poi-type');
 
-      function build () {
+      $('#places-dataset').change(function () {
+        if ($(this).val() === 'points_of_interest') {
+          $divType.show();
+          $divVector.show();
+        } else {
+          $divType.hide();
+          $divVector.hide();
+        }
+      });
+
+      function buildPark () {
         $.each(parks, function (i, park) {
-          $select.append('<option value="' + park.unit_code + '">' + park.full_name + '</option>');
+          $selectPark.append('<option value="' + park.unit_code + '">' + park.full_name + '</option>');
+        });
+      }
+      function buildPoiType () {
+        $.each(poiTypes, function (i, type) {
+          $selectPoiType.append('<option>' + type.type + '</option>');
         });
       }
 
       if (parks) {
-        build();
+        buildPark();
       } else {
         $.ajax({
           success: function (response) {
             parks = response.rows;
-            build();
+            buildPark();
           },
           url: 'https://nps.cartodb.com/api/v2/sql?q=SELECT full_name,unit_code FROM parks ORDER BY full_name'
+        });
+      }
+
+      if (poiTypes) {
+        buildPoiType();
+      } else {
+        $.ajax({
+          success: function (response) {
+            poiTypes = response.rows;
+            buildPoiType();
+          },
+          url: 'https://nps.cartodb.com/api/v2/sql?q=SELECT DISTINCT type FROM points_of_interest WHERE type IS NOT NULL ORDER BY type'
         });
       }
 
@@ -785,13 +828,34 @@ Builder.ui.modal.addLayer = (function () {
       $('#places-form .btn-primary').click(function () {
         var dataset = $('#places-dataset').val();
         var unitCode = $('#places-park').val();
+        var vector = false;
+        var query;
+        var type;
+
+        if ($('.poi-type').is(':visible')) {
+          var val = $('#places-poi-type').val();
+
+          if (val !== 'All') {
+            type = val;
+          }
+
+          vector = $('#places-poi-vector').prop('checked');
+        }
 
         hasNameError = false;
         resetFields();
-        $name.val(unitCode.toUpperCase() + ' ' + $('#places-dataset option:selected').text());
-        $type
-          .val('cartodb')
-          .trigger('change');
+        $name.val(unitCode.toUpperCase() + ' ' + (type ? (type + 's') : $('#places-dataset option:selected').text()));
+
+        if (vector) {
+          $type
+            .val('geojson')
+            .trigger('change');
+        } else {
+          $type
+            .val('cartodb')
+            .trigger('change');
+        }
+
         $.each($('#modal-addLayer .form-group'), function (index, formGroup) {
           var $formGroup = $(formGroup);
 
@@ -799,9 +863,16 @@ Builder.ui.modal.addLayer = (function () {
             $formGroup.removeClass('has-error');
           }
         });
-        $('#cartodb-sql').val('SELECT * FROM ' + dataset + ' WHERE unit_code=\'' + unitCode + '\'');
-        $('#cartodb-table').val(dataset);
-        $('#cartodb-user').val('nps');
+
+        query = 'SELECT * FROM ' + dataset + ' WHERE unit_code=\'' + unitCode + '\'' + (type ? ' AND type=\'' + type + '\'' : '');
+
+        if (vector) {
+          $('#geojson-url').val('https://nps.cartodb.com/api/v2/sql?q=' + query + '&format=geojson');
+        } else {
+          $('#cartodb-sql').val(query);
+          $('#cartodb-table').val(dataset);
+          $('#cartodb-user').val('nps');
+        }
       });
     });
   $('input[type=radio][name=addAnOverlay]').change(function () {

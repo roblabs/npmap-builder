@@ -3,181 +3,181 @@
 
 Builder.ui = Builder.ui || {};
 Builder.ui.modal = Builder.ui.modal || {};
-Builder.ui.modal.addLayer = (function() {
-  var $attribution = $('#layerAttribution'),
-    $description = $('#layerDescription'),
-    $modal = $('#modal-addLayer'),
-    $name = $('#layerName'),
-    $type = $('#layerType'),
-    hasNameError = false,
-    types = {
-      arcgisserver: {
-        _tiled: false,
-        _url: null,
-        fields: {
-          $clickable: $('#arcgisserver-clickable'),
-          $layers: $('#arcgisserver-layers'),
-          $opacity: $('#arcgisserver-opacity'),
-          $url: $('#arcgisserver-url').bind('change paste keyup', function() {
-            var value = $(this).val(),
-              lower = value.toLowerCase();
+Builder.ui.modal.addLayer = (function () {
+  var $attribution = $('#layerAttribution');
+  var $description = $('#layerDescription');
+  var $modal = $('#modal-addLayer');
+  var $name = $('#layerName');
+  var $type = $('#layerType');
+  var hasNameError = false;
+  var types = {
+    arcgisserver: {
+      _tiled: false,
+      _url: null,
+      fields: {
+        $clickable: $('#arcgisserver-clickable'),
+        $layers: $('#arcgisserver-layers'),
+        $opacity: $('#arcgisserver-opacity'),
+        $url: $('#arcgisserver-url').bind('change paste keyup', function () {
+          var value = $(this).val();
+          var lower = value.toLowerCase();
 
-            if (lower.indexOf('mapserver') === (value.length - 9) || lower.indexOf('mapserver/') === (value.length - 10)) {
-              $.ajax({
-                dataType: 'json',
-                success: function(response) {
-                  if (value !== types.arcgisserver._url) {
-                    types.arcgisserver.fields.$layers.find('option').remove();
-                    $.each(response.layers, function(i, layer) {
-                      types.arcgisserver.fields.$layers.append($('<option>', {
-                        value: layer.id
-                      }).text(layer.id + ': ' + layer.name));
-                    });
-                    types.arcgisserver.fields.$layers.prop('disabled', false);
-                    types.arcgisserver.fields.$layers.selectpicker('refresh');
-                    types.arcgisserver._tiled = response.singleFusedMapCache || false;
-                    types.arcgisserver._url = value;
-                  }
-                },
-                url: value + '?f=json&callback=?'
-              });
-            } else {
-              types.arcgisserver.fields.$layers.find('option').remove();
-              types.arcgisserver.fields.$layers.prop('disabled', true);
-              types.arcgisserver.fields.$layers.selectpicker('refresh');
-              types.arcgisserver._url = null;
-            }
-          })
-        },
-        reset: function() {
-          types.arcgisserver.fields.$clickable.prop('checked', 'checked');
-          types.arcgisserver.fields.$layers.find('option').remove();
-          types.arcgisserver.fields.$layers.prop('disabled', true);
-          types.arcgisserver.fields.$layers.selectpicker('refresh');
-          types.arcgisserver.fields.$opacity.slider('setValue', 100);
-          types.arcgisserver.fields.$url.val('');
-          types.arcgisserver._tiled = false;
-          types.arcgisserver._url = null;
-        }
+          if (lower.indexOf('mapserver') === (value.length - 9) || lower.indexOf('mapserver/') === (value.length - 10)) {
+            $.ajax({
+              dataType: 'json',
+              success: function (response) {
+                if (value !== types.arcgisserver._url) {
+                  types.arcgisserver.fields.$layers.find('option').remove();
+                  $.each(response.layers, function (i, layer) {
+                    types.arcgisserver.fields.$layers.append($('<option>', {
+                      value: layer.id
+                    }).text(layer.id + ': ' + layer.name));
+                  });
+                  types.arcgisserver.fields.$layers.prop('disabled', false);
+                  types.arcgisserver.fields.$layers.selectpicker('refresh');
+                  types.arcgisserver._tiled = response.singleFusedMapCache || false;
+                  types.arcgisserver._url = value;
+                }
+              },
+              url: value + '?f=json&callback=?'
+            });
+          } else {
+            types.arcgisserver.fields.$layers.find('option').remove();
+            types.arcgisserver.fields.$layers.prop('disabled', true);
+            types.arcgisserver.fields.$layers.selectpicker('refresh');
+            types.arcgisserver._url = null;
+          }
+        })
       },
-      cartodb: {
-        fields: {
-          $clickable: $('#cartodb-clickable'),
-          $detectRetina: $('#cartodb-retina'),
-          $opacity: $('#cartodb-opacity'),
-          $sql: $('#cartodb-sql'),
-          $table: $('#cartodb-table'),
-          $user: $('#cartodb-user')
-        },
-        reset: function() {
-          types.cartodb.fields.$clickable.prop('checked', 'checked');
-          types.cartodb.fields.$detectRetina.prop('checked', false);
-          types.cartodb.fields.$opacity.slider('setValue', 100);
-          types.cartodb.fields.$sql.val('');
-          types.cartodb.fields.$table.val('');
-          types.cartodb.fields.$user.val('');
-        }
-      },
-      csv: {
-        fields: {
-          $clickable: $('#csv-clickable'),
-          $cluster: $('#csv-cluster'),
-          $url: $('#csv-url')
-        },
-        reset: function() {
-          types.csv.fields.$clickable.prop('checked', 'checked');
-          types.csv.fields.$cluster.prop(false);
-          types.csv.fields.$url.val('');
-        }
-      },
-      geojson: {
-        fields: {
-          $clickable: $('#geojson-clickable'),
-          $cluster: $('#geojson-cluster'),
-          $url: $('#geojson-url')
-        },
-        reset: function() {
-          types.geojson.fields.$clickable.prop('checked', 'checked');
-          types.geojson.fields.$cluster.prop(false);
-          types.geojson.fields.$url.val('');
-        }
-      },
-      kml: {
-        fields: {
-          $clickable: $('#kml-clickable'),
-          $cluster: $('#kml-cluster'),
-          $url: $('#kml-url')
-        },
-        reset: function() {
-          types.kml.fields.$clickable.prop('checked', 'checked');
-          types.kml.fields.$cluster.prop(false);
-          types.kml.fields.$url.val('');
-        }
-      },
-      mapbox: {
-        fields: {
-          $clickable: $('#mapbox-clickable'),
-          $id: $('#mapbox-id'),
-          $opacity: $('#mapbox-opacity')
-        },
-        reset: function() {
-          types.mapbox.fields.$clickable.prop('checked', 'checked');
-          types.mapbox.fields.$id.val('');
-          types.mapbox.fields.$opacity.slider('setValue', 100);
-        }
-      },
-      spot: {
-        fields: {
-          $clickable: $('#spot-clickable'),
-          $cluster: $('#spot-cluster'),
-          $id: $('#spot-id'),
-          $zoomToBounds: $('#spot-zoomToBounds')
-        },
-        reset: function() {
-          types.spot.fields.$clickable.prop('checked', 'checked');
-          types.spot.fields.$cluster.prop(false);
-          types.spot.fields.$id.val('');
-          types.spot.fields.$zoomToBounds.prop(false);
-        }
-      },
-      tiled: {
-        fields: {
-          $opacity: $('#tiled-opacity'),
-          $url: $('#tiled-url')
-        },
-        reset: function() {
-          types.tiled.fields.$opacity.slider('setValue', 100);
-          types.tiled.fields.$url.val('');
-        }
+      reset: function () {
+        types.arcgisserver.fields.$clickable.prop('checked', 'checked');
+        types.arcgisserver.fields.$layers.find('option').remove();
+        types.arcgisserver.fields.$layers.prop('disabled', true);
+        types.arcgisserver.fields.$layers.selectpicker('refresh');
+        types.arcgisserver.fields.$opacity.slider('setValue', 100);
+        types.arcgisserver.fields.$url.val('');
+        types.arcgisserver._tiled = false;
+        types.arcgisserver._url = null;
       }
-      /*,
-      wms: {
-        fields: {
-          $format: $('#wms-format'),
-          $layers: $('#wms-layers'),
-          $opacity: $('#wms-opacity'),
-          $transparent: $('#wms-transparent'),
-          $url: $('#wms-url')
-        },
-        reset: function() {
-          types.wms.fields.$format.find('option').remove();
-          types.wms.fields.$format.prop('disabled', true);
-          types.wms.fields.$layers.find('option').remove();
-          types.wms.fields.$layers.prop('disabled', true);
-          types.wms.fields.$layers.selectpicker('refresh');
-          types.wms.fields.$opacity.slider('setValue', 100);
-          types.wms.fields.$transparent.prop(false);
-          types.wms.fields.$url.val('');
-        }
-      }
-      */
     },
-    activeButton, parks, popup, styles, tooltip;
+    cartodb: {
+      fields: {
+        $clickable: $('#cartodb-clickable'),
+        $detectRetina: $('#cartodb-retina'),
+        $opacity: $('#cartodb-opacity'),
+        $sql: $('#cartodb-sql'),
+        $table: $('#cartodb-table'),
+        $user: $('#cartodb-user')
+      },
+      reset: function () {
+        types.cartodb.fields.$clickable.prop('checked', 'checked');
+        types.cartodb.fields.$detectRetina.prop('checked', false);
+        types.cartodb.fields.$opacity.slider('setValue', 100);
+        types.cartodb.fields.$sql.val('');
+        types.cartodb.fields.$table.val('');
+        types.cartodb.fields.$user.val('');
+      }
+    },
+    csv: {
+      fields: {
+        $clickable: $('#csv-clickable'),
+        $cluster: $('#csv-cluster'),
+        $url: $('#csv-url')
+      },
+      reset: function () {
+        types.csv.fields.$clickable.prop('checked', 'checked');
+        types.csv.fields.$cluster.prop(false);
+        types.csv.fields.$url.val('');
+      }
+    },
+    geojson: {
+      fields: {
+        $clickable: $('#geojson-clickable'),
+        $cluster: $('#geojson-cluster'),
+        $url: $('#geojson-url')
+      },
+      reset: function () {
+        types.geojson.fields.$clickable.prop('checked', 'checked');
+        types.geojson.fields.$cluster.prop(false);
+        types.geojson.fields.$url.val('');
+      }
+    },
+    kml: {
+      fields: {
+        $clickable: $('#kml-clickable'),
+        $cluster: $('#kml-cluster'),
+        $url: $('#kml-url')
+      },
+      reset: function () {
+        types.kml.fields.$clickable.prop('checked', 'checked');
+        types.kml.fields.$cluster.prop(false);
+        types.kml.fields.$url.val('');
+      }
+    },
+    mapbox: {
+      fields: {
+        $clickable: $('#mapbox-clickable'),
+        $id: $('#mapbox-id'),
+        $opacity: $('#mapbox-opacity')
+      },
+      reset: function () {
+        types.mapbox.fields.$clickable.prop('checked', 'checked');
+        types.mapbox.fields.$id.val('');
+        types.mapbox.fields.$opacity.slider('setValue', 100);
+      }
+    },
+    spot: {
+      fields: {
+        $clickable: $('#spot-clickable'),
+        $cluster: $('#spot-cluster'),
+        $id: $('#spot-id'),
+        $zoomToBounds: $('#spot-zoomToBounds')
+      },
+      reset: function () {
+        types.spot.fields.$clickable.prop('checked', 'checked');
+        types.spot.fields.$cluster.prop(false);
+        types.spot.fields.$id.val('');
+        types.spot.fields.$zoomToBounds.prop(false);
+      }
+    },
+    tiled: {
+      fields: {
+        $opacity: $('#tiled-opacity'),
+        $url: $('#tiled-url')
+      },
+      reset: function () {
+        types.tiled.fields.$opacity.slider('setValue', 100);
+        types.tiled.fields.$url.val('');
+      }
+    }
+    /*,
+    wms: {
+      fields: {
+        $format: $('#wms-format'),
+        $layers: $('#wms-layers'),
+        $opacity: $('#wms-opacity'),
+        $transparent: $('#wms-transparent'),
+        $url: $('#wms-url')
+      },
+      reset: function() {
+        types.wms.fields.$format.find('option').remove();
+        types.wms.fields.$format.prop('disabled', true);
+        types.wms.fields.$layers.find('option').remove();
+        types.wms.fields.$layers.prop('disabled', true);
+        types.wms.fields.$layers.selectpicker('refresh');
+        types.wms.fields.$opacity.slider('setValue', 100);
+        types.wms.fields.$transparent.prop(false);
+        types.wms.fields.$url.val('');
+      }
+    }
+    */
+  };
+  var activeButton, parks, popup, styles, tooltip;
 
-  function onChangeName() {
-    var $this = $(this),
-      $parent = $this.parent(),
-      value = $this.val();
+  function onChangeName () {
+    var $this = $(this);
+    var $parent = $this.parent();
+    var value = $this.val();
 
     hasNameError = false;
 
@@ -204,10 +204,10 @@ Builder.ui.modal.addLayer = (function() {
       $parent.removeClass('has-error');
     }
   }
-  function onChangeType() {
+  function onChangeType () {
     var value = $(this).val();
 
-    $.each($('#modal-addLayer form div'), function(i, div) {
+    $.each($('#modal-addLayer form div'), function (i, div) {
       var $div = $(div);
 
       if ($div.attr('id')) {
@@ -219,21 +219,21 @@ Builder.ui.modal.addLayer = (function() {
       }
     });
   }
-  function resetFields() {
+  function resetFields () {
     $attribution.val(null);
     $description.val(null);
     $name.val(null);
-    $.each(types, function(type) {
+    $.each(types, function (type) {
       types[type].reset();
     });
   }
-  function save() {
-    var attribution = $attribution.val() || null,
-      description = $description.val() || null,
-      errors = [],
-      fields = [$attribution, $description, $name],
-      name = $name.val() || null,
-      config;
+  function save () {
+    var attribution = $attribution.val() || null;
+    var description = $description.val() || null;
+    var errors = [];
+    var fields = [$attribution, $description, $name];
+    var name = $name.val() || null;
+    var config;
 
     if (typeof NPMap.overlays === 'undefined') {
       NPMap.overlays = [];
@@ -244,12 +244,12 @@ Builder.ui.modal.addLayer = (function() {
     }
 
     if ($('#arcgisserver').is(':visible')) {
-      (function() {
-        var clickable = types.arcgisserver.fields.$clickable.prop('checked'),
-          layers = types.arcgisserver.fields.$layers.val(),
-          url = types.arcgisserver.fields.$url.val();
+      (function () {
+        var clickable = types.arcgisserver.fields.$clickable.prop('checked');
+        var layers = types.arcgisserver.fields.$layers.val();
+        var url = types.arcgisserver.fields.$url.val();
 
-        $.each(types.arcgisserver.fields, function(field) {
+        $.each(types.arcgisserver.fields, function (field) {
           fields.push(field);
         });
 
@@ -276,14 +276,14 @@ Builder.ui.modal.addLayer = (function() {
         }
       })();
     } else if ($('#cartodb').is(':visible')) {
-      (function() {
-        var clickable = types.cartodb.fields.$clickable.prop('checked'),
-          detectRetina = types.cartodb.fields.$detectRetina.prop('checked'),
-          sql = types.cartodb.fields.$sql.val(),
-          table = types.cartodb.fields.$table.val(),
-          user = types.cartodb.fields.$user.val();
+      (function () {
+        var clickable = types.cartodb.fields.$clickable.prop('checked');
+        var detectRetina = types.cartodb.fields.$detectRetina.prop('checked');
+        var sql = types.cartodb.fields.$sql.val();
+        var table = types.cartodb.fields.$table.val();
+        var user = types.cartodb.fields.$user.val();
 
-        $.each(types.cartodb.fields, function(field) {
+        $.each(types.cartodb.fields, function (field) {
           fields.push(field);
         });
 
@@ -319,12 +319,12 @@ Builder.ui.modal.addLayer = (function() {
         }
       })();
     } else if ($('#csv').is(':visible')) {
-      (function() {
-        var clickable = types.csv.fields.$clickable.prop('checked'),
-          cluster = types.csv.fields.$cluster.prop('checked'),
-          url = types.csv.fields.$url.val();
+      (function () {
+        var clickable = types.csv.fields.$clickable.prop('checked');
+        var cluster = types.csv.fields.$cluster.prop('checked');
+        var url = types.csv.fields.$url.val();
 
-        $.each(types.csv.fields, function(field) {
+        $.each(types.csv.fields, function (field) {
           fields.push(field);
         });
 
@@ -346,12 +346,12 @@ Builder.ui.modal.addLayer = (function() {
         }
       })();
     } else if ($('#geojson').is(':visible')) {
-      (function() {
-        var clickable = types.geojson.fields.$clickable.prop('checked'),
-          cluster = types.geojson.fields.$cluster.prop('checked'),
-          url = types.geojson.fields.$url.val();
+      (function () {
+        var clickable = types.geojson.fields.$clickable.prop('checked');
+        var cluster = types.geojson.fields.$cluster.prop('checked');
+        var url = types.geojson.fields.$url.val();
 
-        $.each(types.geojson.fields, function(field) {
+        $.each(types.geojson.fields, function (field) {
           fields.push(field);
         });
 
@@ -373,12 +373,12 @@ Builder.ui.modal.addLayer = (function() {
         }
       })();
     } else if ($('#kml').is(':visible')) {
-      (function() {
-        var clickable = types.kml.fields.$clickable.prop('checked'),
-          cluster = types.kml.fields.$cluster.prop('checked'),
-          url = types.kml.fields.$url.val();
+      (function () {
+        var clickable = types.kml.fields.$clickable.prop('checked');
+        var cluster = types.kml.fields.$cluster.prop('checked');
+        var url = types.kml.fields.$url.val();
 
-        $.each(types.kml.fields, function(field) {
+        $.each(types.kml.fields, function (field) {
           fields.push(field);
         });
 
@@ -400,11 +400,11 @@ Builder.ui.modal.addLayer = (function() {
         }
       })();
     } else if ($('#mapbox').is(':visible')) {
-      (function() {
-        var clickable = types.mapbox.fields.$clickable.prop('checked'),
-          id = types.mapbox.fields.$id.val();
+      (function () {
+        var clickable = types.mapbox.fields.$clickable.prop('checked');
+        var id = types.mapbox.fields.$id.val();
 
-        $.each(types.mapbox.fields, function(field) {
+        $.each(types.mapbox.fields, function (field) {
           fields.push(field);
         });
 
@@ -423,13 +423,13 @@ Builder.ui.modal.addLayer = (function() {
         }
       })();
     } else if ($('#spot').is(':visible')) {
-      (function() {
-        var clickable = types.spot.fields.$clickable.prop('checked'),
-          cluster = types.spot.fields.$cluster.prop('checked'),
-          id = types.spot.fields.$id.val(),
-          zoomToBounds = types.spot.fields.$zoomToBounds.prop('checked');
+      (function () {
+        var clickable = types.spot.fields.$clickable.prop('checked');
+        var cluster = types.spot.fields.$cluster.prop('checked');
+        var id = types.spot.fields.$id.val();
+        var zoomToBounds = types.spot.fields.$zoomToBounds.prop('checked');
 
-        $.each(types.spot.fields, function(field) {
+        $.each(types.spot.fields, function (field) {
           fields.push(field);
         });
 
@@ -455,10 +455,10 @@ Builder.ui.modal.addLayer = (function() {
         }
       })();
     } else if ($('#tiled').is(':visible')) {
-      (function() {
+      (function () {
         var url = types.tiled.fields.$url.val();
 
-        $.each(types.tiled.fields, function(field) {
+        $.each(types.tiled.fields, function (field) {
           fields.push(field);
         });
 
@@ -475,7 +475,7 @@ Builder.ui.modal.addLayer = (function() {
     } else if ($('#wms').is(':visible')) {
       /*
         http://nowcoast.noaa.gov/wms/com.esri.wms.Esrimap/obs?request=GetCapabilities&service=WMS
-        
+
         attribution: 'NOAA',
         crs: null, (not implemented)
         format: 'image/png',
@@ -490,10 +490,10 @@ Builder.ui.modal.addLayer = (function() {
     }
 
     if (!errors.length) {
-      var $layers = $('#layers'),
-        type = config.type;
+      var $layers = $('#layers');
+      var type = config.type;
 
-      $('#addLayer-add, #addLayer-cancel').each(function(i, button) {
+      $('#addLayer-add, #addLayer-cancel').each(function (i, button) {
         $(button).prop('disabled', true);
       });
 
@@ -525,13 +525,13 @@ Builder.ui.modal.addLayer = (function() {
 
       // TODO: Loop through all properties and "sanitize" them.
       // TODO: Better loading indicator?
-      validate($.extend({}, config), function(validated, error) {
+      validate($.extend({}, config), function (validated, error) {
         if (error) {
           if (!error.message) {
             error.message = 'An unhandled error occured.';
           }
 
-          $('#addLayer-add, #addLayer-cancel').each(function(i, button) {
+          $('#addLayer-add, #addLayer-cancel').each(function (i, button) {
             $(button).prop('disabled', false);
           });
           window.alert('The overlay could not be added to the map. The full error message is:\n\n' + error.message);
@@ -544,23 +544,23 @@ Builder.ui.modal.addLayer = (function() {
                 var geometryType = geometryTypes[0];
 
                 switch (geometryType) {
-                case 'line':
-                  delete config.styles.fill;
-                  delete config.styles['fill-opacity'];
-                  delete config.styles['marker-color'];
-                  delete config.styles['marker-size'];
-                  break;
-                case 'point':
-                  delete config.styles.fill;
-                  delete config.styles['fill-opacity'];
-                  delete config.styles.stroke;
-                  delete config.styles['stroke-opacity'];
-                  delete config.styles['stroke-width'];
-                  break;
-                case 'polygon':
-                  delete config.styles['marker-color'];
-                  delete config.styles['marker-size'];
-                  break;
+                  case 'line':
+                    delete config.styles.fill;
+                    delete config.styles['fill-opacity'];
+                    delete config.styles['marker-color'];
+                    delete config.styles['marker-size'];
+                    break;
+                  case 'point':
+                    delete config.styles.fill;
+                    delete config.styles['fill-opacity'];
+                    delete config.styles.stroke;
+                    delete config.styles['stroke-opacity'];
+                    delete config.styles['stroke-width'];
+                    break;
+                  case 'polygon':
+                    delete config.styles['marker-color'];
+                    delete config.styles['marker-size'];
+                    break;
                 }
               } else {
                 if (geometryTypes.indexOf('line') === -1) {
@@ -579,8 +579,8 @@ Builder.ui.modal.addLayer = (function() {
 
             Builder.addOverlay(config);
           } else {
-            var $li = $($layers.children()[Builder.ui.modal.addLayer._editingIndex]),
-              $interactivity = $($li.find('.interactivity')[0]);
+            var $li = $($layers.children()[Builder.ui.modal.addLayer._editingIndex]);
+            var $interactivity = $($li.find('.interactivity')[0]);
 
             NPMap.overlays[Builder.ui.modal.addLayer._editingIndex] = config;
             $($li.find('.name')[0]).text(config.name);
@@ -603,22 +603,22 @@ Builder.ui.modal.addLayer = (function() {
         }
       });
     } else {
-      $.each(errors, function(i, $el) {
+      $.each(errors, function (i, $el) {
         $el.parent().addClass('has-error');
       });
     }
   }
-  function setHeight() {
+  function setHeight () {
     $('#modal-addLayer .modal-body').css({
       height: $(document).height() - 180
     });
   }
-  function validate(config, callback) {
-    var done = false,
-      error = null,
-      interval;
+  function validate (config, callback) {
+    var done = false;
+    var error = null;
+    var interval;
 
-    window.layerValidate = (function() {
+    window.layerValidate = (function () {
       var contentWindow = document.getElementById('iframe-map').contentWindow;
 
       if (config.type === 'arcgisserver') {
@@ -635,7 +635,7 @@ Builder.ui.modal.addLayer = (function() {
     if (window.layerValidate.readyFired) {
       done = true;
     } else {
-      window.layerValidate.on('ready', function() {
+      window.layerValidate.on('ready', function () {
         done = true;
       });
     }
@@ -646,13 +646,13 @@ Builder.ui.modal.addLayer = (function() {
       };
       done = true;
     } else {
-      window.layerValidate.on('error', function(e) {
+      window.layerValidate.on('error', function (e) {
         error = e;
         done = true;
       });
     }
 
-    interval = setInterval(function() {
+    interval = setInterval(function () {
       if (done === true) {
         clearInterval(interval);
         callback(window.layerValidate, error);
@@ -662,13 +662,13 @@ Builder.ui.modal.addLayer = (function() {
   }
 
   if (typeof Builder._pendingLayerEditIndex !== 'undefined') {
-    var overlay = NPMap.overlays[Builder._pendingLayerEditIndex],
-      type = overlay.type;
+    var overlay = NPMap.overlays[Builder._pendingLayerEditIndex];
+    var type = overlay.type;
 
     delete Builder._pendingLayerEditIndex;
 
     $type.val(type);
-    $.each(types, function(prop) {
+    $.each(types, function (prop) {
       var $el = $('#' + type);
 
       if (prop === type) {
@@ -688,12 +688,12 @@ Builder.ui.modal.addLayer = (function() {
       backdrop: 'static',
       keyboard: false
     })
-    .on('hide.bs.modal', function() {
+    .on('hide.bs.modal', function () {
       hasNameError = false;
       popup = styles = tooltip = null;
       resetFields();
       $type.val('arcgisserver').trigger('change');
-      $.each($('#modal-addLayer .form-group'), function(index, formGroup) {
+      $.each($('#modal-addLayer .form-group'), function (index, formGroup) {
         var $formGroup = $(formGroup);
 
         if ($formGroup.hasClass('has-error')) {
@@ -706,16 +706,16 @@ Builder.ui.modal.addLayer = (function() {
       $('#modal-addLayer-description-create').show();
       $('#modal-addLayer-title').html('Add an Existing Overlay&nbsp;<img data-container="#modal-addLayer" data-original-title="You can add ArcGIS Online/ArcGIS Server, CartoDB, CSV, GeoJSON, KML, MapBox, SPOT, or Tiled overlays to your map." data-placement="bottom" rel="tooltip" src="img/help@2x.png" style="height:18px;" title="">');
       Builder.buildTooltips();
-      $('#addLayer-add, #addLayer-cancel').each(function(i, button) {
+      $('#addLayer-add, #addLayer-cancel').each(function (i, button) {
         $(button).prop('disabled', false);
       });
     })
-    .on('shown.bs.modal', function() {
+    .on('shown.bs.modal', function () {
       $type.focus();
     });
   $('#modal-addLayer .modal-footer .btn-primary').click(save);
   $('#button-preset-places')
-    .click(function() {
+    .click(function () {
       activeButton = $(this);
       activeButton.popover('show');
     })
@@ -749,19 +749,19 @@ Builder.ui.modal.addLayer = (function() {
       placement: 'bottom',
       trigger: 'manual'
     })
-    .on('hide.bs.popover', function() {
+    .on('hide.bs.popover', function () {
       $modal.css('z-index', 1050);
       $('#modal-addLayer .modal-body').scrollTop(0);
       activeButton = null;
     })
-    .on('show.bs.popover', function() {
+    .on('show.bs.popover', function () {
       $modal.css('z-index', 1);
     })
-    .on('shown.bs.popover', function() {
+    .on('shown.bs.popover', function () {
       var $select = $('#places-park');
 
-      function build() {
-        $.each(parks, function(i, park) {
+      function build () {
+        $.each(parks, function (i, park) {
           $select.append('<option value="' + park.unit_code + '">' + park.full_name + '</option>');
         });
       }
@@ -770,7 +770,7 @@ Builder.ui.modal.addLayer = (function() {
         build();
       } else {
         $.ajax({
-          success: function(response) {
+          success: function (response) {
             parks = response.rows;
             build();
           },
@@ -778,13 +778,13 @@ Builder.ui.modal.addLayer = (function() {
         });
       }
 
-      $('#places-form .btn').click(function() {
+      $('#places-form .btn').click(function () {
         activeButton.popover('hide');
         return false;
       });
-      $('#places-form .btn-primary').click(function() {
-        var dataset = $('#places-dataset').val(),
-          unitCode = $('#places-park').val();
+      $('#places-form .btn-primary').click(function () {
+        var dataset = $('#places-dataset').val();
+        var unitCode = $('#places-park').val();
 
         hasNameError = false;
         resetFields();
@@ -792,7 +792,7 @@ Builder.ui.modal.addLayer = (function() {
         $type
           .val('cartodb')
           .trigger('change');
-        $.each($('#modal-addLayer .form-group'), function(index, formGroup) {
+        $.each($('#modal-addLayer .form-group'), function (index, formGroup) {
           var $formGroup = $(formGroup);
 
           if ($formGroup.hasClass('has-error')) {
@@ -804,7 +804,7 @@ Builder.ui.modal.addLayer = (function() {
         $('#cartodb-user').val('nps');
       });
     });
-  $('input[type=radio][name=addAnOverlay]').change(function() {
+  $('input[type=radio][name=addAnOverlay]').change(function () {
     if (this.value === 'hosted') {
       $('#places').hide();
       $('#hosted').show();
@@ -826,16 +826,16 @@ Builder.ui.modal.addLayer = (function() {
       value: 100
     });
   $(window).resize(setHeight);
-  setTimeout(function() {
+  setTimeout(function () {
     $type.focus();
   }, 100);
 
   return {
     _editingIndex: -1,
-    _clearAllArcGisServerLayers: function() {
+    _clearAllArcGisServerLayers: function () {
       types.arcgisserver.fields.$layers.val([]);
     },
-    _load: function(layer) {
+    _load: function (layer) {
       var type = layer.type;
 
       popup = layer.popup || null;
@@ -869,7 +869,7 @@ Builder.ui.modal.addLayer = (function() {
         var interval;
 
         types.arcgisserver.fields.$url.trigger('change');
-        interval = setInterval(function() {
+        interval = setInterval(function () {
           if ($('#arcgisserver-layers option').length) {
             clearInterval(interval);
             types.arcgisserver.fields.$layers.selectpicker('val', layer.layers.split(','));
@@ -877,7 +877,7 @@ Builder.ui.modal.addLayer = (function() {
         }, 100);
       }
     },
-    _selectAllArcGisServerLayers: function() {
+    _selectAllArcGisServerLayers: function () {
       $('#arcgisserver-layers option').prop('selected', 'selected');
     }
   };

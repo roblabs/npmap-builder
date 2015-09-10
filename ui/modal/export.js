@@ -1,27 +1,27 @@
-/* globals $, Builder, NPMap, mapId */
+/* globals $, Builder, mapId */
 
 Builder.ui = Builder.ui || {};
 Builder.ui.modal = Builder.ui.modal || {};
-Builder.ui.modal.export = (function() {
-  var $cmsId = $('#cms-id'),
-    $iframeCode = $('#iframe-code');
+Builder.ui.modal.export = (function () {
+  var $cmsId = $('#cms-id');
+  var $iframeCode = $('#iframe-code');
 
-  function setHeight() {
+  function setHeight () {
     $('#modal-export .tab-content').css({
       height: $(document).height() - 310
     });
   }
 
-  $cmsId.on('click', function() {
+  $cmsId.on('click', function () {
     $(this).select();
   });
-  $iframeCode.on('click', function() {
+  $iframeCode.on('click', function () {
     $(this).select();
   });
   Builder.buildTooltips();
   $cmsId.val(mapId);
   $iframeCode.val('<iframe height="500px" frameBorder="0" width="100%" src="http://www.nps.gov/maps/embed.html?mapId=' + mapId + '"></iframe>');
-  $('#modal-export-template img.template').click(function() {
+  $('#modal-export-template img.template').click(function () {
     window.open('http://www.nps.gov/maps/' + this.id.replace('template-', '') + '.html?mapId=' + mapId, '_blank');
   });
   setHeight();

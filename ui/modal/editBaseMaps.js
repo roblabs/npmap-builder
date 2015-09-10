@@ -6,26 +6,26 @@
 
 Builder.ui = Builder.ui || {};
 Builder.ui.modal = Builder.ui.modal || {};
-Builder.ui.modal.editBaseMaps = (function() {
-  var $checkbox = $('#modal-editBaseMaps input'),
-    $modal = $('#modal-editBaseMaps'),
-    presets = document.getElementById('iframe-map').contentWindow.L.npmap.preset,
-    baseLayers = presets.baselayers,
-    html = [],
-    overlays = presets.overlays,
-    providers = {
-      bing: 'Bing',
-      cartodb: 'CartoDB',
-      esri: 'Esri',
-      mapbox: 'Mapbox',
-      nps: 'National Park Service',
-      stamen: 'Stamen'
-    },
-    activeLink;
+Builder.ui.modal.editBaseMaps = (function () {
+  var $checkbox = $('#modal-editBaseMaps input');
+  var $modal = $('#modal-editBaseMaps');
+  var presets = document.getElementById('iframe-map').contentWindow.L.npmap.preset;
+  var baseLayers = presets.baselayers;
+  var html = [];
+  // var overlays = presets.overlays;
+  var providers = {
+    bing: 'Bing',
+    cartodb: 'CartoDB',
+    esri: 'Esri',
+    mapbox: 'Mapbox',
+    nps: 'National Park Service',
+    stamen: 'Stamen'
+  };
+  var activeLink;
 
-  function createThumbnail(map, provider, providerPretty, parkTiles) {
-    var id = provider + '-' + map,
-      pretty = maps[map].name.replace(provider.toUpperCase() + ' ', '').replace(providerPretty + ' ', '');
+  function createThumbnail (map, provider, providerPretty, parkTiles) {
+    var id = provider + '-' + map;
+    var pretty = maps[map].name.replace(provider.toUpperCase() + ' ', '').replace(providerPretty + ' ', '');
 
     return '' +
       '<div id="' + id + '" class="basemap col-xs-4 col-sm-4 col-md-4 col-lg-4">' +
@@ -57,18 +57,18 @@ Builder.ui.modal.editBaseMaps = (function() {
       '</div>' +
     '';
   }
-  function setHeight() {
+  function setHeight () {
     $('#modal-editBaseMaps .modal-body').css({
       height: $(document).height() - 180
     });
   }
-  function submit() {
+  function submit () {
     var layers = [];
 
     if (!$checkbox.is(':checked')) {
-      $.each($('#modal-editBaseMaps div.basemap'), function(i, div) {
-        var id = div.id,
-          inputs = $(div).find('input');
+      $.each($('#modal-editBaseMaps div.basemap'), function (i, div) {
+        var id = div.id;
+        var inputs = $(div).find('input');
 
         if ($(inputs[0]).prop('checked')) {
           var link = $(div).find('a');
@@ -111,11 +111,11 @@ Builder.ui.modal.editBaseMaps = (function() {
     Builder.updateMap();
     $modal.modal('hide');
   }
-  function update() {
-    $.each($('#modal-editBaseMaps div.basemap'), function(i, div) {
-      var checked = false,
-        id = div.id,
-        link = $(div).find('.parktiles-overlays-link');
+  function update () {
+    $.each($('#modal-editBaseMaps div.basemap'), function (i, div) {
+      var checked = false;
+      var id = div.id;
+      var link = $(div).find('.parktiles-overlays-link');
 
       // TODO: Maybe you should store the overlays in the baselayers preset in NPMap.js?
 
@@ -173,10 +173,10 @@ Builder.ui.modal.editBaseMaps = (function() {
 
   for (var provider in baseLayers) {
     if (provider !== 'openstreetmap') {
-      var content = '',
-        maps = baseLayers[provider],
-        providerPretty = providers[provider] || provider,
-        map;
+      var content = '';
+      var maps = baseLayers[provider];
+      var providerPretty = providers[provider] || provider;
+      var map;
 
       content += '<div class="well"><h5>' + providerPretty + '</h5><div class="row">';
 
@@ -226,7 +226,7 @@ Builder.ui.modal.editBaseMaps = (function() {
   $('#modal-editBaseMaps .btn-primary').on('click', submit);
   $('#modal-editBaseMaps .modal-body').append(html.join(''));
   $('#modal-editBaseMaps .parktiles-overlays-link')
-    .click(function() {
+    .click(function () {
       activeLink = $(this);
       $(this).popover('show');
     })
@@ -246,22 +246,22 @@ Builder.ui.modal.editBaseMaps = (function() {
       html: true,
       trigger: 'manual'
     })
-    .on('hide.bs.popover', function() {
+    .on('hide.bs.popover', function () {
       $('#modal-editBaseMaps').css('z-index', 1050);
     })
-    .on('show.bs.popover', function() {
+    .on('show.bs.popover', function () {
       $('#modal-editBaseMaps').css('z-index', 1);
     })
-    .on('shown.bs.popover', function() {
+    .on('shown.bs.popover', function () {
       if (activeLink.html().indexOf('No') === -1) {
         $('#parktiles-overlays-form input').prop('checked', true);
       }
 
-      $('#parktiles-overlays-form .btn').click(function() {
+      $('#parktiles-overlays-form .btn').click(function () {
         activeLink.popover('hide');
         return false;
       });
-      $('#parktiles-overlays-form .btn-primary').click(function() {
+      $('#parktiles-overlays-form .btn-primary').click(function () {
         if ($('#parktiles-overlays-form input').prop('checked')) {
           activeLink.html('1 overlay selected');
         } else {
@@ -269,7 +269,7 @@ Builder.ui.modal.editBaseMaps = (function() {
         }
       });
     });
-  $('#modal-editBaseMaps .checkbox-inline input').change(function() {
+  $('#modal-editBaseMaps .checkbox-inline input').change(function () {
     var link = $(this).parent().parent().parent().parent().find('.parktiles-overlays-link');
 
     if (link) {
@@ -280,10 +280,10 @@ Builder.ui.modal.editBaseMaps = (function() {
       }
     }
   });
-  $checkbox.change(function() {
+  $checkbox.change(function () {
     var checked = $(this).is(':checked');
 
-    $('#modal-editBaseMaps .well').each(function() {
+    $('#modal-editBaseMaps .well').each(function () {
       var $this = $(this);
 
       if (checked) {
@@ -305,7 +305,7 @@ Builder.ui.modal.editBaseMaps = (function() {
       backdrop: 'static',
       keyboard: false
     })
-    .on('hide.bs.modal', function() {
+    .on('hide.bs.modal', function () {
       $('#modal-editBaseMaps .modal-body').scrollTop(0);
     });
   Builder.buildTooltips();
@@ -314,10 +314,10 @@ Builder.ui.modal.editBaseMaps = (function() {
   $(window).resize(setHeight);
 
   return {
-    handleRadio: function(el) {
+    handleRadio: function (el) {
       var $checkbox = $($(el).parent().parent().prev().children().children()[0]);
-      
-      $.each($('#modal-editBaseMaps :checkbox'), function(i, checkbox) {
+
+      $.each($('#modal-editBaseMaps :checkbox'), function (i, checkbox) {
         $(checkbox).prop('disabled', false);
       });
 

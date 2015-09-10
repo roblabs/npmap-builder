@@ -2,18 +2,18 @@
 
 Builder.ui = Builder.ui || {};
 Builder.ui.modal = Builder.ui.modal || {};
-Builder.ui.modal.viewConfig = (function() {
-  var $code = $('#modal-viewConfig-code'),
-    $htmlDiv = $('#modal-viewConfig-html'),
-    $htmlInput = $('#modal-viewConfig-html input');
+Builder.ui.modal.viewConfig = (function () {
+  var $code = $('#modal-viewConfig-code');
+  var $htmlDiv = $('#modal-viewConfig-html');
+  var $htmlInput = $('#modal-viewConfig-html input');
 
-  function setConfig() {
-    var formatted = 'var NPMap = ',
-      html = $htmlInput.prop('checked'),
-      npmapSorted = {},
-      sorted = [],
-      space = html ? '      ' : '',
-      json, prop;
+  function setConfig () {
+    var formatted = 'var NPMap = ';
+    var html = $htmlInput.prop('checked');
+    var npmapSorted = {};
+    var sorted = [];
+    var space = html ? '      ' : '';
+    var json, prop;
 
     for (prop in NPMap) {
       sorted.push(prop);
@@ -28,13 +28,13 @@ Builder.ui.modal.viewConfig = (function() {
 
     json = JSON.stringify(npmapSorted, null, 2).split('\n');
 
-    $.each(json, function(i, v) {
+    $.each(json, function (i, v) {
       if (v !== null) {
         if (i !== 0 && i !== json.length - 1) {
           formatted += v + '\n' + space;
         } else {
           if (i === json.length - 1) {
-            formatted +=  v;
+            formatted += v;
           } else {
             formatted += v + '\n' + space;
           }
@@ -49,11 +49,11 @@ Builder.ui.modal.viewConfig = (function() {
     }
 
     $code.val(formatted);
-    $('#modal-viewConfig-code').on('click', function() {
+    $('#modal-viewConfig-code').on('click', function () {
       $(this).select();
     }).select();
   }
-  function setHeight() {
+  function setHeight () {
     var height = $(document).height() - 195;
 
     $('#modal-viewConfig .modal-body').css({

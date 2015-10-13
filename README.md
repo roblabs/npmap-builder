@@ -1,7 +1,3 @@
-<p align="center">
-  <img src="http://www.nps.gov/npmap/img/nps-arrowhead-medium.png" alt="NPS Arrowhead">
-</p>
-
 # NPMap Builder
 
 The NPMap Builder is a graphical interface that can be used to build maps with the [NPMap.js library](https://github.com/nationalparkservice/npmap.js). The Builder is intended to be a quick start for developing and deploying maps to the web. It is not intended to cover every use case - and it never will. Those who want to add advanced functionality or customizations to their map will need to use NPMap.js's [API](https://github.com/nationalparkservice/npmap.js/blob/master/API.md).

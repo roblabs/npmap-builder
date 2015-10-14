@@ -1,4 +1,4 @@
-/* globals $, Builder, NPMap */
+/* globals $, Builder, NPMap, npmapjsVersion */
 
 Builder.ui = Builder.ui || {};
 Builder.ui.modal = Builder.ui.modal || {};
@@ -16,7 +16,9 @@ Builder.ui.modal.viewConfig = (function () {
     var json, prop;
 
     for (prop in NPMap) {
-      sorted.push(prop);
+      if (prop !== 'meta') {
+        sorted.push(prop);
+      }
     }
 
     sorted.sort();
@@ -42,7 +44,7 @@ Builder.ui.modal.viewConfig = (function () {
       }
     });
 
-    formatted += ';\n\n' + space + 'var s = document.createElement(\'script\');\n' + space + 's.src = \'http://www.nps.gov/lib/npmap.js/2.0.0/npmap-bootstrap.min.js\';\n' + space + 'document.body.appendChild(s);';
+    formatted += ';\n\n' + space + 'var s = document.createElement(\'script\');\n' + space + 's.src = \'http://www.nps.gov/lib/npmap.js/' + npmapjsVersion + '/npmap-bootstrap.min.js\';\n' + space + 'document.body.appendChild(s);';
 
     if (html) {
       formatted = '<!DOCTYPE html>\n<html lang="en">\n  <head>\n    <meta charset="utf-8">\n  </head>\n  <body>\n    <div id="map" style="height:500px;width:500px;">\n    </div>\n    <script>\n      ' + formatted + '\n    </script>\n  </body>\n</html>';

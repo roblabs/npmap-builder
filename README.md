@@ -1,14 +1,10 @@
-<p align="center">
-  <img src="http://www.nps.gov/npmap/img/nps-arrowhead-medium.png" alt="NPS Arrowhead">
-</p>
-
 # NPMap Builder
 
-The NPMap Builder is a graphical interface that can be used to build maps with the [NPMap.js library](https://github.com/nationalparkservice/npmap.js). The Builder is intended to be a quick start for developing and deploying maps to the web. It is not intended to cover every use case - and it never will. Those who want to add advanced functionality or customizations to their map will need to use NPMap.js's [API](https://github.com/nationalparkservice/npmap.js/blob/master/API.md).
+NPMap Builder is a graphical interface that can be used to build maps with the [NPMap.js library](https://github.com/nationalparkservice/npmap.js). Builder is intended to be a quick start for developing and deploying maps to the web. It is not intended to cover every use case - and it never will. Those who want to add advanced functionality or customizations to their map will need to use NPMap.js's [API](http://www.nps.gov/npmap/tools/npmap.js/docs/).
 
-That said, output from the builder should provide a good base starting point for all maps - even those that require additional customizations.
+That said, output from Builder should provide a good base starting point for all maps - even those that require additional customizations.
 
-# Build
+## Build
 
 You can create a production build with minified and combined JavaScript and CSS by using Grunt:
 
@@ -18,14 +14,14 @@ You can create a production build with minified and combined JavaScript and CSS 
 
 The build will be created in the `_site` directory.
 
-# Status
+## Status
 
-The NPMap Builder is a work-in-progress. Consider the code pre-alpha and the feature set incomplete.
+NPMap Builder is a work-in-progress. Consider the code alpha and the feature set incomplete.
 
-# License
+## Public domain
 
-This project constitutes a work of the United States Government and is not subject to domestic copyright protection under 17 USC § 105.
+This project is in the worldwide [public domain](LICENSE.md). As stated in [CONTRIBUTING](CONTRIBUTING.md):
 
-However, because the project utilizes code licensed from contributors and other third parties, it is licensed under the MIT License ([http://opensource.org/licenses/mit-license.php](http://opensource.org/licenses/mit-license.php)). Under that license, permission is granted free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the conditions that any appropriate copyright notices and this permission notice are included in all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+> This project is in the public domain within the United States, and copyright and related rights in the work worldwide are waived through the [CC0 1.0 Universal public domain dedication](https://creativecommons.org/publicdomain/zero/1.0/).
+>
+> All contributions to this project will be released under the CC0 dedication. By submitting a pull request, you are agreeing to comply with this waiver of copyright interest.

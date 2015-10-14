@@ -1,16 +1,17 @@
-## Introduction
+## Welcome!
 
-The Builder is under _very_ active development, so you will likely encounter bugs and/or areas of the intrace that still need some work. If you do, please take a few minutes to send us your feedback; user feedback helps us prioritize future development.
+We're so glad you're thinking about contributing to an NPMap open source project! If you're unsure about anything, just ask -- or submit the issue or pull request anyway. The worst that can happen is you'll be politely asked to change something. We love all friendly contributions.
 
-A few key points:
+We encourage you to read this project's CONTRIBUTING policy (you are here), its [LICENSE](LICENSE.md), and its [README](README.md).
 
-* Please _do not_ send feedback via email. Submit all feedback through the [issue tracker](https://github.com/nationalparkservice/npmap-builder/issues).
-* If you run into an issue or have a _specific_ enhancement request, feel free to [create a new issue](https://github.com/nationalparkservice/npmap-builder/issues/new). Before doing this, take a look at the existing issues to ensure you aren't creating a duplicate request. If a request similar to yours has already been submitted, do not create a new one. Simply comment on the existing one, using "+1" comments to show your support for an existing issue.
+If you have any questions or want to read more, check out the [NPMap Open Source Policy GitHub repository]( https://github.com/nationalparkservice/npmap-open-source-policy/), or just [shoot us an email](mailto:npmap@nps.gov).
 
-## Support
+## Public domain
 
-The [NPMap team](http://www.nps.gov/npmap/team/) is here to help. We will answer any and all open issues as quickly as possible.
+This project is in the public domain within the United States, and
+copyright and related rights in the work worldwide are waived through
+the [CC0 1.0 Universal public domain dedication](https://creativecommons.org/publicdomain/zero/1.0/).
 
-## Data
-
-If you need help getting your data into a format that is compatible with the Builder, open a data support request in the [issue tracker](https://github.com/nationalparkservice/npmap-builder/issues).
+All contributions to this project will be released under the CC0
+dedication. By submitting a pull request, you are agreeing to comply
+with this waiver of copyright interest.

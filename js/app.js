@@ -1,5 +1,6 @@
 /* globals $, tinycolor */
 
+var npmapjsVersion = '3.0.0';
 var alertify, Builder, mapId, moment, NPMap;
 
 function ready () {
@@ -29,8 +30,8 @@ function ready () {
     var optionsLettersAll = [];
     var optionsLettersFiltered = [];
     var optionsMaki = [];
-    var optionsNpmakiAll = [];
-    var optionsNpmakiFiltered = [];
+    var optionsNpmapSymbolLibraryAll = [];
+    var optionsNpmapSymbolLibraryFiltered = [];
     var optionsNumbersAll = [];
     var optionsNumbersFiltered = [];
     var settingsSet = false;
@@ -166,7 +167,7 @@ function ready () {
                         '<select class="form-control marker-library" id="' + getName('marker-library', 'point') + '" onchange="Builder.ui.steps.addAndCustomizeData.handlers.changeMarkerLibrary(this);return false;">' +
                           '<option value="letters">Letters</option>' +
                           '<option value="maki">Maki</option>' +
-                          '<option value="npmaki">NPMaki</option>' +
+                          '<option value="npmapsymbollibrary">NPMap Symbol Library</option>' +
                           '<option value="numbers">Numbers</option>' +
                         '</select>' +
                       '</div>' +
@@ -339,12 +340,12 @@ function ready () {
         });
       }
 
-      if (!optionsNpmakiAll.length) {
+      if (!optionsNpmapSymbolLibraryAll.length) {
         var letters = [];
         var numbers = [];
 
         sortable = [];
-        $.each(document.getElementById('iframe-map').contentWindow.L.npmap.preset.npmaki, function (prop, value) {
+        $.each(document.getElementById('iframe-map').contentWindow.L.npmap.preset.npmapsymbollibrary, function (prop, value) {
           var lower = value.name.toLowerCase();
           var obj = {
             icon: value.icon,
@@ -369,7 +370,7 @@ function ready () {
         });
         sortable.sort(sort);
         $.each(sortable, function (i, icon) {
-          optionsNpmakiAll.push('<option value="' + icon.icon + '">' + icon.name + '</option>');
+          optionsNpmapSymbolLibraryAll.push('<option value="' + icon.icon + '">' + icon.name + '</option>');
         });
       }
 
@@ -430,6 +431,7 @@ function ready () {
           isShared: true,
           json: JSON.stringify(NPMap),
           mapId: mapId || null,
+          // TODO: Change "name" to "title" for consistency. Need to make this change serverside.
           name: title
         },
         dataType: 'json',
@@ -616,9 +618,9 @@ function ready () {
         },
         metadata: {
           init: function () {
-            description = NPMap.description;
+            description = NPMap.meta.description;
             firstLoad = true;
-            title = NPMap.name;
+            title = NPMap.meta.title;
 
             $('#metadata .description a').text(description).editable({
               animation: false,
@@ -799,8 +801,8 @@ function ready () {
                   case 'maki':
                     $el.html(optionsMaki.join(''));
                     break;
-                  case 'npmaki':
-                    $el.html(optionsNpmakiFiltered.join(''));
+                  case 'npmapsymbollibrary':
+                    $el.html(optionsNpmapSymbolLibraryFiltered.join(''));
                     break;
                   case 'numbers':
                     $el.html(optionsNumbersFiltered.join(''));
@@ -857,7 +859,7 @@ function ready () {
                     var type = split[split.length - 2];
 
                     if (property === 'marker-library' && (value === 'letters' || value === 'numbers')) {
-                      value = 'npmaki';
+                      value = 'npmapsymbollibrary';
                     }
 
                     if (!updated[type]) {
@@ -980,10 +982,10 @@ function ready () {
                                       } else if (value.indexOf('number') > -1) {
                                         $field.html(optionsNumbersFiltered.join(''));
                                       } else {
-                                        $field.html(optionsNpmakiFiltered.join(''));
+                                        $field.html(optionsNpmapSymbolLibraryFiltered.join(''));
                                       }
                                     } else {
-                                      $field.html(optionsNpmakiFiltered.join(''));
+                                      $field.html(optionsNpmapSymbolLibraryFiltered.join(''));
                                     }
                                   }
 
@@ -1154,7 +1156,7 @@ function ready () {
               var value = $icon.val();
 
               optionsLettersFiltered = [];
-              optionsNpmakiFiltered = [];
+              optionsNpmapSymbolLibraryFiltered = [];
               optionsNumbersFiltered = [];
 
               $.each(optionsLettersAll, function (i, option) {
@@ -1162,9 +1164,9 @@ function ready () {
                   optionsLettersFiltered.push(option.replace('Letter \'', '').replace('\' (' + keep + ')', ''));
                 }
               });
-              $.each(optionsNpmakiAll, function (i, option) {
+              $.each(optionsNpmapSymbolLibraryAll, function (i, option) {
                 if (option.indexOf(keep) > -1) {
-                  optionsNpmakiFiltered.push(option.replace(' (' + keep + ')', ''));
+                  optionsNpmapSymbolLibraryFiltered.push(option.replace(' (' + keep + ')', ''));
                 }
               });
               $.each(optionsNumbersAll, function (i, option) {
@@ -1177,8 +1179,8 @@ function ready () {
                 case 'letters':
                   $icon.html(optionsLettersFiltered.join(''));
                   break;
-                case 'npmaki':
-                  $icon.html(optionsNpmakiFiltered.join(''));
+                case 'npmapsymbollibrary':
+                  $icon.html(optionsNpmapSymbolLibraryFiltered.join(''));
                   break;
                 case 'numbers':
                   $icon.html(optionsNumbersFiltered.join(''));
@@ -1521,6 +1523,8 @@ function ready () {
           animation: false
         });
       },
+      // TODO: Preserving private method for now, should migrate all calls to this global method though.
+      enableSave: enableSave,
       hideLoading: function () {
         $('#loading').hide();
         document.body.removeChild(document.getElementById('loading-backdrop'));
@@ -1548,7 +1552,7 @@ function ready () {
       updateMap: function (callback, manualRefresh) {
         var interval;
 
-        $iframe.attr('src', 'iframe.html');
+        $iframe.attr('src', 'iframe.html?v=' + npmapjsVersion);
 
         interval = setInterval(function () {
           var npmap = document.getElementById('iframe-map').contentWindow.NPMap;
@@ -1629,7 +1633,68 @@ if (mapId) {
     jsonpCallback: 'callback',
     success: function (response) {
       if (response) {
+        var version = '2.0.1';
+
         NPMap = response;
+
+        if (NPMap.meta) {
+          if (NPMap.meta.npmapjsVersion) {
+            version = NPMap.meta.npmapjsVersion;
+          }
+        } else {
+          NPMap.meta = {};
+        }
+
+        if (parseInt(version.charAt(0), 10) < parseInt(npmapjsVersion.charAt(0), 10)) {
+          // Migrate from NPMap.js 2.x to 3.x
+          if (NPMap.overlays) {
+            $.each(NPMap.overlays, function (i, overlay) {
+              if (overlay.styles && overlay.styles.point && overlay.styles.point['marker-library'] && overlay.styles.point['marker-library'] === 'npmaki') {
+                overlay.styles.point['marker-library'] = 'npmapsymbollibrary';
+              }
+            });
+          }
+
+          if (NPMap.description) {
+            NPMap.meta.description = NPMap.description;
+            delete NPMap.description;
+          }
+
+          if (NPMap.mapId) {
+            NPMap.meta.mapId = NPMap.mapId;
+            delete NPMap.mapId;
+          }
+
+          if (NPMap.name) {
+            NPMap.meta.title = NPMap.name;
+            delete NPMap.name;
+          }
+
+          NPMap.meta.npmapjsVersion = npmapjsVersion;
+
+          $('body').append('' +
+            '<div class="modal" id="modal-upgrade" tabindex="-1" role="dialog" aria-hidden="true">' +
+              '<div class="modal-dialog">' +
+                '<div class="modal-content">' +
+                  '<div class="modal-body">' +
+                    '<p>Builder has upgraded your map to the latest version of NPMap.js, ' + npmapjsVersion + '. Most automated upgrades work perfectly. We ask, however, that you test your map\'s functionality before saving to ensure that everything has been migrated properly.</p><p>If everything looks good, go ahead and save the map. If, on the other hand, you run into issues, click the "Submit Feedback" link at the bottom of the window and the NPMap team will manually upgrade your map.</p><p>When testing your map, focus on the following functionality:</p><ul><li>Verify that any point symbology you setup on your map\'s overlay(s) is still working properly</li></ul>' +
+                  '</div>' +
+                  '<div class="modal-footer">' +
+                    '<button class="btn btn-primary" data-dismiss="modal" type="button">OK</button>' +
+                  '</div>' +
+                '</div>' +
+              '</div>' +
+            '</div>' +
+          '');
+          $('#modal-upgrade').modal({
+            backdrop: 'static',
+            keyboard: false
+          }).on('hide.bs.modal', function () {
+            $('#modal-upgrade').remove();
+            Builder.enableSave();
+          });
+        }
+
         ready();
       } else {
         window.alert(msg);

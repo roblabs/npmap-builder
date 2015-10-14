@@ -8,7 +8,7 @@ That said, output from Builder should provide a good base starting point for all
 
 You can create a production build with minified and combined JavaScript and CSS by using Grunt:
 
-1. Install Node and NPM
+1. Install Node
 2. `npm install`
 3. `grunt`
 

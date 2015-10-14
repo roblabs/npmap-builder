@@ -1,6 +1,6 @@
 // TODO: Do away with iframe.min.html and index.min.html by replacing paths with minified paths in this script.
 
-module.exports = function(grunt) {
+module.exports = function (grunt) {
   'use strict';
 
   var buildId = new Date().getTime();
@@ -8,14 +8,6 @@ module.exports = function(grunt) {
   grunt.initConfig({
     buildId: buildId,
     clean: {
-      dist: [
-        '_site/css',
-        '_site/iframe.html',
-        '_site/index.html',
-        '_site/img',
-        '_site/js',
-        '_site/ui'
-      ],
       prod: {
         options: {
           force: true
@@ -23,7 +15,15 @@ module.exports = function(grunt) {
         src: [
           '/Volumes/wwwroot/builder/map/**/*'
         ]
-      }
+      },
+      site: [
+        '_site/css',
+        '_site/iframe.html',
+        '_site/index.html',
+        '_site/img',
+        '_site/js',
+        '_site/ui'
+      ]
     },
     copy: {
       prod: {
@@ -42,25 +42,25 @@ module.exports = function(grunt) {
           src: [
             '**/*'
           ]
-        },{
+        }, {
           cwd: 'assets/libs/bootstrap-slider/img/',
           dest: '_site/img/',
           expand: true,
           src: [
             '**/*'
           ]
-        },{
+        }, {
           cwd: 'img/',
           dest: '_site/img/',
           expand: true,
           src: [
             '**/*'
           ]
-        },{
+        }, {
           cwd: 'ui/',
           dest: '_site/ui/',
           expand: true,
-          rename: function(dest, src) {
+          rename: function (dest, src) {
             src = src.replace('.css', '-' + buildId + '.css');
             src = src.replace('.html', '-' + buildId + '.html');
             src = src.replace('.js', '-' + buildId + '.js');
@@ -138,10 +138,10 @@ module.exports = function(grunt) {
           replacements: [{
             pattern: /".css"/g,
             replacement: '"-' + buildId + '.css"'
-          },{
+          }, {
             pattern: /".html"/g,
             replacement: '"-' + buildId + '.html"'
-          },{
+          }, {
             pattern: /".js"/g,
             replacement: '"-' + buildId + '.js"'
           }]
@@ -155,10 +155,10 @@ module.exports = function(grunt) {
           replacements: [{
             pattern: '{{buildId}}',
             replacement: 'Build: ' + buildId
-          },{
+          }, {
             pattern: /js\/app.min.js/g,
             replacement: 'js/app-' + buildId + '.min.js'
-          },{
+          }, {
             pattern: /css\/app.min.css/g,
             replacement: 'css/app-' + buildId + '.min.css'
           }]
@@ -205,6 +205,6 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-htmlmin');
   grunt.loadNpmTasks('grunt-contrib-uglify');
   grunt.loadNpmTasks('grunt-string-replace');
-  grunt.registerTask('build', ['clean:dist', 'htmlmin:site', 'copy', 'cssmin:site', 'uglify', 'string-replace:app', 'string-replace:index', 'cssmin:ui', 'htmlmin:ui']);
+  grunt.registerTask('build', ['clean:site', 'htmlmin:site', 'copy:site', 'cssmin:site', 'uglify', 'string-replace:app', 'string-replace:index', 'cssmin:ui', 'htmlmin:ui']);
   grunt.registerTask('deploy', ['clean:prod', 'copy:prod']);
 };

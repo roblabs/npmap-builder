@@ -460,7 +460,7 @@ function ready () {
                 }, '', url);
               }
 
-              mapId = response.mapId;
+              mapId = NPMap.meta.mapId = response.mapId;
               updateSaveStatus(response.modified);
               alertify.success('Your map was saved!');
               success = true;
@@ -662,7 +662,7 @@ function ready () {
                 }
 
                 description = newDescription;
-                NPMap.description = description;
+                NPMap.meta.description = description;
               })
               .on('shown', function () {
                 var next = $(this).parent().next();
@@ -714,7 +714,7 @@ function ready () {
                 }
 
                 title = newTitle;
-                NPMap.name = title;
+                NPMap.meta.title = title;
               })
               .on('shown', function () {
                 var next = $(this).next();
@@ -1716,6 +1716,12 @@ if (mapId) {
     },
     div: 'map',
     homeControl: true,
+    meta: {
+      description: null,
+      mapId: null,
+      npmapjsVersion: npmapjsVersion,
+      title: null
+    },
     smallzoomControl: true,
     zoom: 4
   };

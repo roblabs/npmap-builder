@@ -10,7 +10,7 @@ You can create a production build with minified and combined JavaScript and CSS 
 
 1. Install Node
 2. `npm install`
-3. `grunt`
+3. `grunt build`
 
 The build will be created in the `_site` directory.
 

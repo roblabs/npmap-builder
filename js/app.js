@@ -1,6 +1,6 @@
 /* globals $, tinycolor */
 
-var npmapjsVersion = '3.0.3';
+var npmapjsVersion = '3.0.8';
 var alertify, Builder, mapId, moment, NPMap;
 
 function ready () {

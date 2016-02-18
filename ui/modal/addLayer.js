@@ -912,7 +912,6 @@ Builder.ui.modal.addLayer = (function () {
         activeButton.popover('hide');
         return false;
       });
-
       $('#inaturalist-form .btn-primary').click(function () {
         var projectId = $('#inaturalist-project').val();
         var url;

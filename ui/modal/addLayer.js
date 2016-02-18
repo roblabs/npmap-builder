@@ -924,7 +924,7 @@ Builder.ui.modal.addLayer = (function () {
 
         resetFields();
         $name.val('iNaturalist ' + projectId + ' Layer');
-        $type.val('kml').trigger('change');
+        $type.val('csv').trigger('change');
 
         $.each($('#modal-addLayer .form-group'), function (index, formGroup) {
           var $formGroup = $(formGroup);
@@ -934,8 +934,8 @@ Builder.ui.modal.addLayer = (function () {
           }
         });
 
-        url = 'http://www.inaturalist.org/observations/project/' + projectId + '.kml';
-        $('#kml-url').val(url);
+        url = 'http://www.inaturalist.org/observations/project/' + projectId + '.csv';
+        $('#csv-url').val(url);
         activeButton.popover('hide');
         return false;
       });

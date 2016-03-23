@@ -20,9 +20,9 @@ Builder.ui.modal.export = (function () {
   });
   Builder.buildTooltips();
   $cmsId.val(mapId);
-  $iframeCode.val('<iframe height="500px" frameBorder="0" width="100%" src="http://www.nps.gov/maps/embed.html?mapId=' + mapId + '"></iframe>');
+  $iframeCode.val('<iframe height="500px" frameBorder="0" width="100%" src="https://www.nps.gov/maps/embed.html?mapId=' + mapId + '"></iframe>');
   $('#modal-export-template img.template').click(function () {
-    window.open('http://www.nps.gov/maps/' + this.id.replace('template-', '') + '.html?mapId=' + mapId, '_blank');
+    window.open('https://www.nps.gov/maps/' + this.id.replace('template-', '') + '.html?mapId=' + mapId, '_blank');
   });
   setHeight();
   $(window).resize(setHeight);

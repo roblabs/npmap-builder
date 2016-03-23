@@ -16,7 +16,7 @@
   "engines": {
     "node": "*"
   },
-  "homepage": "http://www.nps.gov/npmap/tools/npmap-builder/",
+  "homepage": "https://www.nps.gov/npmap/tools/npmap-builder/",
   "licenses": [
     {
       "type": "Public Domain",

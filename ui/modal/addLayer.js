@@ -875,6 +875,70 @@ Builder.ui.modal.addLayer = (function () {
         }
       });
     });
+  $('#button-preset-inaturalist')
+    .click(function () {
+      activeButton = $(this);
+      activeButton.popover('show');
+    })
+    .popover({
+      container: 'body',
+      content: '' +
+        '<p>Add an overlay of species observations from an iNaturalist Project</p>' +
+        '<form id="inaturalist-form" role="form">' +
+          '<div class="form-group">' +
+            '<label for="inaturalist-project">Project ID</label>' +
+            '<input class="form-control" id="inaturalist-project" type="text" required></input>' +
+          '</div>' +
+          '<div style="text-align:center;">' +
+            '<input type="button" class="btn btn-default" style="margin-right:5px;" value="Cancel"></input>' +
+            '<input type="submit" form="inaturalist-form" class="btn btn-primary" value="Select"></input>' +
+          '</div>' +
+        '</form>' +
+      '',
+      html: true,
+      placement: 'bottom',
+      trigger: 'manual'
+    })
+    .on('hide.bs.popover', function () {
+      $modal.css('z-index', 1050);
+      $('#modal-addLayer .modal-body').scrollTop(0);
+      activeButton = null;
+    })
+    .on('show.bs.popover', function () {
+      $modal.css('z-index', 1);
+    })
+    .on('shown.bs.popover', function () {
+      $('#inaturalist-form .btn-default').click(function () {
+        activeButton.popover('hide');
+        return false;
+      });
+      $('#inaturalist-form .btn-primary').click(function () {
+        var projectId = $('#inaturalist-project').val();
+        var url;
+
+        if (!projectId) {
+          $('#inaturalist-project').parent().addClass('has-error');
+          return false;
+        }
+
+        resetFields();
+        $name.val('iNaturalist ' + projectId + ' Layer');
+        $type.val('csv').trigger('change');
+
+        $.each($('#modal-addLayer .form-group'), function (index, formGroup) {
+          var $formGroup = $(formGroup);
+
+          if ($formGroup.hasClass('has-error')) {
+            $formGroup.removeClass('has-error');
+          }
+        });
+
+        url = 'http://www.inaturalist.org/observations/project/' + projectId + '.csv';
+        $('#csv-url').val(url);
+        activeButton.popover('hide');
+        return false;
+      });
+    });
   $('input[type=radio][name=addAnOverlay]').change(function () {
     if (this.value === 'hosted') {
       $('#places').hide();

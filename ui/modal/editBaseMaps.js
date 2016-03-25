@@ -203,6 +203,34 @@ Builder.ui.modal.editBaseMaps = (function () {
         }
 
         for (map in maps) {
+          if (map === 'parkTiles3') {
+            content += createThumbnail(map, provider, providerPretty, true);
+            break;
+          }
+        }
+
+        for (map in maps) {
+          if (map === 'parkTiles3Imagery') {
+            content += createThumbnail(map, provider, providerPretty, true);
+            break;
+          }
+        }
+
+        for (map in maps) {
+          if (map === 'parkTiles3Light') {
+            content += createThumbnail(map, provider, providerPretty, true);
+            break;
+          }
+        }
+
+        for (map in maps) {
+          if (map === 'parkTiles3Slate') {
+            content += createThumbnail(map, provider, providerPretty, true);
+            break;
+          }
+        }
+
+        for (map in maps) {
           if (map !== 'darkStreets' && map.indexOf('parkTiles') === -1) {
             content += createThumbnail(map, provider, providerPretty);
           }

@@ -1670,8 +1670,6 @@ if (mapId) {
             delete NPMap.name;
           }
 
-          NPMap.meta.npmapjsVersion = npmapjsVersion;
-
           $('body').append('' +
             '<div class="modal" id="modal-upgrade" tabindex="-1" role="dialog" aria-hidden="true">' +
               '<div class="modal-dialog">' +
@@ -1695,6 +1693,7 @@ if (mapId) {
           });
         }
 
+        NPMap.meta.npmapjsVersion = npmapjsVersion;
         ready();
       } else {
         window.alert(msg);

@@ -526,6 +526,8 @@ Builder.ui.modal.addLayer = (function () {
       // TODO: Loop through all properties and "sanitize" them.
       // TODO: Better loading indicator?
       validate($.extend({}, config), function (validated, error) {
+        console.log(validated);
+
         if (error) {
           if (!error.message) {
             error.message = 'An unhandled error occured.';
@@ -562,7 +564,7 @@ Builder.ui.modal.addLayer = (function () {
                     delete config.styles['marker-size'];
                     break;
                 }
-              } else {
+              } else if (geometryTypes && geometryTypes.length) {
                 if (geometryTypes.indexOf('line') === -1) {
                   delete config.styles.line;
                 }
@@ -574,6 +576,10 @@ Builder.ui.modal.addLayer = (function () {
                 if (geometryTypes.indexOf('polygon') === -1) {
                   delete config.styles.polygon;
                 }
+              } else {
+                // Clustered
+                delete config.styles.line;
+                delete config.styles.polygon;
               }
             }
 

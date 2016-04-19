@@ -1,6 +1,6 @@
 /* globals $, tinycolor */
 
-var npmapjsVersion = '3.0.12';
+var npmapjsVersion = '3.0.15';
 var alertify, Builder, mapId, moment, NPMap;
 
 function ready () {
@@ -1024,11 +1024,11 @@ function ready () {
                     '<form class="configure-interactivity" id="' + name + '_layer-configure-interactivity" role="form">' +
                       '<fieldset>' +
                         '<div class="form-group">' +
-                          '<span><label for="' + name + '_title">Title</label><a href="http://www.nps.gov/npmap/tools/npmap-builder/docs/popups-and-tooltips/" target="_blank"><img data-container="body" data-placement="bottom" rel="tooltip" src="img/help@2x.png" style="cursor:pointer;float:right;height:18px;" title="The title will display in bold at the top of the popup. HTML and Handlebars templates are allowed. Click for more info."></a></span>' +
+                          '<span><label for="' + name + '_title">Title</label><a href="https://www.nps.gov/npmap/tools/npmap-builder/docs/popups-and-tooltips/" target="_blank"><img data-container="body" data-placement="bottom" rel="tooltip" src="img/help@2x.png" style="cursor:pointer;float:right;height:18px;" title="The title will display in bold at the top of the popup. HTML and Handlebars templates are allowed. Click for more info."></a></span>' +
                           '<input class="form-control" id="' + name + '_title" rows="3" type="text"></input>' +
                         '</div>' +
                         '<div class="form-group">' +
-                          '<span><label for="' + name + '_description">Description</label><a href="http://www.nps.gov/npmap/tools/npmap-builder/docs/popups-and-tooltips/" target="_blank"><img data-container="body" data-placement="bottom" rel="tooltip" src="img/help@2x.png" style="cursor:pointer;float:right;height:18px;" title="The description will display underneath the title. HTML and Handlebars templates are allowed. Click for more info."></a></span>' +
+                          '<span><label for="' + name + '_description">Description</label><a href="https://www.nps.gov/npmap/tools/npmap-builder/docs/popups-and-tooltips/" target="_blank"><img data-container="body" data-placement="bottom" rel="tooltip" src="img/help@2x.png" style="cursor:pointer;float:right;height:18px;" title="The description will display underneath the title. HTML and Handlebars templates are allowed. Click for more info."></a></span>' +
                           '<textarea class="form-control" id="' + name + '_description" rows="4"></textarea>' +
                         '</div>' +
                         (supportsTooltips ? '' +
@@ -1038,7 +1038,7 @@ function ready () {
                             '</label>' +
                           '</div>' +
                           '<div class="form-group">' +
-                            '<span><label for="' + name + '_tooltip">Tooltip</label><a href="http://www.nps.gov/npmap/tools/npmap-builder/docs/popups-and-tooltips/" target="_blank"><img data-container="body" data-placement="bottom" rel="tooltip" src="img/help@2x.png" style="cursor:pointer;float:right;height:18px;" title="Tooltips display when the cursor moves over a shape. HTML and Handlebars templates are allowed. Click for more info."></a></span>' +
+                            '<span><label for="' + name + '_tooltip">Tooltip</label><a href="https://www.nps.gov/npmap/tools/npmap-builder/docs/popups-and-tooltips/" target="_blank"><img data-container="body" data-placement="bottom" rel="tooltip" src="img/help@2x.png" style="cursor:pointer;float:right;height:18px;" title="Tooltips display when the cursor moves over a shape. HTML and Handlebars templates are allowed. Click for more info."></a></span>' +
                             '<input class="form-control" id="' + name + '_tooltip" type="text" disabled></input>' +
                           '</div>' +
                         '' : '') +
@@ -1670,8 +1670,6 @@ if (mapId) {
             delete NPMap.name;
           }
 
-          NPMap.meta.npmapjsVersion = npmapjsVersion;
-
           $('body').append('' +
             '<div class="modal" id="modal-upgrade" tabindex="-1" role="dialog" aria-hidden="true">' +
               '<div class="modal-dialog">' +
@@ -1695,13 +1693,14 @@ if (mapId) {
           });
         }
 
+        NPMap.meta.npmapjsVersion = npmapjsVersion;
         ready();
       } else {
         window.alert(msg);
       }
     },
     timeout: 3000,
-    url: 'http://www.nps.gov/maps/builder/configs/' + mapId + '.jsonp'
+    url: 'https://www.nps.gov/maps/builder/configs/' + mapId + '.jsonp'
   });
 } else {
   $('#mask').show();
